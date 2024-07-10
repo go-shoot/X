@@ -37,11 +37,12 @@ const is = {
     volatile: url => /\.(?:css|js|json)$/.test(new URL(url).pathname),
     image: url => /\.(?:ico|svg|jpeg|jpg|png)$/.test(new URL(url).pathname),
     part: url => /img\/.+?\/.+?\.png$/.test(new URL(url).pathname),
-    html: url => /(?:\/|\.html)$/.test(new URL(url).pathname)
+    html: url => /(?:\/|\.html)$/.test(new URL(url).pathname),
+    google: url => url.includes('gstatic')
 }
 fetch.net = req => {
     req = new Request(req.url.replace(/go-shoot\.github\.io(?!\/X)/, 'go-shoot.github.io/X') + 
-        (is.internal(req.url) && is.volatile(req.url) ? `?${Math.random()}` : ''), {mode: 'no-cors'});
+        (is.internal(req.url) && is.volatile(req.url) ? `?${Math.random()}` : ''), is.google(req.url) ? null : {mode: 'no-cors'});
     return fetch(req).then(res => 
         (res.status < 400 && is.cacheable(req.url) ? fetch.cache(res) : Promise.resolve(res))
         .then(res => is.html(req.url) ? Head.add(res) : res)

@@ -46,7 +46,7 @@ addEventListener('DOMContentLoaded', () => {
         setTimeout(() => Q('nav').classList.add('safari'), 200);
     }
     Q('[popover]')?.addEventListener('click', ev => ev.target.closest('[popover]').hidePopover());
-    document.querySelectorAll('a[href]', a => a.href = a.href.replace(/go-shoot\.github\.io(?!\/X)/, 'go-shoot.github.io/X'));
+    document.querySelectorAll('a[href]').forEach(a => a.href = a.href.replace(/go-shoot\.github\.io(?!\/X)/, 'go-shoot.github.io/X'));
 });
 const E = (el, ...stuff) => {
     let [text, attr, children] = ['String', 'Object', 'Array'].map(t => stuff.find(s => Object.prototype.toString.call(s).includes(t)));
