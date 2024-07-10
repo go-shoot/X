@@ -41,7 +41,7 @@ const is = {
 }
 fetch.net = req => {
     req = new Request(is.internal(req.url) && is.volatile(req.url) ? 
-        `${req.url}?${Math.random()}` : req.url.replace(/go-shoot\.github\.io(?!\/X)/, 'go-shoot.github.io/X'), req);
+        `${req.url}?${Math.random()}` : req.url.replace(/go-shoot\.github\.io(?!\/X)/, 'go-shoot.github.io/X'));
     return fetch(req).then(res => 
         (res.status < 400 && is.cacheable(req.url) ? fetch.cache(res) : Promise.resolve(res))
         .then(res => is.html(req.url) ? Head.add(res) : res)
