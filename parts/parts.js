@@ -1,5 +1,4 @@
 import DB from '../include/DB.mjs'
-import {Storage} from '../include/utilities.js';
 import Part from './catalog.js'
 let META;
 const [component, category] = [...new URLSearchParams(location.search)]?.[0] ?? [];
