@@ -1,0 +1,136 @@
+<title>非官方資訊站⬧Unofficial site</title>
+<meta name=description content="最新日本陀螺情報、所有部件圖鑑、限量産品，都一應俱全。">
+<script defer src=include/common.js></script>
+<script type=module src=https://aeoq.github.io/drag-knob/script.js></script>
+<link rel=stylesheet href=index.css>
+<link rel=stylesheet href=include/component.css>
+<img src="https://beyblade.takaratomy.co.jp/anime/_image/kv_chara.png" hidden>
+
+<input>
+
+<header>
+    <h1 hidden>戰鬥陀螺 X⬧爆旋陀螺 X⬧ベイブレード X⬧Beyblade X</h1>
+    <img src="https://beyblade.takaratomy.co.jp/_image/cmn_logo.svg" alt="戰鬥陀螺 X⬧爆旋陀螺 X⬧ベイブレード X⬧Beyblade X">
+    <h2>非官方資訊站</h2>
+</header>
+
+<section id=contents>
+    <h3>本站内容</h3>
+    <a href=products/ >商品</a>
+    <a href=parts/ >部件</a>
+    <a href=prize/ >景品</a>
+    <a href="customize/sheet.html">設計器</a>
+    <a href="customize/" class="disabled">對戰盒</a>
+</section>
+
+<section id=links>
+    <h3>外部連結</h3>
+    <continuous-knob title=商品陣容 alt="//www.amazon.co.jp/s?rh=n%3A2189319051%2Cp_n_date%3A2320554051" href="//beyblade.takaratomy.co.jp/beyblade-x/lineup/" data-icon=🛍️></continuous-knob>
+    <continuous-knob title=YouTube alt="//www.youtube.com/results?search_query=ベイブレードX&sp=EgIIAw%253D%253D" href="//m.youtube.com/@BEYBLADEOfficialYouTube/videos" data-icon=🎞️></continuous-knob>
+    <continuous-knob title=漫畫閲覽 alt="//drive.google.com/drive/folders/1vSOCv8UNyiJ76KCDhUbexuS7E7Hs-Isr" href="//www.corocoro.jp/episode/4856001361379685850" data-icon=🖍️></continuous-knob>
+    <continuous-knob title=動畫資訊 alt="//drive.google.com/drive/folders/11K6rxKid9m0_90otiRxQlJRJhRTJWRSN" href="//beyblade.takaratomy.co.jp/anime/character/" data-icon=📺></continuous-knob>
+    <continuous-knob title=App 下載 alt data-icon=📥></continuous-knob>
+    <continuous-knob title=𝕏 alt="//x.com/search?q=ベイブレードX" href="//x.com/tbh_pr" data-icon=🛠️></continuous-knob>
+</section>
+
+<section id=products><h3>最新商品</h3></section>
+
+<section id=reboot>
+    <div>
+        如在本網遇上問題<p><i id=reset>&#xe010;</i><span>重設儲存</span><i></i></p>
+    </div>
+    <a href="https://beyblade-burst.github.io/" id=bbb><img src="img/system-BBB.png"></a>
+</section>
+
+<footer>
+    對於本網所載資料的準確性或完整性，製作者不會作任何保證或聲明，或因提供或使用此網資料而直接或間接引致的任何損失、損壞或傷害，負上任何責任。
+    <br>Developed and Designed by V Man (MKK). 2023–.
+</footer>
+
+<script type=module>  
+import DB from './include/DB.mjs'
+import {Mapping, Storage} from './include/utilities.js'
+
+const observer = new IntersectionObserver(entries => entries.forEach(entry => entry.target.classList.toggle('seeing', entry.isIntersecting)));
+Q('header').after(DB(() => Q('header,section,time,.scroller', el => observer.observe(el))));
+
+class Shohin {
+    constructor({code, name, imgs, desc, type, color, class: classList}) {
+        imgs ??= [];
+        if (name && /XG?-\d+/.test(code)) {
+            let c = code.match(/.XG?-\d+/)[0].replace('-', '');
+            imgs = [Shohin.base + `${c}@1.png`, ...imgs];
+            imgs.push(...[2,3,4,5,6,7,8].map(n => Shohin.base + `${c}${color ? `_${color}` : ''}_0${n}@1.png`));
+        }
+        this.div = E('div', [
+            E('h5', type ? [
+                E('ruby', {classList: [`below`, type]}, [
+                    E('img', {src: `img/types.svg#${type}`}), 
+                    E('rt', Shohin.types[type])]),
+                    code
+                ] : code),
+            E('h4', name?.replaceAll('-', '‑').replaceAll('<br>', String.fromCharCode(10))), 
+            ...imgs.map(src => E('figure', [E('a', '🖼️', {href: src}), E('img', {src})])), 
+            ...([desc ?? []].flat()).map(d => E('p', {innerHTML: d.replaceAll('-', '‑')}))
+        ], {classList: [`scroller`, classList || Shohin.classes.find(code)]});
+    }
+    static classes = new Mapping(
+        /(stadium|entry) set/i, 'SS',
+        /組合|Set/i, 'St',
+        /Starter/i, 'S',
+        /Random/i, 'RB',
+        /Booster/i, 'B',
+        /.XG?-/, 'others',
+        'Lm'
+    )
+    static base = `https://beyblade.takaratomy.co.jp/beyblade-x/lineup/_image/`;
+    static types = {att: 'ATTACK', bal: 'BALANCE', sta: 'STAMINA', def: 'DEFENSE'};
+}
+DB.plugins = {
+    announce: news => [...new O(news)].forEach(([date, beys]) => 
+        Q('#products').append(E('time', {title: date}), ...beys.map(bey => new Shohin(bey).div))
+    ),
+};
+import {PointerInteraction} from 'https://aeoq.github.io/pointer-interaction/script.js';
+const reset = message => Promise.all([
+    DB.discard('V3', ev => message.innerText = ev.type == 'blocked' ? '請先關閉所有本網的分頁' : ev.type),
+    caches.delete('V3'), caches.delete('parts'),
+    localStorage.clear(),
+    navigator.serviceWorker.getRegistrations().then(([reg]) => reg.unregister())
+]);
+PointerInteraction.events({
+    '.scroller': {scroll: {x: true}},
+    '#reset': {
+        drop: {goal: 'i:last-child'},
+        drag: PI => PI.drag.to.translate({x: {min: 0, max: Q('#reboot p').clientWidth - Q('#reset').clientWidth}, y: false}),
+        lift: PI => PI.goal && reset(PI.target.nextElementSibling).then(() => {
+            onbeforeunload = () => scrollTo(0, 0);
+            location.reload();
+        }).catch(er => console.error(er)),
+    }
+});
+
+Q('continuous-knob', knob => {
+    knob.click = click => click.for(1).to(_ => location.href = knob.get('href')),
+    knob.drag = PI => Math.abs(PI.$drag.θ - PI.$press.θ) >= 180 && [knob.classList.add('alt'), knob.set('href', knob.get('alt'))]
+});
+let app = ['https://apps.apple.com/tw/app/id1670801696', 'https://play.google.com/store/apps/details?id=jp.co.takaratomy.beyblade&pli=1'];
+((knob, [href, alt]) => [knob.set('href', href), knob.set('alt', alt)])(Q('continuous-knob[title^=App]'), navigator.appVersion.includes('Mac') ? app : app.reverse());
+
+Q('body>input').onkeypress = ev => {
+    if ((ev.keyCode || ev.which) != 13) return;
+    ev.target.value = ev.target.value.trim();
+    if (/^i#.+$/i.test(ev.target.value))
+        return location.href = `https://instagram.com/explore/tags/${/(?<=#).+/.exec(ev.target.value)}`;
+    if (/^i@.+$/i.test(ev.target.value))
+        return location.href = `https://instagram.com/${/(?<=@).+/.exec(ev.target.value)}`;
+    if (/^x\?.+$/i.test(ev.target.value))
+        return location.href = `https://x.com/search?q=${/(?<=\?).+/.exec(ev.target.value)}&f=live`;
+    if (/^x#.+$/i.test(ev.target.value))
+        return location.href = `https://x.com/hashtag/${/(?<=#).+/.exec(ev.target.value)}/?f=live`;
+    if (/^t\?.+$/i.test(ev.target.value))
+        return location.href = `https://www.threads.net/search?q=${/(?<=\?).+/.exec(ev.target.value.replace('#', '%23'))}`;
+    return location.href = `https://${ev.target.value}`;
+}
+(new Date - Storage('cached'))/1000/60/60/24 > 30 && fetch('sw/?delete=parts');
+</script>
