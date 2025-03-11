@@ -32,12 +32,12 @@ const actions = {
 }
 
 const is = {
-    internal: url => new URL(url).host == 'aeoq.github.io' || url.includes('go-shoot.github.io/X'),
+    internal: url => ['aeoq.github.io', new URL(location.href).host].includes(new URL(url).host),
     cacheable: url => is.internal(url) && !/\.json$/.test(new URL(url).pathname),
     volatile: url => /\.(?:css|js|json)$/.test(new URL(url).pathname),
     image: url => /\.(?:ico|svg|jpeg|jpg|png)$/.test(new URL(url).pathname),
     part: url => /img\/.+?\/.+?\.png$/.test(new URL(url).pathname),
-    html: url => is.internal(url) && /(?:\/|\.html)$/.test(new URL(url).pathname)
+    html: url => /(?:\/|\.html)$/.test(new URL(url).pathname)
 }
 fetch.net = req => {
     is.internal(req.url) && is.volatile(req.url) && (req = new Request(`${req.url}?${Math.random()}`, req));
@@ -55,7 +55,7 @@ fetch.cache = res => res.url ? caches.open(is.part(res.url) ? 'parts' : 'V3')
     .then(() => res) : Promise.resolve(res);
 
 const Head = {
-    url: '/include/head.html',
+    url: '/X/include/head.html',
     aeoq: [
         'https://aeoq.github.io/diamond-grid/style.css',
         'https://aeoq.github.io/drag-knob/style.css'
