@@ -39,7 +39,7 @@
     <div>
         如在本網遇上問題<p><i id=reset>&#xe010;</i><span>重設儲存</span><i></i></p>
     </div>
-    <a href="https://beyblade-burst.github.io/" id=bbb><img src="img/system-BBB.png"></a>
+    <a href="../burst/" id=bbb><img src="img/system-BBB.png"></a>
 </section>
 
 <footer>
@@ -49,7 +49,7 @@
 
 <script type=module>  
 import DB from './include/DB.mjs'
-import {Mapping, Storage} from './include/utilities.js'
+import {Mapping} from './include/utilities.js'
 
 const observer = new IntersectionObserver(entries => entries.forEach(entry => entry.target.classList.toggle('seeing', entry.isIntersecting)));
 Q('header').after(DB(() => Q('header,section,time,.scroller', el => observer.observe(el))));

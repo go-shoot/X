@@ -1,3 +1,7 @@
+const Storage = (key, obj) => !obj ? 
+    JSON.parse(localStorage[key] ?? 'null') : 
+    localStorage[key] = typeof obj == 'object' ? JSON.stringify({...Storage(key), ...obj}) : obj;
+    
 const unsupported = document.createElement('style');
 unsupported.textContent = `
     html::before {

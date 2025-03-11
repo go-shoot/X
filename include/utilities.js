@@ -39,9 +39,5 @@ Markup.items.parts = [...Markup.items,
     [/^[^</\\]+?(?=[A-Z])/, '<span>$&</span>']
 ];
 Markup.sterilize = text => text.replaceAll(/[_\/\\]/g, '');
-
-const Storage = (key, obj) => !obj ? 
-    JSON.parse(localStorage[key] ?? 'null') : 
-    localStorage[key] = typeof obj == 'object' ? JSON.stringify({...Storage(key), ...obj}) : obj;
     
-export {KeysAsString, Mapping, Markup, Storage}
+export {KeysAsString, Mapping, Markup}

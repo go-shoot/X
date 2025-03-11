@@ -1,4 +1,4 @@
-import {KeysAsString, Storage} from "./utilities.js"
+import {KeysAsString} from "./utilities.js"
 const DB = callback => DB.indicator = new DB.indicator(callback);
 Object.assign(DB, {
     current: 'V3',
