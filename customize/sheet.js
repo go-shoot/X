@@ -1,5 +1,5 @@
 import DB from '../include/DB.mjs'
-import {PointerInteraction} from 'https://aeoq.github.io/pointer-interaction/script.js';
+import PointerInteraction from 'https://aeoq.github.io/pointer-interaction/script.js';
 E.img = src => new Promise(res => E('img', {src, onload: function() {res(this);}}));
 const MAIN = {con: Q('canvas').getContext('2d', { alpha: false })};
 const App = () => {

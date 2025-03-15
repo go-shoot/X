@@ -38,7 +38,7 @@ import DB from '../include/DB.mjs'
 import Parts from './parts.js'
 Q('nav').after(DB(location.search && Parts.catalog || location.hash && Parts.list));
 
-import {PointerInteraction} from 'https://aeoq.github.io/pointer-interaction/script.js'
+import PointerInteraction from 'https://aeoq.github.io/pointer-interaction/script.js'
 PointerInteraction.events({
     summary: {
         drag: PI => Math.abs(PI.$drag.dy) > 50 && PI.target.parentElement.classList[PI.$drag.dy > 0 ? 'add' : 'remove']('showing')

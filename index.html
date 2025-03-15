@@ -91,7 +91,7 @@ DB.plugins = {
         Q('#products').append(E('time', {title: date}), ...beys.map(bey => new Shohin(bey).div))
     ),
 };
-import {PointerInteraction} from 'https://aeoq.github.io/pointer-interaction/script.js';
+import PointerInteraction from 'https://aeoq.github.io/pointer-interaction/script.js';
 const reset = message => Promise.all([
     DB.discard('V3', ev => message.innerText = ev.type == 'blocked' ? '請先關閉所有本網的分頁' : ev.type),
     caches.delete('V3'), caches.delete('parts'),

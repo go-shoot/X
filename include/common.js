@@ -34,7 +34,7 @@ addEventListener('DOMContentLoaded', () => {
     addEventListener('hashchange', hashchange);
     hashchange();
     Q('body').append(E('script', `
-        import {PointerInteraction} from 'https://aeoq.github.io/pointer-interaction/script.js';
+        import PointerInteraction from 'https://aeoq.github.io/pointer-interaction/script.js';
         PointerInteraction.events({
             'nav menu': {
                 drag: PI => {
