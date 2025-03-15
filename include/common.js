@@ -16,7 +16,7 @@ unsupported.textContent = `
     }
     @keyframes show {to {color:white;}}`;
 document.head.append(unsupported);
-navigator.serviceWorker?.register('/X/worker.js', {scope: './'}).then(() => {
+navigator.serviceWorker?.register('/X/worker.js', {scope: '/X/'}).then(() => {
     if (!document.querySelector('link[href$="common.css"]')) return Promise.reject();
     document.title += ' ■ 戰鬥陀螺 X⬧爆旋陀螺 X⬧ベイブレード X⬧Beyblade X';
     unsupported.remove();
