@@ -6,8 +6,8 @@ Object.assign(DB, {
         .then(dbs => dbs.find(db => db.name == before) && DB.open(before).then(DB.discard))
         .then(() => DB.open(after))
     ,
-    discard: (name, handler) => (name != DB.db?.name ? DB.open(name) : Promise.resolve())
-        .then(DB.transfer.out).then(() => new Promise(res => {
+    discard: handler => DB.transfer.out()
+        .then(() => new Promise(res => {
             DB.db.close();
             Object.assign(indexedDB.deleteDatabase(DB.db.name), {        
                 onsuccess: () => res(DB.db = null),
@@ -87,7 +87,7 @@ Object.assign(DB, {
         }
         connectedCallback() {
             [this.progress, this.total] = [0, Storage('DB')?.count || 100];
-            Q('link[href$="common.css"]') && DB.replace('V2', DB.current).then(this.callback).catch(this.error);
+            Q('link[href$="common.css"]') && DB.replace('V', DB.current).then(this.callback).catch(this.error);
         }
         attributeChangedCallback(_, __, state) {
             if (state == 'success') {

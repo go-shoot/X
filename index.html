@@ -93,7 +93,7 @@ DB.plugins = {
 };
 import PointerInteraction from 'https://aeoq.github.io/pointer-interaction/script.js';
 const reset = message => Promise.all([
-    DB.discard('V3', ev => message.innerText = ev.type == 'blocked' ? '請先關閉所有本網的分頁' : ev.type),
+    DB.discard(ev => message.innerText = ev.type == 'blocked' ? '請先關閉所有本網的分頁' : ev.type),
     caches.delete('V3'), caches.delete('parts'),
     localStorage.clear(),
     navigator.serviceWorker.getRegistrations().then(([reg]) => reg.unregister())

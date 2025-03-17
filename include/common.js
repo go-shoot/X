@@ -20,7 +20,7 @@ navigator.serviceWorker?.register('/X/worker.js', {scope: '/X/'}).then(() => {
     if (!document.querySelector('link[href$="common.css"]')) return Promise.reject();
     document.title += ' ■ 戰鬥陀螺 X⬧爆旋陀螺 X⬧ベイブレード X⬧Beyblade X';
     unsupported.remove();
-}).catch(() => Storage('reloaded') < 3 && Storage('reloaded', Storage('reloaded') + 1) && location.reload());;
+}).catch(() => Storage('reloaded') < 3 && Storage('reloaded', Storage('reloaded') + 1) && setTimeout(() => location.reload(), 500));
 
 addEventListener('DOMContentLoaded', () => {
     Q('[popover]')?.addEventListener('click', ev => ev.target.closest('[popover]').hidePopover());
