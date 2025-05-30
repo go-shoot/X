@@ -16,8 +16,8 @@ const Parts = {
     },
     async cataloging () {
         Parts.all = DB.get.parts(/^.X$/.test(category) ? category : component)
-            .then(parts => parts.map(p => new Part(p, category).prepare().catalog()));
-        Parts.all = await Promise.all(await Parts.all);
+            .then(parts => Promise.all(parts.map(p => new Part(p, category).prepare())));
+        Parts.all = await Parts.all;
     },
     async listing () {
         Parts.all = await Promise.all(location.hash.substring(1).split(',').map(p => DB.get(p)));
@@ -102,7 +102,10 @@ Object.assign(Filter, {
         spin:   () => ({迴轉: ['left','right'].map((s, i) => ({id: s, label: ['\ue01d','\ue01e'][i]}) )}),
         prefix: () => ({變化: [{id: '–', label: '–'}, ...[...new O(META.variety)].map(([label, id]) => ({id, label}))] }),
     },
-    filter (group) {
+    async filter (group) {
+        let groups = [Q('.part-filter[title=group] :checked')].flat().map(input => input.id);
+        await Promise.all(Parts.all.map(part => !part.a.id && groups.includes(part.group) && part.catalog()));
+        
         let show = Q('.part-filter[title]:not([hidden])', [])
             .filter(dl => Q('#motif')?.checked ? dl.title != 'type' : dl)
             .map(dl => `:is(${dl.Q('input:checked', []).map(input => input.id == '–' ? Filter.normal() : Filter.multiple(input.id))})`)
@@ -114,7 +117,7 @@ Object.assign(Filter, {
     multiple: id => id.includes(',') ? id.split(',').map(id => `.${id}`).join() : `.${id}`
 });
 const Sorter = () => {
-    let inputs = [['name', '\ue034'], /*['rank', '\ue037'],*/ ['weight', '\ue036'], ['time', '\ue035']];
+    let inputs = [['name', '\ue034'], ['weight', '\ue036'], ['time', '\ue035']];
     let dl = E.dl(
         {排序: E.radios(inputs.map(([id, icon]) => new A(icon, {name: 'sort', id}) ))}, 
         {classList: `part-sorter`}

@@ -9,10 +9,8 @@ class Part {
         Object.assign(this, {...dict, line: key});
     }
     async revise(bits) {
-        if (this.comp == 'ratchet') {
-            this.#revise.group();
-            return this;
-        }
+        if (this.comp == 'ratchet')
+            return this.#revise.group();
         if (this.comp != 'bit' || this.names)
             return this;
         let [, pref, ref] = new RegExp(`^([${META.prefixes.bit}]+)([^a-z].*)$`).exec(this.abbr);
@@ -37,19 +35,20 @@ class Part {
     strip = what => this.comp == 'bit' ? Part.strip(this.abbr, what) : this.abbr;
     static strip = (abbr, what) => abbr.replace(what == 'dash' ? '′' : new RegExp(`^[${META.prefixes.bit}]+(?=[^′a-z])|′`, what == 'prefORdash' ? '' : 'g'), '');
 
-    prepare() {
-        this.a = Q('.catalog').appendChild(E('a', {hidden: true}));
+    async prepare() {
+        location.pathname.includes('products') && Object.assign(META, await DB.get.meta(this.comp));
+        location.pathname.includes('parts') && (this.a = Q('.catalog').appendChild(E('a', {hidden: true})));
+        await this.revise();
         return this;
     }
     async catalog(show) {
-        location.pathname.includes('products') && Object.assign(META, await DB.get.meta(this.comp));
-        let {abbr, comp, line, group, attr, for: For} = await this.revise();
+        let {abbr, comp, line, group, attr, for: For} = this;
         this.catalog.part = this.catalog.html.part = this;
 
         this.a ??= Q('.catalog').appendChild(E('a'));
         E(this.a).set(this.catalog.html(), {
             id: abbr,
-            classList: [comp, line, group, ...(attr ?? [])],
+            classList: [comp, line, group, ...(attr ?? []).filter(a => !/.X$/.test(a))],
             hidden: !show,
             for: For,
         });
@@ -82,7 +81,7 @@ Object.assign(Part.prototype.catalog.html, {
     background () {
         let {comp, attr} = this.part;
         let param = [
-            ['hue', E([Q(`.${comp}`)].flat()[0]).get('--c')],
+            ['hue', getComputedStyle(document.querySelector(`.${comp.match(/^[^0-9]+/)}`)).getPropertyValue('--c')],
             [attr?.find(a => a == 'left' || a == 'right') ?? '', '']
         ];
         return `../parts/bg.svg?${new URLSearchParams(param).toString()}`;
@@ -90,6 +89,7 @@ Object.assign(Part.prototype.catalog.html, {
     icons () {
         let {abbr, line, group, attr} = this.part;
         let icons = new Mapping('left', '\ue01d', 'right', '\ue01e', /^(?:att|def|sta|bal)$/, t => [E('img', {src: `../img/types.svg#${t}`})]);
+        ['hasbro', 'collab'].includes(group) && (group = attr.find(a => /.X$/.test(a)));
         return E.ul([
             (line || /.X$/.test(group)) && [E('img', {src: `../img/lines.svg#${line ?? group}`})], 
             group == 'remake' && [E('img', {src: `../img/system-${/^D..$/.test(abbr) ? 'BSB' : /\d$/.test(abbr) ? 'BBB' : 'MFB'}.png`})], 
@@ -97,24 +97,24 @@ Object.assign(Part.prototype.catalog.html, {
         ]);
     },
     names () {
-        let {abbr, comp, line, group, names} = this.part;
+        let {abbr, comp, line, group, names, attr} = this.part;
         names ??= {};
         names.chi = (names.chi ?? '').split(' ');
         let children = comp != 'blade' || line == 'CX' && group == 'lower' ? 
             [E('h4', abbr.replace('-', '‒')), ...['jap','eng'].map(l => E('h5', names[l] || '', {classList: l}))] : 
             [
-                Part.chi(abbr, names.chi[0]),
-                Part.chi(abbr, names.chi[1] ?? ''),
+                Part.chi(group, attr, names.chi[0]),
+                Part.chi(group, attr, names.chi[1] ?? ''),
                 E('h5', {classList: 'jap', innerHTML: Markup(names.jap, 'parts')}),
-                E('h5', {classList: 'eng', innerHTML: Markup(names.eng, 'parts')}),
+                E('h5', {classList: 'eng', innerHTML: group == 'collab' ? names.eng : Markup(names.eng, 'parts')}),
             ];
         return children;
     },
     stat () {
-        let {abbr, comp, stat, limited} = this.part;
-        comp == 'ratchet' && stat[0] && stat.push(...abbr.split('-'));
+        let {abbr, comp, stat, date} = this.part;
+        comp == 'ratchet' && stat.length === 1 && stat.push(...abbr.split('-'));
         return [
-            E('strong', limited ? 'L' : ''),
+            date ? E('strong', date) : '',
             E.dl(stat.map((s, i) => [
                 META.terms[i].replace(/(?<=[A-Z])(?=[一-龢])/, `
 `),             {innerHTML: `${s}`.replace(/[+\-=]/, '<sup>$&</sup>').replace('-','−').replace('=','≈')}
@@ -128,8 +128,8 @@ Object.assign(Part.prototype.catalog.html, {
         return div;
     }
 });
-Part.chi = (abbr, chi) => E('h5', {
-    innerHTML: /^D[ZRGC]/.test(abbr) ? chi.replace(' ', ' ') : Markup(chi, 'parts'), 
+Part.chi = (group, attr, chi) => E('h5', {
+    innerHTML: Markup(chi, group == 'collab' || attr.includes('BSB') ? '' : 'parts'), 
     classList: 'chi'
 });
 Part.triangle = () => {

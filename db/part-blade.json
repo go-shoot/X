@@ -1,10 +1,32 @@
 {
+    "TrPr": {
+        "group": "BX",
+        "names": {
+            "jap": "トリケラプレス",
+            "eng": "TriceraPress",
+            "chi": ""
+        },
+        "stat": [""],
+        "desc": "擁有大型 Launcher Hook（發射器爪的掛勾）的內重心構造，受到攻擊也難以被撞飛。",
+        "attr": ["def","right",""]
+    },
+    "ScSp": {
+        "group": "UX",
+        "names": {
+            "jap": "スコーピオスピア",
+            "eng": "ScorpioSpear",
+            "chi": "毒蠍刺槍 天蠍長矛"
+        },
+        "stat": ["40-"],
+        "desc": "X Dash 時從高化解性防禦性能的圓形六枚刃變形至高攻擊性能的三枚刃。",
+        "attr": ["bal","right",""]
+    },
     "ShDr": {
         "group": "BX",
         "names": {
             "jap": "シェルター\\ドレイク",
             "eng": "Shelter\\Drake",
-            "chi": "神護魔龍"
+            "chi": "神護\\魔龍 護城\\龍神"
         },
         "stat": ["33-"],
         "desc": "高剛性圓形的兩枚刃兼備離心力持久及卸走性防禦。",
@@ -15,7 +37,7 @@
         "names": {
             "jap": "ゴーレムロック",
             "eng": "GolemRock",
-            "chi": "魔像巨石"
+            "chi": "魔像巨石 魔像奇岩"
         },
         "stat": ["34="],
         "desc": "一併擁有能抵受對手攻擊的連打形狀側面，及傾側時撞走對手的上方向打擊面。",
@@ -51,7 +73,7 @@
             "chi": "騎士護甲 騎士圓甲"
         },
         "stat": ["37-"],
-        "desc": "圓形十二枚刃中内藏的三顆金屬球能上下移動，緩和衝擊。",
+        "desc": "圓形十二枚刃中內藏的三顆金屬球能上下移動，緩和衝擊。",
         "attr": ["def","right"]
     },
     "SmSb": {
@@ -72,7 +94,7 @@
             "eng": "Crimson\\Garuda",
             "chi": "緋紅\\迦樓羅 赫燃\\天鳳"
         },
-        "stat": ["35-"],
+        "stat": ["35="],
         "desc": "上下擁有不同的性能：上面擅長少持久損失的攻擊，下面擅長反擊。",
         "attr": ["bal","right","bsb"]
     },
@@ -84,7 +106,7 @@
             "chi": "白銀\\戰狼 霜輝\\銀狼"
         },
         "stat": ["37-"],
-        "desc": "下部的 Free Ring 能迴轉，卸走對手攻擊，維持迴轉力。",
+        "desc": "下部的 Free Ring 能迴轉，卸走對手攻擊，維持迴轉力。",
         "attr": ["sta","right","bsb"]
     },
     "WhWv": {
@@ -95,7 +117,7 @@
             "chi": "戰鯨波浪 巨鯨怒濤"
         },
         "stat": ["38="],
-        "desc": "大徑且具離心力的 Smash 五枚刃，如籠罩對手地連打。",
+        "desc": "大徑且具離心力的 Smash 五枚刃，如籠罩對手地連打。",
         "attr": ["bal","right"]
     },
     "ArPg": {
@@ -114,7 +136,7 @@
         "names": {
             "jap": "レオンクレスト",
             "eng": "LeonCrest",
-            "chi": "獅王徽章 雄獅巓峰"
+            "chi": "獅王徽章 雄獅巔峰"
         },
         "stat": ["35="],
         "desc": "垂直高聳形狀的厚七枚刃，防禦從任何方向而來的攻擊。",
@@ -150,7 +172,7 @@
             "chi": "鈷藍\\青龍 蒼穹\\龍騎士"
         },
         "stat": ["38-"],
-        "desc": "有厚尖端的四枚 Upper 刃擁有高撞飛性能。",
+        "desc": "有厚尖端的四枚 Upper 刃擁有高撞飛性能。",
         "attr": ["att","left","bsb"]
     },
     "WsTg": {
@@ -161,7 +183,7 @@
             "chi": "純白\\猛虎 皓戰\\猛虎"
         },
         "stat": ["35-"],
-        "desc": "一併持有 Upper 刃、Damper 刃及 Smash 刃三種性能。",
+        "desc": "一併持有 Upper 刃、Damper 刃及 Smash 刃三種性能。",
         "attr": ["bal","right","bsb"]
     },
     "ShSh": {
@@ -205,7 +227,7 @@
             "chi": "煉獄惡鎚 惡魔戰鎚"
         },
         "stat": ["33+"],
-        "desc": "有厚度的 Smash 刃專門把對手砸向對戰盤。",
+        "desc": "有厚度的 Smash 刃專門把對手砸向對戰盤。",
         "attr": ["bal","right"]
     },
     "DrBs": {
@@ -259,7 +281,8 @@
             "eng": "PhoenixWing",
             "chi": "鳳凰飛翼"
         },
-        "stat": ["38="],
+        "stat": ["39-"],
+        "date": ["I ░░ 24+"],
         "desc": "厚重三枚刃猛烈撞向對手。",
         "attr": ["att","right"]
     },
@@ -271,7 +294,7 @@
             "chi": "鳳凰炎羽 鳳凰翔羽"
         },
         "stat": ["33+"],
-        "desc": "三枚輕量 Upper 刃産生高速攻擊。",
+        "desc": "三枚輕量 Upper 刃産生高速攻擊。",
         "attr": ["att","right"],
         "from": "DrSw"
     },
@@ -294,7 +317,7 @@
             "chi": "翔龍神劍 蒼龍神劍"
         },
         "stat": ["35-"],
-        "desc": "三攻 Upper 刃擅長把對手向斜上方撞飛。",
+        "desc": "三攻 Upper 刃擅長把對手向斜上方撞飛。",
         "attr": ["att","right"]
     },
     "HlCh": {
@@ -313,10 +336,10 @@
         "names": {
             "jap": "ヘルズサイズ",
             "eng": "HellsScythe",
-            "chi": "煉獄魔鎌 惡魔紅鎌"
+            "chi": "煉獄魔鐮 惡魔紅鐮"
         },
         "stat": ["33-"],
-        "desc": "四枚 Smash 刃擅長令對手體勢傾倒。",
+        "desc": "四枚 Smash 刃擅長令對手體勢傾倒。",
         "attr": ["bal","right"]
     },
     "WzAr": {
@@ -360,7 +383,7 @@
             "chi": "犀牛號角 戰犀號角"
         },
         "stat": ["33-"],
-        "desc": "金屬凝縮在内側的内重心構造，是令體勢受強衝擊也難以傾倒的設計。",
+        "desc": "金屬凝縮在內側的內重心構造，是令體勢受強衝擊也難以傾倒的設計。",
         "attr": ["def","right"]
     },
     "ShEd": {
@@ -371,7 +394,7 @@
             "chi": "烈鯊利刃 鮫鯊鋒鰭"
         },
         "stat": ["35-"],
-        "desc": "急角度的 Upper 刃侵入對手身内，能從低位置向上撞。",
+        "desc": "急角度的 Upper 刃侵入對手身內，能從低位置向上撞。",
         "attr": ["att","right"]
     },
     "LnCl": {
@@ -416,7 +439,7 @@
         },
         "stat": ["29-"],
         "desc": "擁有圓形翼的兩枚刃兼備攻擊及防禦。（2000 年發售的陀螺之 X 代復刻版）",
-        "attr": ["bal","right"]
+        "attr": ["bal","right","BSB"]
     },
     "DZS": {
         "group": "remake",
@@ -427,7 +450,7 @@
         },
         "stat": ["28-"],
         "desc": "兩枚水平刃産生高攻擊力及持久力，是重視平衡的設計。（2000 年發售的陀螺之 X 代復刻版）",
-        "attr": ["bal","right"]
+        "attr": ["bal","right","BSB"]
     },
     "DGS": {
         "group": "remake",
@@ -436,9 +459,9 @@
             "eng": "DragoonStorm",
             "chi": "暴風戰龍 龍騎士 S"
         },
-        "stat": [],
-        "desc": "（2000 年發售的陀螺之 X 代復刻版）",
-        "attr": ["att","left"]
+        "stat": ["25="],
+        "desc": "特化於左迴轉的四枚刃強力地把對手撞走。（2000 年發售的陀螺之 X 代復刻版）",
+        "attr": ["att","left","BSB"]
     },
     "DCS": {
         "group": "remake",
@@ -449,7 +472,7 @@
         },
         "stat": ["28+"],
         "desc": "外周的凹凸擅長反擊防禦。（2001 年發售的陀螺之 X 代復刻版）",
-        "attr": ["def","right"]
+        "attr": ["def","right","BSB"]
     },
     "SPg": {
         "group": "remake",
@@ -458,9 +481,9 @@
             "eng": "Storm \\Pegasis",
             "chi": "烈風\\天馬 暴風\\天馬"
         },
-        "stat": [],
-        "desc": "（2009 年發售的陀螺之 X 代復刻版）",
-        "attr": ["att","right"]
+        "stat": ["31+"],
+        "desc": "Upper 形狀三枚刃把對手撞走及給予傷害。",
+        "attr": ["att","right","MFB"]
     },
     "LLd_u": {
         "group": "remake",
@@ -470,8 +493,8 @@
             "chi": "雷霆\\魔龍_高空扣殺 雷霆\\天龍_強擊"
         },
         "stat": ["34-"],
-        "desc": "在三處配置向左的 Upper 刃，重視 Upper 攻擊。（2009 年發售的陀螺之 X 代復刻版）",
-        "attr": ["att","left"]
+        "desc": "在三處配置向左的 Upper 刃，重視 Upper 攻擊。（2009 年發售的陀螺之 X 代復刻版）",
+        "attr": ["att","left","MFB"]
     },
     "LLd_r": {
         "group": "remake",
@@ -482,7 +505,7 @@
         },
         "stat": ["33="],
         "desc": "在三處配置向左的連打刃，重視連打攻擊。（2009 年發售的陀螺之 X 代復刻版）",
-        "attr": ["att","left"]
+        "attr": ["att","left","MFB"]
     },
     "V2": {
         "group": "remake",
@@ -491,9 +514,9 @@
             "eng": "Victory \\Valkyrie",
             "chi": "勝利\\武神 天翼\\戰神"
         },
-        "stat": [],
-        "desc": "（2016 年發售的陀螺之 X 代復刻版）",
-        "attr": ["att","right"]
+        "stat": ["33+"],
+        "desc": "三把大劍的強烈上段攻擊旨在擊爆。（2016 年發售的陀螺之 X 代復刻版）",
+        "attr": ["att","right","BBB"]
     },
     "X2": {
         "group": "remake",
@@ -502,9 +525,9 @@
             "eng": "Xeno \\Xcalibur",
             "chi": "異界\\聖劍 神力\\聖劍"
         },
-        "stat": [],
-        "desc": "（2016 年發售的陀螺之 X 代復刻版）",
-        "attr": ["att","right"]
+        "stat": ["31="],
+        "desc": "劍形大型一枚刃，擅長強烈地撞飛對手。（2016 年發售的陀螺之 X 代復刻版）",
+        "attr": ["att","right","BBB"]
     },
     "ShKn": {
         "group": "BX",
@@ -513,20 +536,20 @@
             "eng": "ShinobiKnife",
             "chi": ""
         },
-        "stat": ["31+"],
-        "desc": "小徑及高剛性内重心構造，容易抵耐對手衝擊。",
+        "stat": ["31="],
+        "desc": "小徑及高剛性內重心構造，容易抵耐對手衝擊。",
         "attr": ["def","right"],
         "from": "RhHr"
     },
     "SmSt": {
-        "group": "hasbro",
+        "group": "BX",
         "names": {
             "jap": "サムライスチール",
             "eng": "SamuraiSteel",
             "chi": ""
         },
         "stat": ["31+"],
-        "desc": "（目前只在孩之寶商品中收錄，稱「Steel Samurai」）",
+        "desc": "",
         "attr": ["bal","right"],
         "from": "LnCl"
     },
@@ -562,7 +585,7 @@
             "chi": "狂熊鋭爪 悍熊猛爪"
         },
         "stat": ["30="],
-        "desc": "凝縮成小徑的内重心構造，受到衝擊體勢也難以倒下。",
+        "desc": "凝縮成小徑的內重心構造，受到衝擊體勢也難以倒下。",
         "attr": ["def","right"],
         "from": "RhHr"
     },
@@ -575,7 +598,7 @@
         },
         "stat": ["31+"],
         "desc": "（目前只在孩之寶商品中收錄，稱「Kong Yell」）",
-        "attr": ["def","right"],
+        "attr": ["def","right","BX"],
         "from": "WyGl"
     },
     "CrCr": {
@@ -586,9 +609,20 @@
             "chi": ""
         },
         "stat": ["34="],
-        "desc": "擅長從低位置 Upper 攻擊。",
+        "desc": "擅長從低位置 Upper 攻擊。",
         "attr": ["att","right"],
         "from": "ShEd"
+    },
+    "HvWy": {
+        "group": "hasbro",
+        "names": {
+            "jap": "",
+            "eng": "",
+            "chi": ""
+        },
+        "stat": ["35="],
+        "desc": "（目前只在孩之寶商品中收錄，稱「Hover Wyvern」）",
+        "attr": ["def","right","UX"]
     },
     "TyRr": {
         "group": "hasbro",
@@ -599,7 +633,151 @@
         },
         "stat": ["36-"],
         "desc": "（目前只在孩之寶商品中收錄，稱「Roar Tyranno」）",
-        "attr": ["att","right"],
+        "attr": ["att","right","BX"],
         "from": "PhWn"
+    },
+    "ShGl": {
+        "group": "hasbro",
+        "names": {
+            "jap": "",
+            "eng": "",
+            "chi": ""
+        },
+        "stat": [""],
+        "desc": "（目前只在孩之寶商品中收錄，稱「Gill Shark」）",
+        "attr": ["bal","right","BX"],
+        "from": "ShDr"
+    },
+    "IRON": {
+        "group": "collab",
+        "names": {
+            "jap": "アイアンマン",
+            "eng": "Ironman",
+            "chi": "鋼鐵人"
+        },
+        "stat": ["32+"],
+        "attr": ["def","right","BX"],
+        "from": "KnSh"
+    },
+    "THAN": {
+        "group": "collab",
+        "names": {
+            "jap": "サノス",
+            "eng": "Thanos",
+            "chi": "薩諾斯"
+        },
+        "stat": ["30-"],
+        "attr": ["def","right","BX"],
+        "from": "KnLn"
+    },
+    "SPID": {
+        "group": "collab",
+        "names": {
+            "jap": "スパイダーマン",
+            "eng": "Spiderman",
+            "chi": "蜘蛛人"
+        },
+        "stat": ["33="],
+        "attr": ["sta","right","BX"],
+        "from": "VpTl"
+    },
+    "VENO": {
+        "group": "collab",
+        "names": {
+            "jap": "ヴェノム",
+            "eng": "Venom",
+            "chi": "猛毒"
+        },
+        "stat": ["35-"],
+        "attr": ["att","right","BX"],
+        "from": "DrSw"
+    },
+    "LUKE": {
+        "group": "collab",
+        "names": {
+            "jap": "ルーク・スカイウォーカー",
+            "eng": "Luke Skywalker",
+            "chi": "路克天行者"
+        },
+        "stat": ["30+"],
+        "attr": ["def","right","BX"],
+        "from": "KnSh"
+    },
+    "DART": {
+        "group": "collab",
+        "names": {
+            "jap": "ダース・ベイダー",
+            "eng": "Darth Vader",
+            "chi": "達斯維達"
+        },
+        "stat": ["31-"],
+        "attr": ["def","right","BX"],
+        "from": "KnLn"
+    },
+    "MAND": {
+        "group": "collab",
+        "names": {
+            "jap": "マンダロリアン",
+            "eng": "The Mandalorian",
+            "chi": "曼達洛人"
+        },
+        "stat": ["31-"],
+        "attr": ["bal","right","BX"],
+        "from": "LnCl"
+    },
+    "MOFF": {
+        "group": "collab",
+        "names": {
+            "jap": "モフ・ギデオン",
+            "eng": "Moff Gideon",
+            "chi": "星區長吉迪恩"
+        },
+        "stat": ["31-"],
+        "attr": ["bal","right","BX"],
+        "from": "HlSc"
+    },
+    "OPME": {
+        "group": "collab",
+        "names": {
+            "jap": "オプティマスプライム",
+            "eng": "Optimus Prime",
+            "chi": "柯博文"
+        },
+        "stat": ["32-"],
+        "attr": ["def","right","BX"],
+        "from": "KnSh"
+    },
+    "MEGA": {
+        "group": "collab",
+        "names": {
+            "jap": "メガトロン",
+            "eng": "Megatron",
+            "chi": "密卡登"
+        },
+        "stat": ["31+"],
+        "attr": ["bal","right","BX"],
+        "from": "HlSc"
+    },
+    "OPAL": {
+        "group": "collab",
+        "names": {
+            "jap": "オプティマスプライマル",
+            "eng": "Optimus Primal",
+            "chi": "金剛王"
+        },
+        "stat": ["35+"],
+        "attr": ["att","right","BX"],
+        "from": "ShEd"
+    },
+    "STAR": {
+        "group": "collab",
+        "names": {
+            "jap": "スタースクリーム",
+            "eng": "Starscream",
+            "chi": "天王星"
+        },
+        "stat": ["29+"],
+        "attr": ["sta","right","BX"],
+        "from": "WzAr"
     }
 }

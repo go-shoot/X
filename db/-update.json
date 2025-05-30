@@ -1,16 +1,30 @@
 {
-  "part-blade":    "2025/02/21 23:15:00",
+  "part-blade-CX": "2025/05/19 17:45:00",
+  "part-blade":    "2025/05/19 17:45:00",
+  "part-ratchet":  "2025/05/15 12:15:00",
+  "part-bit":      "2025/05/19 17:45:00",
+  "prod-beys":     "2025/05/15 12:15:00",
+  "part-meta":     "2025/03/29 11:55:00",
   "prod-others":   "2025/02/21 23:15:00",
   "prod-launchers":"2025/02/21 23:15:00",
-  "prod-beys":     "2025/02/21 23:15:00",
-  "part-blade-CX": "2025/02/23 23:15:00",
-  "part-bit":      "2025/02/21 23:15:00",
-  "part-ratchet":  "2025/02/21 23:15:00",
-  "part-meta":     "2025/02/21 23:15:00",
   "news": {
-    "2025-03-29":[
-      {"code":"CX-01 starter","type":"att","name":"DranBrave S6-60V<br>ドランブレイブ S6-60V",
-      "desc":["【Brave】Main blade：Upper 刃產生 Down force","【Slash】Assist blade：低重心三枚刃","【Vortex】Bit：右迴轉版【C】Bit"]}
+    "2025-06-28":[
+      {"code":"BX-44 Booster","name":"トリケラプレスM-85BS<br>TriceraPress M-85BS","type":"def",
+      "imgs":["https://takaratomymall.jp/img/goods/5/4904810939528_75cf5296881c493e81614752d20212ef.jpg","https://takaratomymall.jp/img/goods/L/4904810939528_6aecc11747b84710b7fd6c7173e2aae1.jpg","https://takaratomymall.jp/img/goods/C/4904810939528_7c15305fcd8c46cd809a94a8cafde0e2.jpg"],
+    "desc":["【TriceraPress】Blade：內重心提升安定性","【Metal-85】Ratchet：金屬組件提升重量"]}
+    ],
+    "2025-07":[
+      {"code":"CX-07 starter"},
+      {"code":"BXG-20 booster"}
+    ],
+    "2025-08":[
+      {"code":"CX-08 random booster"},
+      {"code":"UX-15 deck set"},
+      {"code":"BX-45 booster"}
+    ],
+    "2025-09":[
+      {"code":"CX-09 starter"}
     ]
   }
+
 }

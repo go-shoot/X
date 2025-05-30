@@ -14,14 +14,13 @@
     <data class=part-result></data>
 </nav>
 <!--ps: Get-ChildItem -Filter *.png | ForEach-Object {
-    $inputFile = $_.FullName
-    $outputFile = "o$($_.Name)"
-    backgroundremover -i $inputFile -a -af 4 -o $outputFile
-    magick mogrify -fuzz 5% -trim $outputFile
-    $save = $outputFile -replace '^o', ''
-    pngquant --quality=65-80 $outputFile -o "op/$($save)"
-}-->
-<main id=catalog>
+    $f = $_.Name
+    magick mogrify -fuzz 5% -trim $f
+    pngquant --quality=65-80 $f -o "op/$($f)"
+}
+    ukenagashi: 卸走/開  inashi: 化解
+-->
+    <main id=catalog>
     <span class=loading></span>
     <details hidden open>
         <summary>&#xe026;</summary>

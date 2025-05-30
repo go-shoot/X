@@ -140,8 +140,8 @@ class Cell {
         let {abbr, comp, pref, dash, core, mode} = this.dissect(true);
         let name = comp == 'bit' && (pref || dash) ? 
             Part.revise.name(META.names[comp][abbr], pref[0]) : 
-            comp != 'ratchet' && comp != 'bit' && this.tr.Q('td:nth-child(10)') ? 
-                META.names.blade[this.tr.classList[0]][comp]?.[abbr] : 
+            comp != 'ratchet' && comp != 'bit' && this.td.parentElement.Q('td:nth-child(10)') ? 
+                META.names.blade[this.td.parentElement.classList[0]][comp]?.[abbr] : 
                 META.names[comp]?.[abbr];
         name = name?.[lang] ?? '';
         this.td.innerHTML = this.fullname[lang](name, comp, core) + this.fullname.add(name, dash, mode);
@@ -166,7 +166,9 @@ class Cell {
     #preview = {
         part: () => {
             Cell.popup.classList = 'catalog';
-            this.dissect().reduce((prom, key) => prom.then(() => DB.get(key)).then(part => new Part(part, key).catalog(true)), Promise.resolve())
+            this.dissect().reduce((prom, key) => prom
+                .then(() => DB.get(key)).then(part => new Part(part, key).prepare()).then(part => part.catalog(true))
+            , Promise.resolve())
         },
         image () {
             Cell.popup.classList = 'images';

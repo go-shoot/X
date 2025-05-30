@@ -76,7 +76,7 @@ figure {grid-area:2/1/3/-1;}
 div {grid-area:2/1/3/-1;}
 a p {grid-area:1/3/-1/-1;}
 a dl {grid-area:2/2/-1/-1;}
-a strong {grid-area:1/1/2/2;}
+a strong {grid-area:2/4/3/5;}
 a ul {grid-area:4/1/-1/-1;}
 a>span {grid-area:2/2/3/3;}
 
@@ -102,7 +102,7 @@ a object {
         margin:0 0 .2em .2em;
     }
 }
-:is(.eng,.chi) span {
+:is(.eng,.chi):not(:has(span)),:is(.eng,.chi) span {
     color:var(--type);
     -webkit-text-stroke:initial;
     font-weight:normal;
@@ -247,30 +247,11 @@ a dl {
     }
 }
 strong {
-    justify-self:start;
-    font-size:1.5em; line-height:.9;
-    mix-blend-mode:lighten;
-    color:black; text-shadow:none;
-    position:relative;
-    padding:.1em; margin-left:-.1em;
-
-    &::before {
-        font-size:.3em;
-        display:block;
-        margin-bottom:.05em;
-    }
-    &::after {
-        content:'';
-        border-style:solid; border-width:1.5em;
-        border-color:var(--on) transparent transparent var(--on);
-        position:absolute; left:-.4em; top:-.5em;
-        z-index:-1;
-    }
-    &:empty {
-        display:none;
-    }
+    align-self:end;
+    font-size:.6em; color:silver;
+    writing-mode:vertical-lr;
+    margin:0 0 .2em -.4em;
 }
-
 figure {
     place-self:center;
     width:6em; height:6em;
@@ -320,10 +301,10 @@ a div {
 #catalog details {
     position:relative;
     user-select:none; -webkit-user-select:none;
-    transform:translateY(calc(-100% - 1em)); transition:transform .5s,opacity .5s;
-    
+    max-height:0; transition:max-height .5s,opacity .5s;
+
     summary {
-        position:absolute; left:1.5em; bottom:-2.4em;
+        position:absolute; left:1.5em; bottom:-1.5em;
         width:1.2em; height:2.4em;
         border-bottom-left-radius:9em; border-bottom-right-radius:9em;
         background:var(--theme); color:black;
@@ -349,7 +330,7 @@ a div {
     }
     img:only-of-type {
         width:90%;max-width:30em;
-        margin:1em auto;
+        margin:1em 0;
         display:block;
     }
     i {
@@ -367,8 +348,8 @@ a div {
     }
 }
 #catalog details.showing {
-    transform:none;
-
+    max-height:50em;
+    
     summary {
         height:calc(3.3em + 100%);
     }
