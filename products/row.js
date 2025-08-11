@@ -1,8 +1,17 @@
-import DB from '../include/DB.mjs'
-import {Markup} from '../include/utilities.js'
+import DB from '../include/DB.js'
+import {Markup, spacing} from '../include/utilities.js'
 import Mapping from './maps.js'
 import Part from '../parts/catalog.js'
 let META;
+class Bey {
+    constructor(abbr) {
+        this.abbr = abbr;
+        let [blade, ratchet, bit] = abbr.split(' ');
+        [this.blade, this.ratchet, this.bit] = ratchet == '=' ?
+            [new Blade(blade), new Ratchet('/'), new Bit(bit, true)] : 
+            [new Blade(blade), new Ratchet(ratchet), new Bit(bit)];
+    }
+}
 class AbsPart {
     constructor(sym, fusionORsub = false) {
         this.sym = sym;
@@ -11,7 +20,8 @@ class AbsPart {
     abbr = html => E('td', {
         innerHTML: html ?? this.sym.replace(/^[A-Z]$/, ' $&'), 
         abbr: this.sym, 
-        headers: this.sub ?? this.constructor.name.toLowerCase()
+        headers: this.sub ?? this.constructor.name.toLowerCase(),
+        classList: this.fusion ? 'fusion' : ''
     });
     none = hidden => [E('td'), E('td'), E('td', {classList: 'right'})];
 }
@@ -50,7 +60,7 @@ class Bit extends AbsPart {
     }
     cells(fusion = this.fusion) {
         if (this.sym == '/') return [E('td'), E('td')];
-        return [this.abbr(), E('td', fusion ? {classList: fusion} : null)];
+        return [this.abbr(), E('td')];
     }
 }
 
@@ -59,13 +69,11 @@ class Row {
     create([code, type, abbr, ...others]) {
         if (code == 'BH') return;
         let [video, extra] = ['string', 'object'].map(t => others.find(o => typeof o == t));
-        let [blade, ratchet, bit] = abbr.split(' ');
-        [blade, ratchet, bit] = [new Blade(blade), new Ratchet(ratchet), new Bit(bit)];
+        let {blade, ratchet, bit} = new Bey(abbr);
                 
         this.tr = E('tr', [
             this.create.code(code, type, video), 
-            blade.cells(), 
-            bit.fusion ? [bit.cells(), bit.none(true)] : [ratchet.cells(), bit.cells()]
+            blade.cells(), ratchet.cells(), bit.cells()
         ].flat(9), {
             hidden: this.hidden,
             classList: [blade.line ?? '', type],
@@ -78,15 +86,16 @@ class Row {
         code (code, type, video) {
             type.split(' ')[0] == 'RB' ? code == Row.current ? Row.RB++ : Row.RB = 1 : Row.RB = 0;
             Row.current = code;
-            video ??= Q(`td[data-video]`, []).findLast(td => new Cell(td)?.text == code)?.dataset.video;
+            video ??= Q(`td[data-video]`, []).findLast(td => td.dataset.code == code)?.dataset.video;
             return E('td', 
                 [code.replace(/^(?=.X-)/, ' '), ...Row.RB ? [E('s', '-'), E('sub', `0${Row.RB}`)] : []], 
-                {dataset: {...Mapping.maps.images.find(code), ...video ? {video} : {}}}
+                {dataset: {code, ...video ? {video} : {}}}
             );
         }
     }
-    extra({more, coat}) {
+    extra({more, mode, coat}) {
         coat && E(this.tr).set({'--coat': coat});
+        mode && (this.tr.Q('td[headers=blade]').dataset.mode = JSON.stringify(mode));
         more && (this.tr.dataset.more = Object.keys(more));
         more && [...new O(more)].forEach(([part, column], i) => {
             this.tr.Q(`td:nth-child(${column})`).dataset.more = i;
@@ -108,11 +117,12 @@ class Cell {
 
     dissect (naming) {
         let td = this.td.abbr ? this.td : $(this.td).prevAll('[abbr]')[0];
+        let mode = JSON.parse(td.dataset.mode ?? '{}');
         let [comp, line] = [td.headers, td.parentElement.classList[0]];
         let {prop, abbr} = this.dissect.exec(td.abbr, naming && this.dissect.items[comp] || []);
         //prop.core ? comp = 'frame' : null;
         
-        return naming ? {...prop, abbr, comp} : [
+        return naming ? {...prop, abbr, comp, mode} : [
             Blade.sub.includes(comp) ? `${abbr}.${line}` : `${abbr}.${comp}`, 
             //prop.core && `${prop.core}.ratchet`, 
             //prop.mode && `${prop.mode}.${comp}`,
@@ -144,13 +154,13 @@ class Cell {
                 META.names.blade[this.td.parentElement.classList[0]][comp]?.[abbr] : 
                 META.names[comp]?.[abbr];
         name = name?.[lang] ?? '';
-        this.td.innerHTML = this.fullname[lang](name, comp, core) + this.fullname.add(name, dash, mode);
+        this.td.innerHTML = this.fullname[lang](name, comp, core) + this.fullname.add(mode[lang]);
     }
     static fullname = {
         eng: (name, comp, core) => Markup(name, 'products'),
         jap: (name, comp, core) => Cell.oversize(Markup(name, 'products'), comp, 'jap'),
         chi: (name, comp, core) => Markup(name, 'products'),
-        add: (name, dash, mode) => (name && dash ? '<i>′</i>' : ''),
+        add: (mode) => mode ? `<sub>${mode}</sub>` : ''
     }
     static oversize = (name, comp, lang) => name.length >= Cell.limit[comp]?.[lang] ? `<small>${name}</small>` : name
     static limit = {bit: {jap: 8}}
@@ -173,7 +183,7 @@ class Cell {
         image () {
             Cell.popup.classList = 'images';
             Cell.popup.append(
-                E('p', Mapping.maps.note.find(Cell.text(this.td))),
+                E('p', spacing(Mapping.maps.note.find(this.td.dataset.code))),
                 ...this.td.dataset.video?.split(',').map(href => E('a', {href: `//youtu.be/${href}?start=60`})) ?? [],
                 ...this.image.parse('main').juxtapose(),
                 ...this.image.parse('more').juxtapose(),
@@ -183,21 +193,32 @@ class Cell {
         _image: {
             parse (type) {
                 Cell.images = [];
-                let no = (this.td.dataset.switch || Cell.text(this.td)).replace('-', this.td.dataset.underscore ? '_' : '');
-                if (!this.td.dataset[type]) {
-                    this.format(no, type, this.td.dataset.detailUpper);
+                let code = this.td.dataset.code, lower;
+                let {alias, underscore, ...syntax} = Mapping.maps.images.find(code);
+                if (type == 'detail') {
+                    let [, line, number] = /^(.+?)-(\d+)$/.exec(code);
+                    lower = /^BXG-(01|04|07|14|31|32|11|18|19)$/.test(code) 
+                    || line == 'BX' && parseInt(number) <= 39 
+                    || line == 'UX' && parseInt(number) <= 13;
+                }
+                code = (alias || code).replace('-', underscore ? '_' : '')[lower ? 'toLowerCase' : 'toUpperCase']();
+                if (!syntax[type]) {
+                    this.format(code, type);
                 } else {
-                    let values = {no};
-                    let expression = this.td.dataset[type].replaceAll(/\$\{.+\}/g, whole => values[whole.match(/[a-z]+/)]);
+                    let values = {no: code};
+                    let expression = syntax[type].replaceAll(/\$\{.+\}/g, whole => values[whole.match(/[a-z]+/)]);
                     let group = expression.match(/(?<=\().+(?=\))/)?.[0];
-                    group.split('|').forEach(s => this.format(expression.replace(`(${group})`, s), type, this.td.dataset.detailUpper));
+                    group.split('|').forEach(s => this.format(expression.replace(`(${group})`, s), type));
                 }
                 return this;
             },
-            format (no, type, upper) {
-                type == 'main' && Cell.images.push(`${no}@1`);
-                type == 'more' && Cell.images.push(...[...Array(9)].map((_, i) => `${no}_${`${i+1}`.padStart(2, 0)}@1`));
-                type == 'detail' && Cell.images.push(`detail_${no.replace(/.+(?=\d)/, s => upper ? s : s.toLowerCase())}`);
+            format (code, type) {
+                if (type == 'main') Cell.images.push(`${code}@1`);
+                if (type == 'more') {
+                    let max = Q(`td[data-code=${this.td.dataset.code}]`).length > 2 ? 18 : 9;
+                    Cell.images.push(...[...Array(max)].map((_, i) => `${code}_${`${i+1}`.padStart(2, 0)}@1`));
+                }
+                if (type == 'detail') Cell.images.push(`detail_${code}`);
             },
             juxtapose () {return [Cell.images].flat().map(src => E('img', {src: this.src(src)}))},
             src: href => /^https|\/img\//.test(href) ? href : `https://beyblade.takaratomy.co.jp/beyblade-x/lineup/_image/${href}.png`,

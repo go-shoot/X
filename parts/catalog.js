@@ -1,5 +1,5 @@
-import DB from '../include/DB.mjs'
-import {Markup, Mapping} from '../include/utilities.js'
+import DB from '../include/DB.js'
+import {Markup, Mapping, spacing} from '../include/utilities.js'
 import {Finder} from '../products/table.js'
 let META;
 class Part {
@@ -61,6 +61,7 @@ class Part {
         location.pathname.includes('products') && (this.a.onclick = () => Finder.find(query));
         return this;
     }
+    static hue = {}
 }
 Part.prototype.catalog.html = function() {
     Q('#triangle') || Part.triangle();
@@ -71,7 +72,7 @@ Part.prototype.catalog.html = function() {
         E('figure', [E('img', {src: `../img/${path}.png`})]),
         ...this.part.stat ? this.html.stat() : [],
         ...this.html.names(),
-        E('p', this.part.desc ?? ''),
+        E('p', spacing(this.part.desc)),
         this.html.icons(),
         this.html.buttons(),
         this.part.from ? E('span', this.part.from, {onclick: ev => ev.preventDefault() ?? (location.href = `/parts/?blade=一體#${ev.target.innerText}`)}) : '',
@@ -80,8 +81,14 @@ Part.prototype.catalog.html = function() {
 Object.assign(Part.prototype.catalog.html, {
     background () {
         let {comp, attr} = this.part;
+        let selector = `.${comp.match(/^[^0-9]+/)}${attr?.includes('fusion') ? '.fusion' : ''}`;
+        if (!Part.hue[selector]) {
+            let found;
+            [...document.styleSheets].find(css => found = [...css.cssRules].find(rule => rule    .selectorText == selector));
+            Part.hue[selector] = Object.fromEntries(found.styleMap)['--c'][0][0];
+        }
         let param = [
-            ['hue', getComputedStyle(document.querySelector(`.${comp.match(/^[^0-9]+/)}`)).getPropertyValue('--c')],
+            ['hue', Part.hue[selector]],
             [attr?.find(a => a == 'left' || a == 'right') ?? '', '']
         ];
         return `../parts/bg.svg?${new URLSearchParams(param).toString()}`;
@@ -106,18 +113,20 @@ Object.assign(Part.prototype.catalog.html, {
                 Part.chi(group, attr, names.chi[0]),
                 Part.chi(group, attr, names.chi[1] ?? ''),
                 E('h5', {classList: 'jap', innerHTML: Markup(names.jap, 'parts')}),
-                E('h5', {classList: 'eng', innerHTML: group == 'collab' ? names.eng : Markup(names.eng, 'parts')}),
+                E('h5', {classList: 'eng', innerHTML: ['hasbro','collab'].includes(group) ? names.eng : Markup(names.eng, 'parts')}),
             ];
         return children;
     },
     stat () {
-        let {abbr, comp, stat, date} = this.part;
+        let {abbr, comp, stat, date, attr} = this.part;
         comp == 'ratchet' && stat.length === 1 && stat.push(...abbr.split('-'));
+        let terms = META[attr?.includes('fusion') ? 'terms.fusion' : 'terms'];
         return [
             date ? E('strong', date) : '',
             E.dl(stat.map((s, i) => [
-                META.terms[i].replace(/(?<=[A-Z])(?=[一-龢])/, `
-`),             {innerHTML: `${s}`.replace(/[+\-=]/, '<sup>$&</sup>').replace('-','−').replace('=','≈')}
+                terms[i]?.replace(/(?<=[A-Z ])(?=[一-龢])/, `
+`) ?? '',
+                {innerHTML: Markup(`${s}`, 'stats')}
             ]))
         ];
     },

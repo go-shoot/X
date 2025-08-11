@@ -1,30 +1,45 @@
 {
-  "part-blade-CX": "2025/05/19 17:45:00",
-  "part-blade":    "2025/05/19 17:45:00",
-  "part-ratchet":  "2025/05/15 12:15:00",
-  "part-bit":      "2025/05/19 17:45:00",
-  "prod-beys":     "2025/05/15 12:15:00",
-  "part-meta":     "2025/03/29 11:55:00",
-  "prod-others":   "2025/02/21 23:15:00",
-  "prod-launchers":"2025/02/21 23:15:00",
+  "part-bit":         "2025/08/10 00:35:00",
+  "part-ratchet":     "2025/08/10 00:35:00",
+  "part-blade-CX":    "2025/08/10 00:35:00",
+  "part-blade-collab":"2025/08/10 00:35:00",
+  "part-blade":       "2025/08/10 00:35:00",
+  "part-meta":        "2025/08/10 00:35:00",
+  "prod-beys":        "2025/07/31 22:00:00",
+  "prod-launchers":   "2025/06/14 22:40:00",
+  "prod-others":      "2025/02/21 23:15:00",
   "news": {
-    "2025-06-28":[
-      {"code":"BX-44 Booster","name":"トリケラプレスM-85BS<br>TriceraPress M-85BS","type":"def",
-      "imgs":["https://takaratomymall.jp/img/goods/5/4904810939528_75cf5296881c493e81614752d20212ef.jpg","https://takaratomymall.jp/img/goods/L/4904810939528_6aecc11747b84710b7fd6c7173e2aae1.jpg","https://takaratomymall.jp/img/goods/C/4904810939528_7c15305fcd8c46cd809a94a8cafde0e2.jpg"],
-    "desc":["【TriceraPress】Blade：內重心提升安定性","【Metal-85】Ratchet：金屬組件提升重量"]}
-    ],
-    "2025-07":[
-      {"code":"CX-07 starter"},
-      {"code":"BXG-20 booster"}
-    ],
-    "2025-08":[
-      {"code":"CX-08 random booster"},
-      {"code":"UX-15 deck set"},
-      {"code":"BX-45 booster"}
+    "2025-08-09":[
+      {"code":"UX-15 deck set","type":"att","name":"シャークスケイルデッキセット<br>SharkScale Deck Set",
+        "imgs":["https://takaratomymall.jp/img/goods/5/4904810982432_4f344d103fd04ccd8f8c8c7a99f1dd5e.jpg","https://takaratomymall.jp/img/goods/L/4904810982432_3cd2ec8a25f7484d93bae927b1399bd9.jpg","https://m.media-amazon.com/images/S/aplus-media-library-service-media/ae850888-1483-4fc4-bb7a-f3d2709273d6.__CR0,0,970,600_PT0_SX970_V1___.jpg"], 
+        "desc":["シャークスケイル4-50UF<br>SharkScale 4-50UF","ティラノロア1-70L<br>TyranoRoar 1-70L","ヘルズブレイブJ3-60GF<br>HellsBrave J3-60GF","【SharkScale】集最低部件於一身","",""]
+      },
+      {"code":"BX-45 booster","type":"bal","name":"サムライカリバー6-70M<br>SamuraiCalibur 6-70M",
+        "imgs":["https://takaratomymall.jp/img/goods/5/4904810939580_a910958f6bd649d694b091b6fe40a2ca.jpg","https://takaratomymall.jp/img/goods/C/4904810939580_7d3b95d0bd7f4c839357bd2047a05d92.jpg","https://m.media-amazon.com/images/S/aplus-media-library-service-media/1d140a8a-5ecb-47fd-aafb-66f11ca6e0cf.__CR0,0,970,600_PT0_SX970_V1___.jpg"],
+        "desc":["【SamuraiCalibur】：水平時防禦、傾側後攻擊","【Merge】bit：外橡膠、内球軸"]
+      }
     ],
     "2025-09":[
       {"code":"CX-09 starter"}
+    ],
+    "2025-10":[
+      {"code":"UX-16 random booster select"},
+      {"code":"BX-46 stadium set"},
+      {"code":"BX-47 launcher"}
+    ],
+    "2025-11":[
+      {"code":"CX-10 booster"},
+      {"code":"CX-11 deck set"}
+    ],
+    "2025-12":[
+      {"code":"UX-17 starter"},
+      {"code":"BXG-22 booster"}
+    ],
+    "2026-01":[
+      {"code":"CX-12 booster"}
+    ],
+    "2026-02":[
+      {"code":"BX-48 random booster"}
     ]
   }
-
 }

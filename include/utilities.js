@@ -39,6 +39,11 @@ Markup.items.parts = [...Markup.items,
     [/^([一-龢]{2})([一-龢]{2,})/, '<span>$1</span>$2'],
     [/^[^</\\]+?(?=[A-Z])/, '<span>$&</span>']
 ];
+Markup.items.stats = [
+    ['>', '<small>→</small>'],
+    [/[+\-=]/, '<sup>$&</sup>'],
+    ['-', '−'], ['=', '≈']
+];
 Markup.sterilize = text => text.replaceAll(/[_\/\\]/g, '');
-    
-export {KeysAsString, Mapping, Markup}
+const spacing = text => text?.replace(/(?<=\w)(?=[一-龢])/g, ' ').replace(/(?<=[一-龢])(?=\w)/g, ' ') ?? '';
+export {KeysAsString, Mapping, Markup, spacing}

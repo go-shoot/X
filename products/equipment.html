@@ -34,14 +34,15 @@
     </section>
 </main>
 
-<script>
+<script type="module">
+import {spacing} from '../include/utilities.js'
 const List = {
-    headers: (where, products, determinant, detail) => {
-        for (let {eng, jap, desc, colors} of products.reverse()) {
+    headers: (where, products, determinant) => {
+        for (let {eng, jap, desc, colors, details: p} of products.reverse()) {
             let details = E('details', {name: 'panel'}, [
                 E('summary', [
                     E('h3', {innerHTML: `${jap}<br>${eng}`}),
-                    E('small', desc),
+                    E('small', spacing(desc)),
                     E('picture', {style: {backgroundImage: `url(${List.src(colors[1] || colors[0])})`}})
                 ]),
                 detail ? E('p', detail) : '',

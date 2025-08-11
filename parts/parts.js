@@ -1,5 +1,6 @@
-import DB from '../include/DB.mjs'
+import DB from '../include/DB.js'
 import Part from './catalog.js'
+import {spacing} from '../include/utilities.js'
 let META;
 const [component, category] = [...new URLSearchParams(location.search)]?.[0] ?? [];
 const Parts = {
@@ -39,7 +40,7 @@ const Parts = {
         keep === true ? (location.hash = groups[0]) : location.hash && Parts.focus();
         document.title = document.title.replace(/^.*?(?= ■ )/, META.title?.[groups] ?? META.title ?? '');
         let info = typeof META.info == 'string' ? META.info : META.info?.[groups] ?? '';
-        Q('details').hidden = !(Q('details article').innerHTML = info);
+        Q('details').hidden = !(Q('details article').innerHTML = spacing(info));
     },
     focus () {
         Q('.target')?.classList.remove('target');

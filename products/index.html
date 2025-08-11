@@ -73,7 +73,7 @@
 </main>
 <aside popover></aside>
 <script type="module">
-import DB from '../include/DB.mjs'
+import DB from '../include/DB.js'
 import {Table, Filter, Finder} from './table.js'
 Q('nav').after(DB(() => [Finder(), Table(), Filter()]));
 </script>

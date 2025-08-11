@@ -1,4 +1,4 @@
-import DB from '../include/DB.mjs'
+import DB from '../include/DB.js'
 import {Markup} from '../include/utilities.js'
 import {Blade, Row, Cell} from './row.js'
 let META = {};
@@ -77,7 +77,7 @@ Object.assign(Table, {
     },
     reset () {
         Finder.state(false);
-        location.search && history.pushState('', '', '/products/');
+        location.search && history.pushState('', '', './');
         Filter.inputs.forEach(input => input.checked = true);
         Filter.el.classList.remove('active');
         Table.rows().forEach(tr => tr.classList.toggle('hidden', tr.hidden = false));

@@ -72,7 +72,7 @@ Keihin.events = () => {
         Keihin.all.forEach(k => k.hidden = !show.includes(k.classList[0]));
     }); 
 }
-import DB from '../include/DB.mjs'
+import DB from '../include/DB.js'
 Q('nav').after(DB(Keihin.display));
 Keihin.events();
 </script>

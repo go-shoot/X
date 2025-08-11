@@ -45,8 +45,8 @@ Object.assign(DB, {
         ,
         files: files => Promise.all(files.map(file => 
                 fetch(`/X/db/${file}.json`)
-                .then(resp => Promise.all([file, resp.json(), /^part-/.test(file) && DB.clear(file) ]))
-            )).then(arr => arr.map(([file, json]) => //in one transaction
+                .then(resp => Promise.allSettled([file, resp.json(), file == 'part-blade-collab' && DB.clear('blade','hasbro') ]))
+            )).then(arr => arr.map(([{value: file}, {value: json}]) => //in one transaction
                 (DB.cache.actions[file] || DB.put.parts)(json, file)
                 .then(() => console.log(`Updated '${file}'`) ?? Storage('DB', {[file]: Math.round(new Date() / 1000)} ))
                 .catch(er => console.error(file, er))
@@ -77,8 +77,11 @@ Object.assign(DB, {
         DB.trans(store);
         return Promise.all(items.map(item => DB.put(store, item, callback))).then(res).catch(er => console.error(store, er));
     }),
-    clear: file => new Promise(res => DB.store(file).clear().onsuccess = () => res(Storage('DB', {[file]: null}))),
-
+    clear (store, value) {
+        store = DB.store(store);
+        return new Promise(res => store.index('group').getAll(IDBKeyRange.only(value))
+            .onsuccess = ev => res(ev.target.result.forEach(({abbr}) => store.delete(abbr))));
+    },
     indicator: class extends HTMLElement {
         constructor(callback) {
             super();
@@ -142,6 +145,7 @@ Object.assign(DB, {
 Object.assign(DB.cache, {
     actions: {
         'part-blade': '', 'part-blade-CX': '', 'part-ratchet': '', 'part-bit': '',
+        'part-blade-collab': json => DB.put.parts(json, 'blade'),
         'part-meta': json => DB.put('meta', {part: json}),
         'prod-launchers': json => DB.put('product', {launchers: json}),
         'prod-others': json => DB.put('product', {others: json}),
