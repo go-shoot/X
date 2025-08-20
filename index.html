@@ -49,7 +49,7 @@
 
 <script type=module>  
 import DB from './include/DB.js'
-import {Mapping, spacing} from './include/utilities.js'
+import {spacing} from './include/utilities.js'
 
 const observer = new IntersectionObserver(entries => entries.forEach(entry => entry.target.classList.toggle('seeing', entry.isIntersecting)));
 Q('header').after(DB(() => Q('header,section,time,.scroller', el => observer.observe(el))));
@@ -72,17 +72,16 @@ class Shohin {
             E('h4', name?.replaceAll('-', '‑').replaceAll('<br>', String.fromCharCode(10))), 
             ...imgs.map(src => E('figure', [E('a', '🖼️', {href: src}), E('img', {src})])), 
             ...([desc ?? []].flat()).map(d => E('p', {innerHTML: spacing(d).replaceAll('-', '‑')}))
-        ], {classList: [`scroller`, classList || Shohin.classes.find(code)]});
+        ], {classList: [`scroller`, classList || Shohin.classes.find(code, {default: 'Lm'})]});
     }
-    static classes = new Mapping(
-        /(stadium|entry) set/i, 'SS',
-        /組合|Set/i, 'St',
-        /Starter/i, 'S',
-        /Random/i, 'RB',
-        /Booster/i, 'B',
-        /.XG?-/, 'others',
-        'Lm'
-    )
+    static classes = new O([
+        [/(stadium|entry) set/i, 'SS'],
+        [/組合|Set/i, 'St'],
+        [/Starter/i, 'S'],
+        [/Random/i, 'RB'],
+        [/Booster/i, 'B'],
+        [/.XG?-/, 'others'],
+    ])
     static base = `https://beyblade.takaratomy.co.jp/beyblade-x/lineup/_image/`;
     static types = {att: 'ATTACK', bal: 'BALANCE', sta: 'STAMINA', def: 'DEFENSE'};
 }

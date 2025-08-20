@@ -1,0 +1,23 @@
+<title>Test</title>
+<script defer src=../include/common.js></script>
+<main style="display:flex;flex-wrap:wrap;font-size:1.5em;"><form></form><label><input id=free></label></main>
+<script type="module">
+import {Part, Classes} from './part.js'
+import DB from '../include/DB.js'
+Q('main').after(DB(() =>
+    DB.get.names().then(console.log)
+    .then(() => DB.get('meta', 'part'))
+    .then(META => Part.import(META.general) &&
+        Promise.all([
+            '#PG.blade-CX', '#Bl.blade-CX', '#S.blade-CX', '#LLd_u.blade',
+            '#PtSw.blade', '#WzRd.blade', '#MEGA.blade', '#5-80.ratchet', '#O.bit', '#MN.bit', '#Tr.bit'
+        ].map(part => {
+            let [, abbr, store] = /^#(.+?)\.(.+?)$/.exec(part);
+            return DB.get(store, abbr);
+        }))
+    .then(parts => Promise.all(parts.map(p => new Classes[p.comp](p).revise())))
+    .then(parts => Q('main').append(...parts.map(p => p.tile())))
+)));
+</script>
+
+

@@ -1,5 +1,5 @@
 import DB from '../include/DB.js'
-import {Markup, Mapping, spacing} from '../include/utilities.js'
+import {Markup, spacing} from '../include/utilities.js'
 import {Finder} from '../products/table.js'
 let META;
 class Part {
@@ -95,12 +95,12 @@ Object.assign(Part.prototype.catalog.html, {
     },
     icons () {
         let {abbr, line, group, attr} = this.part;
-        let icons = new Mapping('left', '\ue01d', 'right', '\ue01e', /^(?:att|def|sta|bal)$/, t => [E('img', {src: `../img/types.svg#${t}`})]);
+        let icons = new O({left: '\ue01d', right: '\ue01e'}, [[/^(?:att|def|sta|bal)$/, t => [E('img', {src: `../img/types.svg#${t}`})] ]]);
         ['hasbro', 'collab'].includes(group) && (group = attr.find(a => /.X$/.test(a)));
         return E.ul([
             (line || /.X$/.test(group)) && [E('img', {src: `../img/lines.svg#${line ?? group}`})], 
             group == 'remake' && [E('img', {src: `../img/system-${/^D..$/.test(abbr) ? 'BSB' : /\d$/.test(abbr) ? 'BBB' : 'MFB'}.png`})], 
-            ...(attr ?? []).map(a => icons.find(a, true))
+            ...(attr ?? []).map(a => icons.find(a, {evaluate: true}))
         ]);
     },
     names () {

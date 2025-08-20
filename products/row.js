@@ -1,6 +1,6 @@
 import DB from '../include/DB.js'
 import {Markup, spacing} from '../include/utilities.js'
-import Mapping from './maps.js'
+import Maps from './maps.js'
 import Part from '../parts/catalog.js'
 let META;
 class Bey {
@@ -183,7 +183,7 @@ class Cell {
         image () {
             Cell.popup.classList = 'images';
             Cell.popup.append(
-                E('p', spacing(Mapping.maps.note.find(this.td.dataset.code))),
+                E('p', spacing(Maps.note.find(this.td.dataset.code))),
                 ...this.td.dataset.video?.split(',').map(href => E('a', {href: `//youtu.be/${href}?start=60`})) ?? [],
                 ...this.image.parse('main').juxtapose(),
                 ...this.image.parse('more').juxtapose(),
@@ -194,7 +194,7 @@ class Cell {
             parse (type) {
                 Cell.images = [];
                 let code = this.td.dataset.code, lower;
-                let {alias, underscore, ...syntax} = Mapping.maps.images.find(code);
+                let {alias, underscore, ...syntax} = Maps.images.find(code) ?? {};
                 if (type == 'detail') {
                     let [, line, number] = /^(.+?)-(\d+)$/.exec(code);
                     lower = /^BXG-(01|04|07|14|31|32|11|18|19)$/.test(code) 

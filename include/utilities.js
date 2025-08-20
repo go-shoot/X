@@ -2,27 +2,6 @@ class KeysAsString {
     constructor(obj) {Object.assign(this, obj);}
     [Symbol.toPrimitive] = type => type == 'string' && Object.keys(this).join('')
 };
-class Mapping {
-    constructor(...map) {
-        this.default = map.length % 2 ? map.pop() : null;
-        this.map = new Map(map.flatMap((item, i, ar) => i % 2 ? [] : [[item, ar[i + 1]]]));
-    }
-    find = (...keys) => {
-        let found, evaluate = typeof keys.at(-1) == 'boolean' && keys.pop();
-        let key = keys.find(key => (found = 
-            [...this.map.entries()].find(([k]) =>
-                k instanceof RegExp && k.test(key) || k instanceof Array && k.find(item => item == key) ||
-                k instanceof Function && k(key) || k == key
-            )?.[1] ?? this.default
-        ) != null);
-        if (found instanceof Function)
-            return evaluate ? found(key) : found;
-        if (found instanceof Array)
-            return found.map(item => typeof item == 'string' ? item.replaceAll('${}', key) : (item ?? ''));
-        return found && typeof found == 'string' ? found.replaceAll('${}', key) : (found ?? '');
-    }
-    static maps = {};
-}
 const Markup = (text, location) => text && (location ? Markup.items[location] : Markup.items)
     .reduce((text, [before, after]) => text.replace(before, after), text);
 Markup.items = [
@@ -37,7 +16,7 @@ Markup.items.parts = [...Markup.items,
     [/([^<]+)\\([^<]+)/, '$1<span>$2</span>'],
     [/([^<]+)\/([^<]+)/, '<span>$1</span>$2'],
     [/^([一-龢]{2})([一-龢]{2,})/, '<span>$1</span>$2'],
-    [/^[^</\\]+?(?=[A-Z])/, '<span>$&</span>']
+    [/^[^</\\]+?(?=[ A-Z])/, '<span>$&</span>']
 ];
 Markup.items.stats = [
     ['>', '<small>→</small>'],
@@ -46,4 +25,4 @@ Markup.items.stats = [
 ];
 Markup.sterilize = text => text.replaceAll(/[_\/\\]/g, '');
 const spacing = text => text?.replace(/(?<=\w)(?=[一-龢])/g, ' ').replace(/(?<=[一-龢])(?=\w)/g, ' ') ?? '';
-export {KeysAsString, Mapping, Markup, spacing}
+export {KeysAsString, Markup, spacing}

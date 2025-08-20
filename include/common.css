@@ -13,7 +13,7 @@ summary:focus {
 :root,input,input::placeholder,button,db-state {
     font-family:'IBM Plex Sans JP',COND,sans-serif;
 }
-#parts h4,#menu h4,.catalog dd,
+#parts h4,#menu h4,:host(x-part) dd,
 .part-result[value]::before,.prod-result[value]::before,.part-result[value]::after {
     font-family:COND,'IBM Plex Sans JP',sans-serif;
 }
@@ -121,6 +121,10 @@ html {
 .def,dd:has(#def) {--type:#009f48;}
 .sta,dd:has(#sta) {--type:#f08200;}
 .bal,dd:has(#bal) {--type:#de0010;}
+.BX {--line:#71bce9;}
+.UX {--line:#ee7800;}
+.CX {--line:#e4007f;}
+
 .RB {--row-s:0%;--b-adj:5%;}
 .B  {--row-c:10;}
 .SS {--row-c:235;--b-adj:5%;}
