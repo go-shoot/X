@@ -50,6 +50,7 @@
             height:4em;
             border-width:1em 0 1em 1em;
         }
+        h3 {white-space: pre;}
         small {
             display:block;
             font-size:.85em;

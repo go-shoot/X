@@ -66,3 +66,36 @@ it('5',()=>expect(new O([[/b/,['sef${}',null,'${}w']],[[2,3,4],0]]).find('b')).t
 it('5',()=>expect(new O([[/b/,6],[[2,3,4],0]]).find(9,{default:n=>n+2,evaluate:true})).to.eql(11));
 it('5',()=>expect(`${new O({a:3,b:5})}`).to.eql(`ab`));
 it('5',()=>expect({...new O({a:3,b:5})}).to.eql({a:3,b:5}));
+
+function flattenObject(obj, transformation) {
+    const result = {};
+    const enter = (current, oldPath = []) => {
+        if (current && typeof current === 'object' && !Array.isArray(current)) {
+            Object.entries(current).forEach(([key, value]) => enter(value, oldPath.concat(key)));
+        } else {
+            let newPath = transformation([...oldPath]).filter(k => k);
+            newPath.some(k => k.includes('undefined')) && (newPath = oldPath);
+            let level = result;
+            newPath.forEach((key, i) => level = level[key] ??= i == newPath.length - 1 ? current : {});
+        }
+    }
+    enter(obj);
+    return result;
+}
+const obj={
+    a:5,
+    b:{
+        b1:5,
+        b2:6
+    },
+    c:{
+        c1:{
+            c11:4,
+            c12:{
+                c123:6
+            }
+        },
+        c2:4
+    }
+};
+flattenObject(obj,([$1,$2,$3,...deeper])=>[$1,`${$2}.${$3}`,...deeper]);

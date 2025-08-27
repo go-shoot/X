@@ -1,113 +1,102 @@
 
 import DB from '../include/DB.js'
-import { Markup, spacing } from './utilities.js';
-import { Finder } from '../products/table.js';
-let META, DICT = {};
-class Part {
-    static import = meta => META = meta;
-    #tile; #cell;
-    constructor(json) {Object.assign(this, json);}
-    supplement (json) {Object.assign(this, json);}
-    tile () {return this.#tile ??= new Tile({...this});}
-    cell () {return }
+import { spacing } from './utilities.js';
+import { Bey, Finder, Previewer, Markup } from './bey.js';
 
-    async revise(revisions, ref, pref) {
-        revisions?.forEach(what => this.#revise[what](ref, pref));
+let META, PARTS;
+class Part {
+    static import = (meta, parts) => ([META, PARTS] = [meta, parts]) && Bey.import(meta, parts);
+    #path; #tile;
+    constructor(json) {Object.assign(this, json);}
+    push (json) {return Object.assign(this, json);}
+    get path () {return this.#path ??= [this.constructor.name.toLowerCase(), this.abbr];}
+    tile (execute) {
+        this.#tile ??= new Tile(this);
+        execute && !this.#tile.shadowRoot.Q('object') && this.#tile.html();
+        return this.#tile;
+    }
+    cell () {return new Cell(this);}
+
+    revise (revisions, base, pref) {
+        revisions?.forEach(what => this[what] = this.#revised[what](base, pref));
         return this;
     }
-    #revise = {
-        group: () => this.group = new O(META.ratchet.height).find(([_, dmm]) => this.abbr.split('-')[1] >= dmm)[0],
-        stat: ref => this.stat.length === 1 && this.stat.push(...ref.stat.slice(1)),
-        name: (ref, pref) => this.names = Part.revise.name(ref, pref),
-        attr: (ref, pref) => [this.group, this.attr] = [ref.group, [...this.attr ?? [], ...ref.attr, ...pref]],
-        desc: (ref, pref) => this.desc = [...pref].map(p => META.bit.prefix[p].desc).join('、') + `的【${ref.abbr}】Bit${this.desc ? `，${this.desc}` : '。'}`,
-    }
-    static revise = {
-        name: (ref, pref) => new O(ref?.names ?? ref).prepend(...[...pref].reverse().map(p => META.bit.prefix[p])),
-    }
-    strip (what) {return this.comp == 'bit' ? Part.strip(this.abbr, what) : this.abbr;}
-    static strip = (abbr, what) => abbr.replace(what == 'dash' ? '′' : new RegExp(`^[${new O(META.bit.prefix)}]+(?=[^′a-z])|′`, what == 'prefORdash' ? '' : 'g'), '');
-    
-    cell = {
-        abbr: html => E('td', {
-            innerHTML: html ?? this.abbr.replace(/^[A-Z]$/, ' $&'), 
-            abbr: this.abbr, 
-            headers: this.line ? this.group : this.comp,
-            classList: this.attr.includes('fusion') ? 'fusion' : ''
-        }),
-        none: () => [E('td'), E('td'), E('td.right')]
+    #revised = {
+        group: base => base.group ?? new O(META.ratchet.height).find(([, dmm]) => this.abbr.split('-')[1] >= dmm)[0],
+        names: (base, pref) => new O(base?.names ?? base).prepend(...[...pref].reverse().map(p => META.bit.prefix[p])),
+        stat: base => this.stat.length === 1 ? [this.stat[0], ...base.stat.slice(1)] : this.stat,
+        attr: (base, pref) => [...this.attr ?? [], ...base.attr, ...pref],
+        desc: (base, pref) => [...pref].map(p => META.bit.prefix[p].desc).join('、') + `的【${base.abbr}】Bit${this.desc ? `，${this.desc}` : '。'}`,
     }
 }
 class Blade extends Part {
+    #path;
     constructor(json) {super(json);}
+    get path () {return this.#path ??= this.line ? ['blade', this.line, this.group, this.abbr] : super.path;}
+    static sub = ['motif', 'upper', 'lower'];
 }
 class Ratchet extends Part {
     constructor(json) {super(json);}
-    revise () {
-        return super.revise(['group', 'stat'], {stat: ['', ...this.abbr.split('-')]});
-    }
+    revise (where = 'tile') {return super.revise(Ratchet.revisions[where], {stat: [, ...this.abbr.split('-')]});}
+    static revisions = {tile: ['group', 'stat']}
 }
 class Bit extends Part {
     constructor(json) {super(json);}
-    async revise () {
-        if (this.names) return this;
-        let [, pref, ref] = new RegExp(`^([${new O(META.bit.prefix)}]+)([^a-z].*)$`).exec(this.abbr);
-        return super.revise(['name', 'attr', 'stat', 'desc'], DICT[ref] ??= await DB.get('bit', ref), pref);
+    async revise (where = 'tile') {
+        if (Bit.revisions[where].every(p => this[p])) return this;
+        let [, pref, base] = new RegExp(`^([${new O(META.bit.prefix)}]+)([^a-z].*)$`).exec(this.abbr);
+        Bit.revisions[where].some(p => !PARTS.bit[base][p]) && PARTS.bit[base].push(await DB.get('bit', base));
+        return super.revise(Bit.revisions[where], PARTS.bit[base], pref);
     }
+    static revisions = {cell: ['names'], tile: ['group', 'names', 'attr', 'stat', 'desc']}
 }
 class Tile extends HTMLElement {
-    constructor(json, show = true) {
+    constructor(Part) {
         super();
-        Object.assign(this, json);
+        let {path, group, attr} = Part;
+        (this.Part = Part).named = path[0] == 'blade' && !path[2] || ['motif','upper'].includes(path[2]);
         this.attachShadow({mode: 'open'}).append(
             E('link', {rel: 'stylesheet', href: '../include/common.css'}),
-            E('link', {rel: 'stylesheet', href: 'part.css'}),
-            ...this.html()
+            E('link', {rel: 'stylesheet', href: '../include/part.css'}),
         );
-        let {abbr, comp, line, group, attr} = this;
         E(this).set({
-            id: abbr,
-            classList: [comp, line, group, ...(attr ?? []).filter(a => !/.X$/.test(a))],
-            hidden: !show,
-        });
-        let query = this.line ? {line: this.line, [group]: abbr} : {[comp]: abbr};
-        this.onclick = () => DB.get('product', 'beys').then(beys => {
-            Finder.find(new O(query));
-            console.log(beys.filter(bey => Finder.regexp.some(r => r.test?.(bey[2]))));
+            id: path.at(-1),
+            classList: [...new Set([...path.slice(0, -1), group, ...attr?.filter(a => !/^.X$/.test(a)) ?? []])],
+            style: {visibility: 'hidden'},
+            onclick: () => location.href.includes('parts') ? Previewer.cell(this.Part.path) : Finder.filter(this.Part.path)
         });
     }
     html () {
         Q('#triangle') || Tile.triangle();
-        let {comp, line, group, abbr} = this;
-        this.html.part = this;
-        let path = [comp, line ? `${line}-${group}` : '', abbr].filter(p => p).join('/');
-        return [
+        let {path, desc, from} = this.html.Part = this.Part;
+        this.shadowRoot.append(
             Q('#triangle').cloneNode(true),
             E('object', {data: this.html.background()}),
-            E('figure', E('img', {src: `../img/${path}.png`})),
-            this.html.icons(),
-            E('p', spacing(this.desc)),
-            ...this.stat ? this.html.stat() : [],
+            E('figure>img', {src: `../img/${path.join('/')}.png`}),
+            E.ul(this.html.icons()),
+            E('p', spacing(desc)),
+            ...this.html.stat(),
             ...this.html.names(),
-            E('div', META.types.map(t => E('svg', {class: t, viewBox: '-10 -10 20 10'}, E('use', {href: '#triangle'})))),
-            this.from ? E('a', this.from, {href: `/parts/?blade=一體#${this.from}`}) : '',
-        ];
+            E('div', META.types.map(t => E(`svg.${t}`, {viewBox: '-10 -10 20 10'}, E('use', {href: '#triangle'})))),
+            from ? E('a', from.split('.')[1] ?? from, {
+                href: from.includes('.') ? `?blade=${from.replace('.', '#')}` : `?blade#${from}`, 
+                onclick: ev => ev.stopPropagation()
+            }) : '',
+        );
     }
     static hue = {}
     static icon = new O([
-        [/^D..$/, 'BSB'],
-        [/\d$/, 'BBB'],
         [/^[A-Z]+X$/, l => E('img', {src: `../img/lines.svg#${l}`})],
-        [/^(?:att|def|sta|bal)$/, t => E('img', {src: `../img/types.svg#${t}`})] ], {
-        left: '\ue01d', right: '\ue01e'
-    })
+        [['BSB','MFB','BBB'], g => E('img', {src: `../img/system-${g}.png`})],
+        [['att','bal','def','sta'], t => E('img', {src: `../img/types.svg#${t}`})]
+    ], {left: '\ue01d', right: '\ue01e'})
 }
 Object.assign(Tile.prototype.html, {
     background () {
-        let {comp, attr} = this.part;
+        let {comp, attr} = this.Part;
         let selector = `.${comp}${attr?.includes('fusion') ? '.fusion' : ''}`;
         Tile.hue[selector] ??= [...document.styleSheets]
-            .filter(({ href }) => new URL(href).host == location.host)
+            .filter(({href}) => new URL(href).host == location.host)
             .flatMap(css => [...css.cssRules])
             .find(rule => rule.selectorText == selector)
             .styleMap.get('--c')[0];
@@ -120,54 +109,75 @@ Object.assign(Tile.prototype.html, {
         return `../parts/bg.svg?${new URLSearchParams(param)}`;
     },
     icons () {
-        let {abbr, line, group, attr} = this.part;
-        return E.ul([
-            group == 'remake' ? E('img', {src: `../img/system-${Tile.icon.find(abbr, {default: 'MFB'})}.png`}) : '', 
-            line || group.endsWith('X') ? Tile.icon.find(line ?? group, {evaluate: true}) : '', 
-            ...attr?.map(a => Tile.icon.find(a, {evaluate: true})) ?? ''
-        ]);
+        let {line, group, attr} = this.Part;
+        return [...new Set([line, group, ...attr ?? []])].map(a => Tile.icon.find(a, {evaluate: true}));
     },
     names () {
-        let {abbr, comp, group, names, attr} = this.part;
-        names ??= {};
-        names.chi = names.chi?.split(' ') ?? [];
-        return comp != 'blade' || group == 'lower' ? 
-            [
-                E('h4', abbr.replace('-', '‒')), 
-                ...['jap','eng'].map(l => E(`h5.${l}`, {innerHTML: Markup(names[l] || '', 'parts')}))
-            ] : 
-            [
-                ...names.chi.map(n => E('h5.chi', {innerHTML: Markup(n, group == 'collab' || attr.includes('BSB') ? '' : 'parts')})),
-                E('h5.jap', {innerHTML: Markup(names.jap, 'parts')}),
-                E('h5.eng', {innerHTML: ['hasbro','collab'].includes(group) ? names.eng : Markup(names.eng, 'parts')}),
-            ];
+        let {path, named, names} = this.Part;
+        return [
+            named ? Markup('tile', names.chi)?.map(els => E('h5.chi', els)) ?? '' : E('h4', path.at(-1).replace('-', '‒')), 
+            names ? ['jap', 'eng'].map(l => E(`h5.${l}`, Markup('tile', names[l])[0] ?? '')) : ''
+        ].flat(9);
     },
     stat () {
-        let {comp, stat, date, attr} = this.part;
+        let {comp, stat, date, attr} = this.Part;
         let terms = META[comp][attr?.includes('fusion') ? 'terms.fusion' : 'terms'];
         return [
             date ? E('strong', date) : '',
-            E.dl(stat.map((s, i) => [
-                terms[i]?.replace(/(?<=[A-Z ])(?=[一-龢])/, `
-`) ?? '',
-                {innerHTML: Markup(`${s}`, 'stats')}
+            E('dl', stat.flatMap((s, i) => [
+                E('dt', Markup('stat', terms[i])), 
+                E('dd', typeof s == 'string' ? Markup('stat', s) : s)
             ]))
         ];
     },
 });
 Tile.triangle = () => {
-    let [r1, r2] = [.75, 1];
-    let cornerAdjustX = r1 / Math.tan(Math.PI / 8);
-    let cornerAdjustY = cornerAdjustX * Math.SQRT1_2;
-    let topAdjust = r2 / Math.SQRT2;
-    document.body.append(E('svg', E('defs', E('path', {id: 'triangle'}))));
-    E(Q('#triangle')).set({d: 
-        `M ${cornerAdjustX-10},-10 A ${r1},${r1},0,0,0,${cornerAdjustY-10},${cornerAdjustY-10}
-        L -${topAdjust},-${topAdjust} A ${r2},${r2},0,0,0,${topAdjust},-${topAdjust}
-        L ${10-cornerAdjustY},${cornerAdjustY-10} A ${r1},${r1},0,0,0,${10-cornerAdjustX},-10 Z`
-    });
+    let [r1, r2] = [.75, 1], corner = {side: {}};
+    corner.side.x = r1 / Math.tan(Math.PI / 8);
+    corner.side.y = corner.side.x * Math.SQRT1_2;
+    corner.top = r2 / Math.SQRT2;
+    document.body.append(E('svg>defs>path', {id: 'triangle', d: 
+        `M ${corner.side.x-10},-10 A ${r1},${r1},0,0,0,${corner.side.y-10},${corner.side.y-10}
+        L -${corner.top},-${corner.top} A ${r2},${r2},0,0,0,${corner.top},-${corner.top}
+        L ${10-corner.side.y},${corner.side.y-10} A ${r1},${r1},0,0,0,${10-corner.side.x},-10 Z`
+    }));
 };
-Finder();
 customElements.define('x-part', Tile);
-const Classes = {blade: Blade, ratchet: Ratchet, bit: Bit};
-export {Part, Tile, Classes};
+
+class Cell {
+    constructor({path, attr}) {
+        this.path = path;
+        const named = ['blade','ratchet'].includes(path[0]) && !path[2] || ['motif','upper'].includes(path[2]);
+        let tds = [E('td', this.attr[path[0]]?.() ?? {}), !named ? E('td') : ''];
+        if (path.at(-1) == null)
+            return tds;
+        E(tds[0]).set({
+            abbr: path.at(-1), 
+            headers: path[2] ?? path[0],
+            innerText: path.at(-1) || '', 
+            ...attr?.includes('fusion') ? {classList: 'fusion'} : {},
+            onclick: () => location.href.includes('products') && Previewer.tile(path)
+        });
+        tds[0].path = path;
+        tds[1] && E(tds[1]).set({headers: tds[0].headers, onclick: tds[0].onclick});
+        return tds;
+    }
+    attr = {
+        blade: () => !this.path[2] ? {colSpan: 4} : {},
+    }
+    static fill = (lang, td) => [td ?? Q('td[abbr]:not([headers=ratchet])')].flat().forEach(td => {
+        if (!td) return;
+        let next = td.nextElementSibling;
+        Cell.html(lang, td.path, JSON.parse(td.dataset.mode ?? '""'))
+            .then(name => (next?.headers == td.headers ? next : td).replaceChildren(...name));
+    })
+    static async html (lang, path, mode) {
+        let names = PARTS.at(path).names ?? (path[0] == 'bit' && await PARTS.at(path).revise('cell')).names;
+        if (!names) return [];
+        let content = [...Markup('cell', names[lang] || names.eng), mode ? E('sub', mode[lang] || mode.eng) : ''];
+        return names[lang]?.length >= Cell.limit[lang]?.at(path.slice(0, -1)) ? [E('small', content)] : content;
+    }
+    static limit = {jap: new O({blade: {CX: {lower: 5}}, bit: 7})};
+}
+Part.blade = Blade, Part.ratchet = Ratchet, Part.bit = Bit;
+export {Part, Tile, Cell};

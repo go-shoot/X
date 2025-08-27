@@ -38,15 +38,15 @@
 import {spacing} from '../include/utilities.js'
 const List = {
     headers: (where, products, determinant) => {
-        for (let {eng, jap, desc, colors, details: p} of products.reverse()) {
+        for (let {eng, jap, desc, colors, detail: p} of products.reverse()) {
             let details = E('details', {name: 'panel'}, [
                 E('summary', [
-                    E('h3', {innerHTML: `${jap}<br>${eng}`}),
+                    E('h3', `${jap}${String.fromCharCode(10)}${eng}`),
                     E('small', spacing(desc)),
                     E('picture', {style: {backgroundImage: `url(${List.src(colors[1] || colors[0])})`}})
                 ]),
-                detail ? E('p', detail) : '',
-                E('ol', {classList: 'boards'})
+                p ? E('p', p) : '',
+                E('ol.boards')
             ]);
             let size = (colors[1] || colors[0])[3];
             size && E(details.Q('picture')).set({'--size': size + '%'});
@@ -58,7 +58,7 @@ const List = {
         where.Q('ol').append(...colors.map(([classList, no, img, size]) => {
             let li = E('li', [
                 E('code', no.replace('<br>', String.fromCharCode(10))),
-                E('figure', [E('img', {src: List.src([, no, img]), alt: no})])
+                E('figure>img', {src: List.src([, no, img]), alt: no})
             ], {classList})
             size && E(li.Q('img')).set({'--size': size + '%'});
             return li;

@@ -99,8 +99,8 @@ App.picker = () => {
     let show = image => picker.append(E('img', {src: `https://beyblade.takaratomy.co.jp/anime/character/_image/chara${image}`}));
     let picker = Q('[popover]'), 
         main = ['tenka','multi','bird','ekusu'], 
-        mobu = ['ginro','karura','kuromu','shieru','shiguru','quinn','rex','yuni','zonamos','burn','kadovar','toguro','pan','manju','meiko'],
-        team = ['goldia','pend','cl','pakunchanel','yggdrasil','b4','zoo','persona'];
+        mobu = ['ryu','yoko','dokuga','iwao','reiyu','roji','omega','ginro','karura','kuromu','shieru','shiguru','quinn','rex','yuni','zonamos','burn','kadovar','toguro','pan','manju','meiko'],
+        team = ['missreader','gordias','zodiac','goldia','pend','cl','pakunchanel','yggdrasil','b4','zoo','persona'];
     main.forEach(c => [1,2,3,4,5,6,7].forEach(i => show(`_${c}_chara0${i}.png`)));
     mobu.forEach(c => show(`_${c}_chara01.png`));
     team.forEach(t => show(`_team_${t}.png`));

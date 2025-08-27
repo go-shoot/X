@@ -1,0 +1,146 @@
+@media (max-width:630px) {
+    .part-mag:has(label:first-of-type :checked)::before,
+    label:has(+label>:checked)::before {
+        content: '\e00c'; --h: 0; --s: 0%; 
+    }
+    label:has(:checked)+label::before,
+    .part-mag:has(label:last-of-type :checked)::after {
+        content: '\e00b'; --h: 0; --s: 0%; 
+    }
+    label:has(+label>:checked) {
+        display: inline-block; --h: 220; --s: 60%; 
+    }
+    label:has(:checked)+label, .part-mag::after {
+        display: inline-block; --h: 40; --s: 60%; 
+        margin-left: .2em; 
+    }
+    continuous-knob {display: none;}
+}
+
+#catalog {
+    padding-bottom: 4em; 
+}
+.catalog {
+    font-size: calc(var(--font,1)*1em); 
+    padding-top: 2rem; 
+    display: flex; flex-wrap: wrap; justify-content: center; 
+    gap: .2rem; 
+}
+
+#catalog details {
+    position: relative; 
+    user-select: none; -webkit-user-select: none; 
+    transform: translateY(-100%); max-height:0;
+    transition: transform .5s, max-height .5s;
+
+    &.showing {transform: none; max-height:50em;}
+    
+    summary {
+        position: absolute; left: 1.5em; bottom: -1.5em; 
+        width: 1.2em; height: 2.4em; 
+        border-bottom-left-radius: 9em; border-bottom-right-radius: 9em; 
+        background: var(--theme); color: black; 
+        display: flex; flex-direction: column; justify-content: end; 
+        touch-action: none; 
+        line-height: 1.5; 
+        z-index: 1; 
+        transition: opacity .5s, height .5s; 
+
+        .showing & {height: calc(2.4em + 100%);}
+        &::before,&::after {
+            line-height: .6; color: var(--theme-alt);
+        }
+        &::before {content: '\e00d';}
+        &::after  {content: '\e00e';}
+    }
+    article {
+        text-align: justify; line-height: 1.5; font-size: .9em; 
+        padding: 0 .5em 0 3.5em; 
+        transition: opacity .5s;
+    }
+    img:only-of-type {
+        width: 90%; max-width: 30em; 
+        margin: 1em 0; 
+        display: block; 
+    }
+    &:not(.showing) article,
+    &:not(.showing) summary::before,
+    &.showing summary::after {
+        opacity: 0;
+    }
+}
+
+nav.safari:has(.part-filter.blade) {
+    grid-template: 1.7rem 1.7rem / 3em 3fr 2fr auto; 
+    @media (min-width: 631px) {grid-template: 1.7rem 1.7rem / 3em auto 1fr auto;}
+
+    .part-sorter {
+        grid-area: 1/3/1/5; 
+        @media (max-width:630px) {
+            margin-right: 3em !important; 
+        }
+    }
+}
+.part-sorter {grid-area: 1/3/1/4;}
+.part-filter {
+    &#group {grid-area: 1/2/1/3;}
+    &#type  {grid-area: 2/2/2/3;}
+    &#spin,&#prefix {grid-area: 2/3/2/4;}
+}
+:is(.part-filter,.part-sorter) {
+    margin-right: auto; padding-right: .6em; 
+    display: flex; align-items: center; 
+    white-space: nowrap; 
+    overflow: scroll hidden; 
+    background: var(--overlay2); 
+    border-radius: 9em; 
+    line-height: 1.8rem; 
+    max-width: 100%; 
+
+    &::-webkit-scrollbar {
+        display: none; 
+    }
+    label img {
+        height: 1.2em; 
+        margin-top: .05em; 
+    }
+    dt {
+        padding-left: .2em;
+        min-width: 2.8em; height: 100%; 
+        color: black; font-size: .9em;
+        background: var(--theme); 
+
+        .part-sorter & {background: silver;}
+        #group & {background: var(--fg);}
+        .part-filter:not(:has([value='.motif'])) & {cursor: pointer;}
+    }
+    dd {
+        border-bottom: .1em solid transparent; 
+        margin-left: .3em; padding: 0 .1em; 
+        height: 1.4em; 
+        line-height: 1.5em;
+
+        #type & {padding: 0;}
+        &:has(:checked) {
+            color: var(--fg); border-color: var(--fg); 
+            filter: none; 
+            
+            #type & {border-color: var(--type);}
+        }
+        label:has([value='.remake'],[value='.collab'],[value='.hasbro']) {
+            font-size: .9em;
+        }
+    }
+}
+menu {
+    a[href*=blade]::after {background-image: url(../img/blade/CbDr.png) !important;}
+    a[href*=ratchet]::after {background-image: url(../img/ratchet/3-60.png) !important;}
+    a[href*=bit]::after {background-image: url(../img/bit/B.png) !important;}
+    a[href*=CX]::before {
+        content: ''; 
+        position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); 
+        z-index: 1; 
+        width: 80%; height: 60%; 
+        background: url(../img/lines.svg#CX) center / contain no-repeat; 
+    }
+}

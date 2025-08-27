@@ -5,12 +5,18 @@
     padding: .3em .4em;
     overflow: hidden;
     position: relative;
+    cursor: pointer;
 
     &::after,object {
         position: absolute; right: 0; z-index: -1;
     }
-    * {text-shadow: 0 0 .05em,0 0 .05em black;}
+    h4,h5,dd {text-shadow: 0 0 .05rem,0 0 .05rem black;}
 }
+:host(:is(:target,.target)) {
+    animation: highlight 1s .5s ease 3;
+    scroll-margin-top: 5rem;
+}
+@keyframes highlight {from {filter:brightness(300%);} }
 :host(.hall)::before {
     content: '\e04d';
     background: gray; clip-path: polygon(0 0,100% 0,0 100%);
@@ -36,9 +42,9 @@
     transform: translate(2em,-1.6em) rotate(15deg);
 }
 :host img {
-    filter: drop-shadow(0 0 .1em var(--on));
-    &[alt=types] {filter: drop-shadow(0 0 .1em var(--type));}
-    &[alt=lines] {filter: drop-shadow(0 0 .05em var(--line));}
+    filter: drop-shadow(0 0 .1rem var(--on));
+    &[alt=types] {filter: drop-shadow(0 0 .1rem var(--type));}
+    &[alt=lines] {filter: drop-shadow(0 0 .05rem var(--line));}
 }
 :host figure img {filter: drop-shadow(0 0 .4em hsla(0,0%,100%,.3));}
 :host svg {filter: drop-shadow(0 0 .2em var(--type));}
@@ -61,7 +67,6 @@
 :host(.ratchet) h4 {grid-area: 4/1/6/3;}
 
 :host object {
-    pointer-events: none;
     width: 100%;
 }
 :host h5 {
@@ -78,8 +83,8 @@
     
         span {
             -webkit-text-stroke: var(--type) .1em; paint-order: stroke fill;
-            transform: translateX(calc(50%*(var(--s) - 1) + .05em)) scale(var(--s)); --s:.95;
-            letter-spacing: calc(var(--gap)/var(--s)); --gap:.2em;
+            transform: translateX(calc(50%*(var(--s) - 1) + .025em)) scale(var(--s)); --s: .95;
+            letter-spacing: calc(var(--gap)/var(--s)); --gap: .175em;
             margin-right: calc((2em + var(--gap))*(var(--s) - 1));
         }
         sub {
@@ -110,6 +115,7 @@
         color: var(--type);
         margin-left: -.2em;
         text-transform: uppercase;
+        white-space: break-spaces;
 
         span {color: var(--on);}
     }
@@ -145,19 +151,18 @@
 :host(.CX.motif) ul::before {
     content: '';
     width: 1.4em;
-    background: url(../img/blade/CX-motif/DR.png) center / contain no-repeat;
+    background: url(../img/blade/CX/motif/DR.png) center / contain no-repeat;
     filter: saturate(0) brightness(99);
 }
 
 :host a {
     font-size: .8em; color: var(--theme);
-    margin: 0 0 -.5em -.3em;
+    margin: 0 0 -.6em -.3em;
     place-self: end start;
 
     &::before {
         content: '\e03c';
         font-size: 1.45em;
-        margin-right: .1em;
         transform: translate(.4em,-.4em); display: inline-block;
     }
 }
@@ -245,6 +250,10 @@
         visibility: hidden;
         shape-outside: polygon(0% 13%,75% 50%,0% 87%);
     }
+    u {
+        border-bottom: .15em dotted var(--theme);
+        line-height: 1; display: inline-block;
+    }
 }
 :host div {
     position: absolute; inset: 5em;
@@ -253,15 +262,88 @@
         position: absolute; left: 50%; top: 50%;
         transform: translate(-50%,-50%) rotate(var(--angle)) translateY(4.8em);
         width: 1.8em;
+
+        &.att {--angle: 000deg;}
+        &.bal {--angle: 180deg;}
+        &.sta {--angle: -90deg;}
+        &.def {--angle: 090deg;}
     }
     use {
         stroke: var(--type); fill: none;
+        
+        :host(.att) .att &, :host(.bal) .bal &, :host(.def) .def &, :host(.sta) .sta & {
+            fill: var(--type);
+        }
     }
-    :is(.att .att,.bal .bal,.def .def,.sta .sta) use {
-        fill: var(--type);
-    }
-    .att {--angle: 000deg;}
-    .bal {--angle: 180deg;}
-    .sta {--angle: -90deg;}
-    .def {--angle: 090deg;}
 }
+
+table {
+    white-space: nowrap; border-collapse: collapse;
+    margin: auto;
+
+    tbody:empty::after {
+        content: '未有結果'; font-size: 1.5em;
+    }
+    tbody tr {
+        height: 1.4rem;
+        --width:.45em;
+        background: repeating-linear-gradient(45deg, var(--light) 0 var(--width), var(--dark) var(--width) calc(1.5*var(--width)));
+        
+        &.H {background: var(--dark);}
+        &.hidden {display: none;}
+    }
+    td {
+        padding: 0 var(--pad); --pad: .3em;
+        position: relative;
+        text-align: left;
+
+        &:first-child {
+            color: deepskyblue;
+        }
+        &[abbr][headers=ratchet] {
+            text-align: center;
+            min-width: 4em;
+        }
+        &[abbr][headers=bit],&:first-child {
+            text-align: right;
+        }
+        &[abbr]:has(+:not([abbr])),&[headers=ratchet],&:first-child {
+            font-family: MONO,COND;
+        }
+        tr[style]:not(:has(td:nth-child(8))) &:nth-child(2),
+        tr[style]:has(td:nth-child(8)) &:nth-child(3) {
+            color: var(--coat,transparent);
+        }
+    }
+}
+td {
+    sub {
+        font-size: .75em;
+    }
+    &:not(:first-child) sub {
+        margin-left: .2em;
+        line-height: 0;
+    }
+    &:first-child sub {
+        position: absolute; right: .15em; bottom: .1em;
+        scale: .9 1; letter-spacing: -.05em;
+    }
+    small {
+        letter-spacing: -.05em;
+    }
+}
+
+tbody tr:last-child td {
+    border-bottom: solid .5px var(--on);
+}
+tbody td {
+    border-top: solid .5px var(--on);
+}
+td[abbr]:not(.fusion),td:empty {
+    border-left: solid .5px var(--on);
+}
+td[headers]:not([abbr]) {
+    border-left: solid .5px hsl(0,0%,55%);
+}
+thead {font-size: min(3vw,.7em);}
+tbody {font-size: min(2.75vw,.7em);}

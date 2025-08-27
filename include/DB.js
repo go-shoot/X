@@ -1,4 +1,5 @@
-import {KeysAsString} from "./utilities.js"
+import { Part } from "./part.js";
+import { Glossary } from "./utilities.js";
 const DB = callback => DB.indicator = new DB.indicator(callback);
 Object.assign(DB, {
     current: 'V3',
@@ -91,7 +92,8 @@ Object.assign(DB, {
         }
         connectedCallback() {
             [this.progress, this.total] = [0, Storage('DB')?.count || 100];
-            Q('link[href$="common.css"]') && DB.replace('V', DB.current).then(this.callback).catch(this.error);
+            Q('link[href$="common.css"]') && DB.replace('V', DB.current).then(this.callback).catch(this.error)
+            .then(() => Glossary());
         }
         attributeChangedCallback(_, __, state) {
             if (state == 'success') {
@@ -150,7 +152,7 @@ Object.assign(DB.cache, {
         'part-meta': json => DB.put('meta', {part: json}),
         'prod-launchers': json => DB.put('product', {launchers: json}),
         'prod-others': json => DB.put('product', {others: json}),
-        'prod-beys': beys => DB.put('product', [{beys}, {schedule: beys.filter(bey => bey[1].includes('BXG') || !bey[1].includes('H')).map(bey => bey[2].split(' '))}]),
+        'prod-beys': beys => DB.put('product', {beys}),
     },
     filter: files => [...new O(files)].filter(([file, time]) => new Date(time) / 1000 > (Storage('DB')?.[file] || 0)).map(([file]) => file),
 });
@@ -168,7 +170,7 @@ Object.assign(DB.get, {
     all (store) {
         let comp = /(blade|ratchet|bit)/.exec(store)?.[0];
         return new Promise(res => DB.store(store).getAll()
-            .onsuccess = ev => res(ev.target.result.map(p => comp ? {...p, comp} : p)));
+            .onsuccess = ev => res(ev.target.result.map(p => comp ? {...p, comp, ...store.includes('-') ? {line: store.split('-')[1]} : {}} : p)));
     },
     parts (comps = DB.components, toNAMES) {
         comps = [comps].flat().map(c => /^.X$/.test(c) ? `blade-${c}` : c);
@@ -187,14 +189,22 @@ Object.assign(DB.get, {
             return NAMES;
         })
     ,
-    meta: (comp, category) => DB.get('meta', 'part')
-        .then(meta => ({
-            ...comp ? meta[comp][category] : {}, 
-            ...comp ? meta[comp]._ : {},
-            types: ['att', 'bal', 'def', 'sta'],
-            prefixes: {bit: new KeysAsString(new O(meta.bit._.prefix).map(([k, {eng, jap}]) => [k, {eng, jap}]))}
+    PARTS: () => DB.get.parts(undefined, true)
+        .then(PARTS => {
+            let _PARTS_ = {};
+            PARTS.forEach(([comp, parts]) => comp.includes('-') ?
+                _PARTS_.blade[comp.split('-')[1]] = parts.reduce((obj, {group, abbr, names}) => 
+                    ({...obj, [group]: {...obj[group], [abbr]: new Part.blade({abbr, names, group, line: comp.split('-')[1]})} }), {}) : 
+                _PARTS_[comp] = parts.reduce((obj, {abbr, names, group, attr}) => ({
+                    ...obj, 
+                    [abbr]: new Part[comp]({
+                        abbr,
+                        ...names ? {names} : {}, 
+                        ...comp == 'blade' && /^.X$/.test(group) ? {group} : attr ? {attr} : {}})
+                }), {})
+            );
+            return new O(window.PARTS=_PARTS_);
         })
-    ),
 });
 customElements.define('db-state', DB.indicator);
-export default DB
+export default window.DB = DB

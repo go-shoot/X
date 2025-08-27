@@ -1,22 +1,49 @@
-<title>Test</title>
+<title>s</title>
+<link rel="stylesheet" href="./part.css">
 <script defer src=../include/common.js></script>
-<main style="display:flex;flex-wrap:wrap;font-size:1.5em;"><form></form><label><input id=free></label></main>
+
+<main style="display:flex;flex-wrap:wrap;font-size:1.5em;">
+    <form></form><label><input id=free></label>
+</main>
+<aside popover><table><tbody></tbody></table></aside>
+
 <script type="module">
-import {Part, Classes} from './part.js'
+import {Part, Cell} from './part.js'
+import {Bey, Finder} from './bey.js'
 import DB from '../include/DB.js'
+let PARTS;
 Q('main').after(DB(() =>
-    DB.get.names().then(console.log)
-    .then(() => DB.get('meta', 'part'))
-    .then(META => Part.import(META.general) &&
+    DB.get.parts(undefined, true)
+    .then(PARTS => {
+        let _PARTS_ = {};
+        PARTS.forEach(([comp, parts]) => comp.includes('-') ?
+            _PARTS_.blade[comp.split('-')[1]] = parts.reduce((obj, {group, abbr, names}) => 
+                ({...obj, [group]: {...obj[group], [abbr]: new Part.blade({abbr, names, group, line: comp.split('-')[1]})} }), {}) : 
+            _PARTS_[comp] = parts.reduce((obj, {abbr, names, group, attr}) => ({
+                ...obj, 
+                [abbr]: new Part[comp]({
+                    abbr,
+                    ...names ? {names} : {}, 
+                    ...comp == 'blade' && group.endsWith('X') ? {group} : attr ? {attr} : {}})
+            }), {})
+        );
+        return new O(window.PARTS=_PARTS_);
+    })
+    .then(_PARTS_ => console.log(PARTS = _PARTS_) ?? DB.get('meta', 'part'))
+    .then(META => Part.import(META.general, PARTS) && Bey.import(META.general, PARTS) &&
         Promise.all([
-            '#PG.blade-CX', '#Bl.blade-CX', '#S.blade-CX', '#LLd_u.blade',
+            '#PG.blade-CX', '#Bl.blade-CX', '#S.blade-CX', '#LLd_u.blade', '#DGS.blade', '#X2.blade',
             '#PtSw.blade', '#WzRd.blade', '#MEGA.blade', '#5-80.ratchet', '#O.bit', '#MN.bit', '#Tr.bit'
         ].map(part => {
             let [, abbr, store] = /^#(.+?)\.(.+?)$/.exec(part);
             return DB.get(store, abbr);
         }))
-    .then(parts => Promise.all(parts.map(p => new Classes[p.comp](p).revise())))
-    .then(parts => Q('main').append(...parts.map(p => p.tile())))
+    .then(parts => Promise.all(parts.map(p => new Part[p.comp](p).revise())))
+    .then(parts => Q('main').append(...parts.map(p => p.tile()&&p.tile())) ?? DB.get('product', 'beys'))
+    .then(beys => beys.forEach(bey=>new Bey(bey)))
+    .then(()=>Cell.fill('chi'))
+    .then(async ()=>{
+    })
 )));
 </script>
 

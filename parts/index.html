@@ -1,18 +1,9 @@
 <title>陀螺部件⬧Parts</title>
 <script defer src=../include/common.js></script>
 <script type=module src=https://aeoq.github.io/drag-knob/script.js></script>
-<link rel=stylesheet href=catalog.css>
+<link rel=stylesheet href=parts.css>
+<link rel=stylesheet href=../include/part.css>
 <script>!location.search && !location.hash && (location.href = '?blade=一體')</script>
-
-<nav>
-    <menu>
-        <li><a href="?blade=CX"></a>
-        <li><a href="?blade=一體"></a>
-        <li><a href="?ratchet=一體"></a>
-        <li><a href="?bit=軸心"></a>
-    </menu>
-    <data class=part-result></data>
-</nav>
 <!--ps: Get-ChildItem -Filter *.png | ForEach-Object {
     $f = $_.Name
     magick mogrify -fuzz 5% -trim $f
@@ -20,27 +11,52 @@
 }
     ukenagashi: 卸走/開  inashi: 化解
 -->
-    <main id=catalog>
+<nav>
+    <menu>
+        <li><a href="?blade=CX"></a>
+        <li><a href="?blade"></a>
+        <li><a href="?ratchet"></a>
+        <li><a href="?bit"></a>
+    </menu>
+    <data class=part-result></data>
+</nav>
+
+<main id=catalog>
     <span class=loading></span>
     <details hidden open>
-        <summary>&#xe026;</summary>
+        <summary onclick="return false">&#xe026;</summary>
         <article></article>
     </details>
     <section class=catalog></section>
 </main>
-<div hidden class=blade></div>
-<div hidden class=ratchet></div>
-<div hidden class=bit></div>
+
+<template id="blade">
+    &#xe03c; 圖案代表與所示的Blade有相同形狀的塑膠下層。<br>
+    &#xe04d; 圖案代表在官方的單陀螺賽制比賽中禁止使用。
+</template>
+<template id="blade.CX">
+    <img src=https://beyblade.takaratomy.co.jp/beyblade-x/guide/_image/pict17_cx.webp>
+    CX Blade分為〖Lock Chip〗、〖Main Blade〗及〖Assist Blade〗三個組件。<br>
+    同一款Lock Chip可在官方比賽中使用多個，但含金屬的則只能使用一個。
+</template>
+<template id="ratchet">
+    高度單位為dmm，10 dmm＝1 mm。（<ruby>d<rt>deci</rt></ruby>＝1/10、<ruby>m<rt>milli</rt></ruby>＝1/1000）<br>
+    &#xe015; 表示屬Simple Joint：即不論所裝上之Bit的粗度，Burst抵禦性都是統一至「較鬆」。
+</template>
+<template id="bit">
+    Gear齒愈多，X Dash時的速度就愈快，但迴轉速度下降也加快。<br>
+    Shaft部指與Ratchet機關接觸部分，目前以最小直徑計算，愈粗就愈難被擊至爆裂。
+</template>
 
 <script type=module>
 import DB from '../include/DB.js'
 import Parts from './parts.js'
-Q('nav').after(DB(location.search && Parts.catalog || location.hash && Parts.list));
+Q('nav').after(DB(location.search && Parts));
 
 import PointerInteraction from 'https://aeoq.github.io/pointer-interaction/script.js'
 PointerInteraction.events({
     summary: {
-        drag: PI => Math.abs(PI.$drag.dy) > 50 && PI.target.parentElement.classList[PI.$drag.dy > 0 ? 'add' : 'remove']('showing')
+        drag: PI => Math.abs(PI.$drag.dy) > 30 && PI.target.parentElement.classList[PI.$drag.dy > 0 ? 'add' : 'remove']('showing')
     }
 });
 </script>

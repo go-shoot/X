@@ -31,49 +31,49 @@
         "blade": {
             "一體": {
                 "group": {
-                    "UX": {"label": "UX"},
-                    "BX": {"label": "BX"},
-                    "remake": {"label": "復刻", "checked": false},
-                    "collab": {"label": "聯名", "checked": false},
-                    "hasbro": {"label": "未出", "checked": false}
+                    "UX": {"label": "UX", "checked": true},
+                    "BX": {"label": "BX", "checked": true},
+                    "remake": {"label": "復刻"},
+                    "collab": {"label": "聯名"},
+                    "hasbro": {"label": "未出"}
                 },
-                "title": "【UX】【BX】鋼鐵戰刃⬧刃擊環⬧Blade",
-                "info": "&#xe03c; 圖案代表與所示的Blade有相同形狀的塑膠下層。<br>&#xe04d; 圖案代表在官方的單陀螺賽制比賽中禁止使用。"
+                "title": "【UX】【BX】刃擊環⬧鋼鐵戰刃⬧Blade"
             },
             "CX": {
                 "group": {
-                    "motif": {"label": "Chip", "checked": false},
-                    "upper": {"label": "Main"},
-                    "lower": {"label": "Assist", "checked": false}
+                    "motif": {"label": "Chip"},
+                    "upper": {"label": "Main", "checked": true},
+                    "lower": {"label": "Assist"}
                 },
-                "title": "【CX】鋼鐵戰刃⬧刃擊環⬧Blade",
-                "multiple": false,
-                "info": "<img src=https://beyblade.takaratomy.co.jp/beyblade-x/guide/_image/pict17_cx.webp>CX Blade分為〖Lock Chip〗、〖Main Blade〗及〖Assist Blade〗三個組件。<br>同一款〖Lock Chip〗可在官方比賽中使用多個，但含金屬的則只能使用一個。"
+                "title": {
+                    "motif": "【CX】紋章鎖⬧鎖定紋章⬧Lock Chip",
+                    "upper": "【CX】主刃⬧主要戰刃⬧Main Blade",
+                    "lower": "【CX】支援刃⬧輔助戰刃⬧Assist Blade"
+                },
+                "multiple": false
             },
             "filters": ["type","spin"]
         },
         "ratchet": {
-            "一體": {
+            "所有": {
                 "group": {
-                    "low":  {"label": "▃"},
-                    "mid":  {"label": "▅"},
-                    "high": {"label": "▇"}
+                    "low":  {"label": "▃", "checked": true},
+                    "mid":  {"label": "▅", "checked": true},
+                    "high": {"label": "▇", "checked": true}
                 },
-                "title": "固鎖輪盤⬧核輪⬧Ratchet",
-                "info": "高度單位為dmm，10 dmm＝1 mm。（<ruby>d<rt>deci</rt></ruby>＝1/10、<ruby>m<rt>milli</rt></ruby>＝1/1000）"
+                "title": "核輪⬧固鎖輪盤⬧Ratchet"
             }
         },
         "bit": {
-            "軸心": {
+            "所有": {
                 "group": {
-                    "flat":  {"label": "\ue019"},
-                    "sharp": {"label": "\ue01a"},
-                    "round": {"label": "\ue01b"},
-                    "multi": {"label": "\ue01c"}
+                    "flat":  {"label": "\ue019", "checked": true},
+                    "sharp": {"label": "\ue01a", "checked": true},
+                    "round": {"label": "\ue01b", "checked": true},
+                    "multi": {"label": "\ue01c", "checked": true}
                 },
                 "title": "軸心⬧Bit",
-                "variety": {"\ue047":"H,L,U","\ue04a":"M,R","\ue049":"B,F,T","\ue048":"G","\ue04b":"D,W"},
-                "info": "Gear齒愈多，X Dash時的速度就愈快，但迴轉速度下降也加快。Shaft部指與Ratchet機關接觸部分，目前以最小直徑計算，愈粗就愈難被擊至爆裂。"
+                "variety": {"\ue047":".H,.L,.U","\ue04a":".M,.R","\ue049":".B,.F,.T","\ue048":".G","\ue04b":".D,.W"}
             },
             "filters": ["type","prefix"]
         }

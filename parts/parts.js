@@ -1,72 +1,77 @@
 import DB from '../include/DB.js'
-import Part from './catalog.js'
-import {spacing} from '../include/utilities.js'
-let META;
-const [component, category] = [...new URLSearchParams(location.search)]?.[0] ?? [];
-const Parts = {
-    list: () => Parts.firstly().then(Parts.listing).then(Parts.finally),
-    catalog: () => Parts.firstly().then(Parts.before).then(Parts.cataloging).then(Parts.after).then(Parts.finally),
-    count: () => Q('.part-result').value = document.querySelectorAll('.catalog>a:not([id^="+"]):not([hidden])').length,
+import { Part } from '../include/part.js';
+import { spacing } from '../include/utilities.js';
 
+let META, PARTS;
+let [comp, line] = [...new URLSearchParams(location.search)][0] ?? [];
+
+const Parts = () => Parts.firstly().then(Parts.before).then(Parts.display).then(Parts.after).then(Parts.finally);
+Object.assign(Parts, {
+    count: () => Q('.part-result').value = Q('x-part:not([id^="+"]):not([hidden])', []).length,
     async firstly () {
-        Part.import(META = await DB.get.meta(component, category));
+        [META, PARTS] = await Promise.all([DB.get('meta','part'), DB.get.PARTS()]);
+        Part.import(META.general, PARTS);
+        line ||= META.grouped[comp].所有 ? '所有' : '一體';
+        META = {
+            types: META.general.types, 
+            filters: META.grouped[comp].filters, 
+            ...META.grouped[comp][line]
+        };
+        Parts.catalog = Q('.catalog');
         Magnifier();
     },
-    before () {
-        Filter();
-    },
-    async cataloging () {
-        Parts.all = DB.get.parts(/^.X$/.test(category) ? category : component)
-            .then(parts => Promise.all(parts.map(p => new Part(p, category).prepare())));
-        Parts.all = await Parts.all;
-    },
-    async listing () {
-        Parts.all = await Promise.all(location.hash.substring(1).split(',').map(p => DB.get(p)));
-        Parts.all = Parts.all.map(p => new Part(p).prepare().catalog(true));
-    },
+    before: () => Filter(),
+    display: () => DB.get.parts(/^.X$/.test(line) ? line : comp)
+        .then(parts => Promise.all(parts.map(json => new Part[comp](json).revise())))
+        .then(parts => Parts.catalog.replaceChildren(...parts.map(p => p.tile()))),
+
     after () {
         let hash = decodeURI(location.hash.substring(1));
-        let target = hash && Q(`a#${hash}`);
-        Parts.switch(target?.classList?.[1] || hash, target);
+        Parts.switch(hash && Q(`x-part[id='${hash}']`) || hash);
         Q(`#${Storage('pref')?.sort || 'name'}`).click();
     },
-    finally () {
-        Q('.loading').classList.remove('loading');
-    },
-    switch (groups, keep) {
-        groups && Q(`dl[title=group] input[id]`, input => input.checked = groups.includes(input.id));
+    finally: () => Q('.loading').classList.remove('loading'),
+    
+    switch (groupORpart) {
+        let [group, part] = typeof groupORpart == 'string' ? [groupORpart] : [, groupORpart.Part];
+        group ??= part.path[2] ?? part.group;
+        group && Q(`dl#group input`, input => input.checked = input.value == `.${group}`);
+        group ||= Q('dl#group input:checked').value?.substring(1);
         Filter.filter();
-        if (keep === false) return;
-        keep === true ? (location.hash = groups[0]) : location.hash && Parts.focus();
-        document.title = document.title.replace(/^.*?(?= ■ )/, META.title?.[groups] ?? META.title ?? '');
-        let info = typeof META.info == 'string' ? META.info : META.info?.[groups] ?? '';
-        Q('details').hidden = !(Q('details article').innerHTML = spacing(info));
+        Parts.info(group);
+        part && Parts.focus(part.tile());
     },
-    focus () {
+    info (group) {
+        document.title = document.title.replace(/^.*?(?= ■ )/, META.title?.[group] ?? META.title ?? '');
+        let info = comp + (/^\w+$/.test(line) ? `.${line}` : '');
+        Q('details').hidden = !(Q('details article').innerHTML = spacing(Q(`[id='${info}']`)?.innerHTML));
+    },
+    focus (tile) {
         Q('.target')?.classList.remove('target');
-        Q(location.hash)?.classList.add('target');
-        Q(location.hash)?.scrollIntoView();
+        tile.classList.add('target');
+        setTimeout(() => tile.scrollIntoView(), 500);
     }
-};
+});
 onhashchange = () => Parts.after();
 
 const Magnifier = () => {
     Q('nav data').before(Magnifier.create());
     Q(`#${Storage('pref')?.button || 'mag2'}`).checked = true;
-    Magnifier.knob = Q('continuous-knob');
     Magnifier.events();
 };
 Object.assign(Magnifier, {
-    create: () => E('div', {classList: 'part-mag'}, [
-        E('continuous-knob', {min: .75, max: 2, value: Storage('pref')?.knob || 1}, [E('i', '', {classList: 'center'})]),
-        ...E.radios([1,2,3].map(n => ({id: `mag${n}`, name: 'mag'}) ))
+    create: () => E(`div.part-mag`, [
+        E('continuous-knob', {min: .75, max: 2, value: Storage('pref')?.knob || 1}, E('i.center', '')),
+        ...E.radios([.54, .81, 1.6].map((value, i) => ({id: `mag${i}`, name: 'mag', value}) ))
     ]),
     events () {
-        Q('.part-mag').onchange = ({target: input}) => input.checked && Storage('pref', {button: input.id});
-        Magnifier.knob.oninput = ev => ev && [Q('.catalog').style.fontSize = `${ev.target.value}em`, Storage('pref', {knob: ev.target.value})];
-        setTimeout((onresize = Magnifier.switch));
+        Q('.part-mag').oninput = ({target}) => {
+            E(Parts.catalog).set({'--font': target.value});
+            Storage('pref', target instanceof HTMLInputElement ? {button: target.id} : {knob: target.value});
+        }
+        setTimeout(onresize = Magnifier.switch);
     },
-    switch: () => Q('.catalog').style.fontSize = innerWidth > 630 ? Magnifier.knob.value + 'em' : ''
+    switch: () => E(Parts.catalog).set({'--font': (innerWidth > 630 ? Q('continuous-knob') : Q('[name=mag]:checked')).value})
 });
 
 const Filter = function(type) {
@@ -76,9 +81,11 @@ const Filter = function(type) {
 };
 Object.assign(Filter.prototype, {
     create (type) {
-        let dl = new O(Filter.dl[this.type = type]())
-            .map(([_, inputs]) => [_, E.checkboxes(inputs.map(i => new A(i.label, {id: i.id, checked: i.checked ?? true}) ))]);
-        this.dl = E.dl(dl, {title: type, classList: [`part-filter`, type == 'group' ? component : '']});
+        this.type = type;
+        let dl = new O(Filter.dl[type]()).map(([_, inputs]) => 
+            [_, E.checkboxes(inputs.map(({label, value, checked}) => new A(label, {value: value.replace(/^(?=\w)/, '.'), checked}) ))]
+        );
+        this.dl = E.dl(dl, {id: type, classList: [`part-filter`, type == 'group' ? comp : '']});
         this.inputs = [this.dl.Q('input')].flat();
         type != 'group' && this.inputs.forEach(input => input.checked = true);
         return this;
@@ -91,43 +98,44 @@ Object.assign(Filter.prototype, {
         }
         this.dl.onchange = ({target: input}) => {
             this.inputs.forEach(i => i.checked = i == input);
-            this.type == 'group' ? Parts.switch([input.id]) : Filter.filter(this.type == 'group');
+            this.type == 'group' ? Parts.switch(input.value.substring(1)) : Filter.filter(this.type == 'group');
         };
         return this;
     }
 });
 Object.assign(Filter, {
     dl: {
-        group:  () => ({[category]: [...new O(META.group)].map(([id, {label, checked}]) => ({id, label, checked})) }),
-        type:   () => ({類型: META.types.map(t => ({id: t, label: E('img', {src: `../img/types.svg#${t}`})}) )}),
-        spin:   () => ({迴轉: ['left','right'].map((s, i) => ({id: s, label: ['\ue01d','\ue01e'][i]}) )}),
-        prefix: () => ({變化: [{id: '–', label: '–'}, ...[...new O(META.variety)].map(([label, id]) => ({id, label}))] }),
+        group: () => ({[line]: [...new O(META.group)].map(([value, {label, checked}]) => ({value, label, checked})) }),
+        type:  () => ({類型: META.types.map(t => ({value: t, label: E('img', {src: `../img/types.svg#${t}`})}) )}),
+        spin:  () => ({迴轉: ['left','right'].map((s, i) => ({value: s, label: ['\ue01d','\ue01e'][i]}) )}),
+        prefix:() => ({變化: [{value: Filter.unprefix(), label: '–'}, ...[...new O(META.variety)].map(([label, value]) => ({value, label}))] }),
     },
-    async filter (group) {
-        let groups = [Q('.part-filter[title=group] :checked')].flat().map(input => input.id);
-        await Promise.all(Parts.all.map(part => !part.a.id && groups.includes(part.group) && part.catalog()));
-        
-        let show = Q('.part-filter[title]:not([hidden])', [])
-            .filter(dl => Q('#motif')?.checked ? dl.title != 'type' : dl)
-            .map(dl => `:is(${dl.Q('input:checked', []).map(input => input.id == '–' ? Filter.normal() : Filter.multiple(input.id))})`)
-            .join('');
-        Q('.catalog>a[class]', a => a.hidden = !a.matches(show));
-        Parts.count(group);
+    filter (group) {
+        let query = Q('.part-filter[id]:not([hidden])', []).reduce((obj, dl) => ({
+            ...obj, [dl.id]: [...dl.Q(':checked', []).map(i => i.value)].join()
+        }), {});
+        query.type += `,${Filter.untype()}`;
+        Q('x-part', tile => (tile.hidden = Object.values(query).some(classes => !tile.matches(classes))) || tile.Part.tile());
+        Parts.count();
     },
-    normal: () => `:not(${[...`${META.prefixes.bit}`].map(p => `[class~=${p}]`)})`,
-    multiple: id => id.includes(',') ? id.split(',').map(id => `.${id}`).join() : `.${id}`
+    untype: () => `:not(.${META.types.join(',.')})`,
+    unprefix: () => `:not(${Object.values(META.variety)})`
 });
+
 const Sorter = () => {
-    let inputs = [['name', '\ue034'], ['weight', '\ue036'], ['time', '\ue035']];
-    let dl = E.dl(
-        {排序: E.radios(inputs.map(([id, icon]) => new A(icon, {name: 'sort', id}) ))}, 
-        {classList: `part-sorter`}
-    );
-    dl.onchange = ({target: input}) => {
-        Q('.catalog').append(...Parts.all.sort(Sorter.sort[input.id]).map(p => p.a));
-        input.checked && Storage('pref', {sort: input.id});
-    };
-    Sorter.release(component);
+    let inputs = new O({name: '\ue034', weight: '\ue036', time: '\ue035'});
+    let dl = E.dl({
+        排序: E.radios([...inputs].map(([id, icon]) => new A(icon, { name: 'sort', id })))
+    }, {
+        classList: `part-sorter`, 
+        onchange ({target: input}) {
+            Parts.catalog.append(...[...Parts.catalog.children]
+                .map(tile => tile.Part).sort(Sorter.sort[input.id]).map(p => p.tile())
+            );
+            input.checked && Storage('pref', {sort: input.id});
+        }
+    });
+    Sorter.getSchedule(comp);
     return dl;
 }
 Object.assign(Sorter, {
@@ -135,25 +143,24 @@ Object.assign(Sorter, {
     sort: {
         name: (p, q) =>
             [p.group, q.group].includes('remake') && Sorter.compare(p, q, p => p.group)
-            || Sorter.compare(p, q, p => p.abbr[0] == '+')
             || Sorter.compare(p, q, p => parseInt(p.abbr))
-            || Sorter.compare(p, q, p => p.abbr/*.strip()*/.toLowerCase()),
-            //|| p.comp == 'bit' && Sorter.compare(p, q, p => p.abbr.length),
+            || Sorter.compare(p, q, p => p.abbr.toLowerCase()),
 
-        weight: (p, q) => Sorter.compare(q, p, p => (w => parseInt(w) + ({'+': .2, '-': -.2}[w.at(-1)] ?? 0))(p.stat[0] || '0')),
-        time: (p, q) => Sorter.compare(p, q, p => (i => i == -1 ? 999 : i)(
-            Sorter.release().findLastIndex(abbr => Array.isArray(abbr) ? abbr[Sorter.index.blade[p.group]] == p.abbr : abbr == p.abbr)
-        )),
-        rank: (p, q) => Sorter.compare(p, q, p => p.rank || 'Z')
+        weight: (p, q) => Sorter.compare(q, p, p => (w => parseInt(w) + Sorter.weight[w.at(-1)])(p.stat[0] || '0=')),
+        
+        time: (p, q) => Sorter.compare(p, q, p =>
+            Sorter.getSchedule()[Sorter.index.blade[p.group] ?? 0].findIndex(abbr => abbr == p.abbr) * -1
+        )
     },
-    release: comp => Sorter.schedule ?? DB.get('product', 'schedule').then(beys => Sorter.schedule = beys
-        .map(bey => bey[Sorter.index.full[comp]])
-        .filter(abbr => /.X$/.test(category) ? abbr.includes('.') : !abbr?.includes('.'))
-        .map(abbr => /.X$/.test(category) ? abbr.split('.') : abbr)
-    ),
+    getSchedule: comp => Sorter.schedule ?? DB.get('product', 'beys')
+        .then(beys => beys.reverse()
+            .map(bey => bey[2].split(' ')[Sorter.index.full[comp]]?.split('.'))
+            .filter(subs => subs?.length === (/.X$/.test(line) ? 3 : 1))
+        ).then(list => Sorter.schedule = list[0].map((_, i) => [...new Set(list.map(row => row[i]))] )),
     index: {
         full: {blade: 0, ratchet: 1, bit: 2},
         blade: {motif: 0, upper: 1, lower: 2}
-    }
+    },
+    weight: {'+': .2, '=': 0, '-': -.2}
 });
 export default Parts
