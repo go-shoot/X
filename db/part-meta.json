@@ -43,12 +43,14 @@
                 "group": {
                     "motif": {"label": "Chip"},
                     "upper": {"label": "Main", "checked": true},
-                    "lower": {"label": "Assist"}
+                    "lower": {"label": "Assist"},
+                    "hasbro": {"label": "未出"}
                 },
                 "title": {
                     "motif": "【CX】紋章鎖⬧鎖定紋章⬧Lock Chip",
                     "upper": "【CX】主刃⬧主要戰刃⬧Main Blade",
-                    "lower": "【CX】支援刃⬧輔助戰刃⬧Assist Blade"
+                    "lower": "【CX】支援刃⬧輔助戰刃⬧Assist Blade",
+                    "hasbro": "【CX】"
                 },
                 "multiple": false
             },

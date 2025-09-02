@@ -16,7 +16,7 @@ nav {
         position: relative;
         margin-left: .3em;
 
-        &[href$='#toc2'] {outline-color: var(--theme-alt);}
+        &[href$='#toc2'],&[href*=color] {outline-color: var(--theme-alt);}
         &::before {
             content: '\e02a';
             position: absolute; left: 50%; top: 50%; transform: translate(-50%,-45%);
@@ -123,16 +123,12 @@ caption,caption button,#filter button,#filter label {
 caption span {
     font-size: 1.4em;
 }
-    
-.boards li {background: var(--light);}
 
-[popover] {
-    &.images {
-        gap: .5em; grid-template-columns: repeat(3,1fr);
-        justify-items: center; 
-        padding: 1em calc(50% - min(15em,47.5%));
-    }
-    &.images>* {
+#images {
+    gap: .5em; grid-template-columns: repeat(3,1fr); justify-items: center; 
+    padding: 1em calc(50% - min(15em,47.5%));
+
+    * {
         grid-column: 1/-1;
     }
     a[href*=youtu]::before {
@@ -140,16 +136,15 @@ caption span {
         display: block; width: 3em; height: 3em;
         background: url(https://www.gstatic.com/alkali/e90fc2de5a0e583a01f03acda2e3e61f9577a646.svg) center / contain no-repeat;
     }
-    >p {
+    p {
         font-size: .9em;
         border-bottom: .15em dotted;
         padding: .6em .5em; margin: 0;
-        color: var(--on);
     }
-    >:is(img,p) {
+    :is(img,p) {
         width: 100%;
     }
-    >img:first-of-type~img:not([src*=detail]) {
+    img:first-of-type~img:not([src*=detail]) {
         grid-column: initial;
     }
 }

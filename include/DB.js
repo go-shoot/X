@@ -20,7 +20,7 @@ Object.assign(DB, {
         out: () => DB.get.all('user').then(data => sessionStorage.setItem('user', JSON.stringify(data))).catch(() => {}),
         in: () => DB.put('user', JSON.parse(sessionStorage.getItem('user') ?? '[]').map((item, i) => ({[`sheet-${i+1}`] : item})))
     },
-    components: ['bit','ratchet','blade','blade-CX'],
+    stores: ['bit','ratchet','blade','blade-CX'],
 
     open: (name = DB.current) => name == DB.db?.name ? Promise.resolve(DB.db) : 
         new Promise(res => Object.assign(indexedDB.open(name, 1), {onsuccess: res, onupgradeneeded: res}))
@@ -35,7 +35,7 @@ Object.assign(DB, {
     ,
     setup (ev) {
         ['product','meta','user'].forEach(s => DB.db.createObjectStore(s));
-        DB.components.map(s => DB.db.createObjectStore(s.toUpperCase(), {keyPath: 'abbr'}).createIndex('group', 'group'));
+        DB.stores.map(s => DB.db.createObjectStore(s.toUpperCase(), {keyPath: 'abbr'}).createIndex('group', 'group'));
         return new Promise(res => ev.target.transaction.oncomplete = res);
     },
     fetch: {
@@ -154,13 +154,13 @@ Object.assign(DB.cache, {
         'prod-others': json => DB.put('product', {others: json}),
         'prod-beys': beys => DB.put('product', {beys}),
     },
-    filter: files => [...new O(files)].filter(([file, time]) => new Date(time) / 1000 > (Storage('DB')?.[file] || 0)).map(([file]) => file),
+    filter: files => [...new O(files).filter(([file, time]) => new Date(time) / 1000 > (Storage('DB')?.[file] || 0)).keys()],
 });
 Object.assign(DB.store, {
     format (store) {
         if (Array.isArray(store)) return store.map(DB.store.format);
         store = store.replace('part-', '');
-        return DB.components.includes(store) ? store.toUpperCase() : store;
+        return DB.stores.includes(store) ? store.toUpperCase() : store;
     }
 });
 Object.assign(DB.put, {
@@ -172,14 +172,14 @@ Object.assign(DB.get, {
         return new Promise(res => DB.store(store).getAll()
             .onsuccess = ev => res(ev.target.result.map(p => comp ? {...p, comp, ...store.includes('-') ? {line: store.split('-')[1]} : {}} : p)));
     },
-    parts (comps = DB.components, toNAMES) {
+    parts (comps = DB.stores, toNAMES) {
         comps = [comps].flat().map(c => /^.X$/.test(c) ? `blade-${c}` : c);
         DB.trans(comps);
         return comps.length === 1 && !toNAMES ? 
             DB.get.all(comps[0]) : 
             Promise.all(comps.map(c => DB.get.all(c).then(parts => [c, parts]))).then(PARTS => toNAMES ? PARTS : new O(PARTS));
     },
-    names: (comps = DB.components) => DB.get.parts(comps, true)
+    names: (comps = DB.stores) => DB.get.parts(comps, true)
         .then(PARTS => {
             let NAMES = {};
             PARTS.forEach(([comp, parts]) => comp.includes('-') ?
@@ -191,19 +191,20 @@ Object.assign(DB.get, {
     ,
     PARTS: () => DB.get.parts(undefined, true)
         .then(PARTS => {
-            let _PARTS_ = {};
+            let _PARTS_ = new O();
             PARTS.forEach(([comp, parts]) => comp.includes('-') ?
-                _PARTS_.blade[comp.split('-')[1]] = parts.reduce((obj, {group, abbr, names}) => 
-                    ({...obj, [group]: {...obj[group], [abbr]: new Part.blade({abbr, names, group, line: comp.split('-')[1]})} }), {}) : 
-                _PARTS_[comp] = parts.reduce((obj, {abbr, names, group, attr}) => ({
-                    ...obj, 
-                    [abbr]: new Part[comp]({
+                _PARTS_.blade[comp.split('-')[1]] = new O(parts.reduce((obj, {group, abbr, names}) => ({...obj, 
+                    [group]: new O({...obj[group], [abbr]: new Part.blade({abbr, names, group, line: comp.split('-')[1]})})
+                }), {})) : 
+                _PARTS_[comp] = new O(parts.map(({abbr, names, group, attr}) => 
+                    [abbr, new Part[comp]({
                         abbr,
                         ...names ? {names} : {}, 
-                        ...comp == 'blade' && /^.X$/.test(group) ? {group} : attr ? {attr} : {}})
-                }), {})
+                        ...comp == 'blade' && /^.X$/.test(group) ? {group} : attr ? {attr} : {}
+                    })]
+                ))
             );
-            return new O(window.PARTS=_PARTS_);
+            return window.PARTS=new O(_PARTS_);
         })
 });
 customElements.define('db-state', DB.indicator);

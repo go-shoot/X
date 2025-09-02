@@ -20,12 +20,6 @@
 #catalog {
     padding-bottom: 4em; 
 }
-.catalog {
-    font-size: calc(var(--font,1)*1em); 
-    padding-top: 2rem; 
-    display: flex; flex-wrap: wrap; justify-content: center; 
-    gap: .2rem; 
-}
 
 #catalog details {
     position: relative; 

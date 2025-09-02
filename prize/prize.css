@@ -52,7 +52,9 @@ diamond-grid {
     p {
         grid-area:desc;
         font-size:.7em;
-        margin-top:.2em;
+        margin:.3em auto;
+        line-height:1.2;
+        max-width:12em;
 
         a {
             color:green !important;
@@ -154,7 +156,7 @@ article h4:first-of-type {
 time {
     font-size:smaller;
 }
-u {
+su {
     position:absolute;top:2.6em;right:-.3em;
     font-size:.6em;
 

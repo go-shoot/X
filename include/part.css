@@ -6,6 +6,8 @@
     overflow: hidden;
     position: relative;
     cursor: pointer;
+    box-shadow: 0 0 .5em 0 black;
+    opacity: 1 !important; transition: opacity .5s;
 
     &::after,object {
         position: absolute; right: 0; z-index: -1;
@@ -91,7 +93,7 @@
             max-width: 2em;
             vertical-align: middle;
             font-size: .5em;
-            margin: 0 0 .3em .2em;
+            margin: 0 0 .2em .2em;
             letter-spacing: 0; line-height: 1;
         }
     }
@@ -342,7 +344,7 @@ tbody td {
 td[abbr]:not(.fusion),td:empty {
     border-left: solid .5px var(--on);
 }
-td[headers]:not([abbr]) {
+td[abbr]+td:not([abbr]) {
     border-left: solid .5px hsl(0,0%,55%);
 }
 thead {font-size: min(3vw,.7em);}

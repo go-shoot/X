@@ -22,8 +22,8 @@ Object.assign(Parts, {
     },
     before: () => Filter(),
     display: () => DB.get.parts(/^.X$/.test(line) ? line : comp)
-        .then(parts => Promise.all(parts.map(json => new Part[comp](json).revise())))
-        .then(parts => Parts.catalog.replaceChildren(...parts.map(p => p.tile()))),
+        .then(parts => Promise.all(parts.map(json => new Part[comp](json).tile())))
+        .then(parts => Parts.catalog.replaceChildren(...parts)),
 
     after () {
         let hash = decodeURI(location.hash.substring(1));
@@ -39,7 +39,7 @@ Object.assign(Parts, {
         group ||= Q('dl#group input:checked').value?.substring(1);
         Filter.filter();
         Parts.info(group);
-        part && Parts.focus(part.tile());
+        typeof groupORpart == 'object' && Parts.focus(groupORpart);
     },
     info (group) {
         document.title = document.title.replace(/^.*?(?= ■ )/, META.title?.[group] ?? META.title ?? '');
@@ -110,12 +110,14 @@ Object.assign(Filter, {
         spin:  () => ({迴轉: ['left','right'].map((s, i) => ({value: s, label: ['\ue01d','\ue01e'][i]}) )}),
         prefix:() => ({變化: [{value: Filter.unprefix(), label: '–'}, ...[...new O(META.variety)].map(([label, value]) => ({value, label}))] }),
     },
-    filter (group) {
+    filter () {
         let query = Q('.part-filter[id]:not([hidden])', []).reduce((obj, dl) => ({
             ...obj, [dl.id]: [...dl.Q(':checked', []).map(i => i.value)].join()
         }), {});
         query.type += `,${Filter.untype()}`;
-        Q('x-part', tile => (tile.hidden = Object.values(query).some(classes => !tile.matches(classes))) || tile.Part.tile());
+        [...Parts.catalog.children].forEach(tile => 
+            !(tile.hidden = Object.values(query).some(classes => !tile.matches(classes))) && tile.fill()
+        );
         Parts.count();
     },
     untype: () => `:not(.${META.types.join(',.')})`,
@@ -129,9 +131,9 @@ const Sorter = () => {
     }, {
         classList: `part-sorter`, 
         onchange ({target: input}) {
+            let sorted = [...Parts.catalog.children].map(tile => tile.Part).sort(Sorter.sort[input.id]);
             Parts.catalog.append(...[...Parts.catalog.children]
-                .map(tile => tile.Part).sort(Sorter.sort[input.id]).map(p => p.tile())
-            );
+                .sort((a, b) => sorted.indexOf(a.Part) - sorted.indexOf(b.Part)));
             input.checked && Storage('pref', {sort: input.id});
         }
     });

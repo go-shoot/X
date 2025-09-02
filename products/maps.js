@@ -9,6 +9,7 @@ const Maps = {
         [['CX-05','CX-08'], '封入比例：01×3；03×5；其餘各4'],
     ]),
     images: new O([
+        ['BX-46', {detail: '${no}(_01|_02)'}],
         ['UX-15', {detail: '${no}(|_2|_3)'}],
         ['CX-04', {detail: '${no}_(d|p)'}],
         ['UX-07', {detail: '${no}_(r|g|b)', more: '${no}_(r|g|b)'}],
@@ -20,8 +21,13 @@ const Maps = {
         ['BXG-14', {alias: 'BXG-09'}],
         ['BXG-12', {alias: 'BXG-00'}],
         ['BXG-09', {alias: 'BXG-14'}],
-        ['BXG-07', {underscore: true, detail: '${no}_(1|2)'}],
+        ['BXG-07', {_: true, detail: '${no}_(1|2)'}],
         ['BX-08', {detail: '${no}_(r|g|y)', more: '${no}_(r|g|y)'}],
-    ])
+    ]),
+    lowercase: {
+        BXG: n => [1,4,7,14,31,32,11,18,19].includes(parseInt(n)),
+        BX: n => parseInt(n) <= 39,
+        UX: n => parseInt(n) <= 13
+    }
 }
 export default Maps

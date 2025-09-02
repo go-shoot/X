@@ -6,6 +6,7 @@ const Glossary = () => {
 }
 Object.assign(Glossary, {
     search: () => [Q('p,article'), Q('x-part', []).map(part => part.shadowRoot.Q('p'))].flat(9).forEach(p => {
+        if (!p) return;
         const walker = document.createTreeWalker(p, NodeFilter.SHOW_TEXT);
         let node;
         while (node = walker.nextNode()) {
@@ -34,19 +35,4 @@ Object.assign(Glossary, {
     Upper: ['アッパー', '旋轉時斜面把對手向上撞向空中，令其失去地面摩擦，更易被擊飛'],
     Smash: ['スマッシュ', '旋轉時斜面把對手向下壓，令其傾側，更易失平衡倒下']
 });
-O.prototype.flatten = function(transformation) {
-    const result = new O({});
-    const enter = (current, oldPath = []) => {
-        if (current && typeof current === 'object' && !Array.isArray(current)) {
-            Object.entries(current).forEach(([key, value]) => enter(value, oldPath.concat(key)));
-        } else {
-            let newPath = transformation([...oldPath]).filter(k => k);
-            newPath.some(k => k.includes('undefined')) && (newPath = oldPath);
-            let level = result;
-            newPath.forEach((key, i) => level = level[key] ??= i == newPath.length - 1 ? current : {});
-        }
-    }
-    enter(this);
-    return result;
-}
 export {spacing, Glossary}

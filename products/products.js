@@ -1,6 +1,6 @@
 import DB from '../include/DB.js'
-import { Part, Cell } from '../include/part.js';
-import { Bey, Finder } from '../include/bey.js';
+import { Part, Tile, Cell } from '../include/part.js';
+import { Bey, Preview, Search } from '../include/bey.js';
 
 let META, PARTS;
 
@@ -11,30 +11,49 @@ Object.assign(Table, {
         Filter();
         Table.events();
         [META, PARTS] = await Promise.all([DB.get('meta','part'), DB.get.PARTS()]);
-        Part.import(META = META.general, PARTS);
+        Part.import(META = META.general, new O(PARTS));
     },
     display: () => DB.get('product', 'beys').then(beys => Q('tbody').append(...beys.map(bey => new Bey(bey)))),
     async finally () {
         Q('.loading').classList.remove('loading');
-        Q('#chi').click();
+        Q('#chi').checked = true;
+        Cell.fill('chi');
         $(Q('table')).tablesorter();
-        location.search && Finder.filter(location.search.substring(1).split(/-(?=.+\=)|=/));
-        Table.count();
+        location.search && Table.filter(location.search.substring(1).split(/-(?=.+\=)|=/));
     },
     events () {
         Q('search').oninput = ev => {
             clearTimeout(Table.timer);
-            Table.timer = setTimeout(() => Finder(ev.target.value), 500);
+            Table.timer = setTimeout(() => Table.filter(ev.target.value), 500);
         }
-        Q('caption').onchange = ev => Cell.fill(ev.target.id);
         Q('nav button').onclick = Table.reset;
+        Q('caption').onchange = ev => Cell.fill(ev.target.id);
+        Q('tbody').onclick = ev => ev.target.matches('td:first-child') && new Preview('images', ev.target);
+        new MutationObserver(Table.count).observe(Q('tbody'), {childList: true, subtree: true, attributeFilter: ['hidden', 'class']});
     },
     reset () {
-        location.search && history.pushState('', '', './');
+        location.search && history.replaceState('', '', './');
         Q('tr:is(.hidden,[hidden])', tr => tr.classList.toggle('hidden', tr.hidden = false));
         Q('search input').value = '';
-        Table.count();
         Filter.reset();
+        Q('a[href*=obake]').href = '//obakeblader.com/?s=入手法';
+        Q('a[href*=kyoganken]').href = '//kyoganken.web.fc2.com/beyx/#parts1';
+    },
+    async filter (search) {
+        Q('tbody tr', tr => tr.hidden = true);
+        await new Search(search).then(({beys, href}) => {console.log(search);
+            beys.forEach(tr => tr.hidden = false);
+            href && setTimeout(() => Table.links(search)) && history.replaceState('', '', `?${href}`);
+        });
+    },
+    links (query) {
+        let target = PARTS.at(query);
+        if (!target) return;
+        let comp = target.path[2] != 'motif' && Bey.jap.at(target.path.slice(0, -1))._;
+        let name = Tile.named(target.path) ? target.names.jap : target.abbr;
+        Q('a[href*=obake]').href = '//obakeblader.com/' + (comp && Q('data').value > 1 ? `${comp}-${name}/#toc2` : `?s=入手法`);
+        comp = ['blade', 'ratchet', 'bit'].indexOf(target.path[0]);
+        Q('a[href*=kyoganken]').href = `//kyoganken.web.fc2.com/beyx/color0${comp + 1}.htm`;
     }
 });
 

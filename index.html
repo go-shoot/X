@@ -86,7 +86,7 @@ class Shohin {
     static types = {att: 'ATTACK', bal: 'BALANCE', sta: 'STAMINA', def: 'DEFENSE'};
 }
 DB.plugins = {
-    announce: news => [...new O(news)].forEach(([date, beys]) => 
+    announce: news => new O(news).each(([date, beys]) => 
         Q('#products').append(E('time', {title: date}), ...beys.map(bey => new Shohin(bey).div))
     ),
 };

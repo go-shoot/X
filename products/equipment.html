@@ -34,18 +34,32 @@
     </section>
 </main>
 
+<template id="RUBBER CUSTOM GRIP">
+    四塊分別是：<dl><dt><ruby>Rubber Side Panel<rt>ラバーサイドパネル</ruby> L<dd>放四根手指用<dt><ruby>Rubber Side Panel<rt>ラバーサイドパネル</ruby> M<dd>容易握的平坦形<dt><ruby>Rubber Side Panel<rt>ラバーサイドパネル</ruby> S<dd>放姆指用<dt><ruby>Rubber Grip Panel<rt>ラバーグリップパネル</ruby><dd>一端的突起減少滑手</dl>
+</template>
+<template id="CUSTOM GRIP">
+    四塊分別是：<dl><dt><ruby>Long Side Panel<rt>ロングサイドパネル</ruby><dd>放四根手指用<dt><ruby>Grip Panel<rt>グリップパネル</ruby><dd>掌心用的平坦形<dt><ruby>Short Side Panel<rt>ショートサイドパネル</ruby><dd>放姆指用<dt><ruby>Hybrid Panel<rt>ハイグリップパネル</ruby><dd>一端的突起減少滑手</dl>
+</template>
+<template id="Xtreme Stadium">
+    下方兩側為2分 <ruby>Over Zone<rt>オーバーゾーン</rt></ruby>，中間為3分 <ruby>Xtreme Zone<rt>エクストリームゾーン</rt></ruby>。
+</template>
+<template id="Wide Xtreme Stadium">
+    上方兩個角落為3分Xtreme Zone，下方中間為2分Over Zone。最後一顆生存的陀螺為勝，依其餘兩顆如何落敗而加總得分。例如兩顆陀螺互相碰撞後分別從2分區及3分區離開對戰盤，剩餘的一顆就取得5分。
+</template>
+
+
 <script type="module">
 import {spacing} from '../include/utilities.js'
 const List = {
     headers: (where, products, determinant) => {
-        for (let {eng, jap, desc, colors, detail: p} of products.reverse()) {
+        for (let {eng, jap, desc, colors} of products.reverse()) {
             let details = E('details', {name: 'panel'}, [
                 E('summary', [
                     E('h3', `${jap}${String.fromCharCode(10)}${eng}`),
                     E('small', spacing(desc)),
-                    E('picture', {style: {backgroundImage: `url(${List.src(colors[1] || colors[0])})`}})
+                    E('picture', {style: {backgroundImage: `url(${List.src((colors[1] || colors[0])[2])})`}})
                 ]),
-                p ? E('p', p) : '',
+                E('p', {innerHTML: spacing(Q(`[id='${eng}']`)?.innerHTML)}),
                 E('ol.boards')
             ]);
             let size = (colors[1] || colors[0])[3];
@@ -55,22 +69,27 @@ const List = {
         }
     },
     products: (where, colors) => {
-        where.Q('ol').append(...colors.map(([classList, no, img, size]) => {
+        where.Q('ol').append(...colors.map(([classList, no, src, size]) => {
             let li = E('li', [
                 E('code', no.replace('<br>', String.fromCharCode(10))),
-                E('figure>img', {src: List.src([, no, img]), alt: no})
+                E('figure>img', {src: List.src(src), alt: no}),
+                ...classList.split(' ').map(c => ['dragon', 'long'].includes(c) ? List.winder[c].cloneNode(true) : '')
             ], {classList})
             size && E(li.Q('img')).set({'--size': size + '%'});
             return li;
         }))
     },
-    src: ([, no, href]) => /^https|\/img/.test(href) ? href : 
-        /^[BCU]/.test(href) ? `https://beyblade.takaratomy.co.jp/beyblade-x/lineup/_image/${href}.png` : 
-        /^\d\//.test(href) ? `https://takaratomymall.jp/img/goods/${href}.jpg` :
-        `https://pbs.twimg.com/media/${href}?format=jpg&name=large`,
+    src: src => /^https|\/img/.test(src) ? src : 
+        /^[BCU]/.test(src) ? `https://beyblade.takaratomy.co.jp/beyblade-x/lineup/_image/${src}.png` : 
+        /^\d\//.test(src) ? `https://takaratomymall.jp/img/goods/${src}.jpg` :
+        `https://pbs.twimg.com/media/${src}?format=jpg&name=large`,
     determinant: {
         launchers: eng => eng.includes('STRING') ? 1 : 2,
         others: eng => eng.includes('Stadium') ? 2 : 1
+    },
+    winder: {
+        dragon: E('ruby', ['Dragon Winder', E('rt', 'ドラゴンワインダー')]),
+        long: E('ruby', ['Long Winder', E('rt', 'ロングワインダー')])
     }
 };
 addEventListener('DOMContentLoaded', () => (onhashchange = async () => {

@@ -44,5 +44,5 @@ addEventListener('DOMContentLoaded', () => {
                 lift: PI => Q('.PI-selected') && (location.href = PI.target.Q('.PI-selected a').href)
             }
         })`, {type: 'module'}));
-    setTimeout(() => Q('nav').classList.add('safari'), 200);
+    setTimeout(() => Q('nav').classList.add('safari'), 0);
 });
