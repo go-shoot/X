@@ -18,6 +18,7 @@ nav {
         vertical-align:middle;
     }
     button,label {
+        width: initial;
         background:var(--theme); color:black;
         border-radius:8em;
         padding:0 .5em;

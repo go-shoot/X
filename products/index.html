@@ -11,52 +11,53 @@
         <li><a href='equipment.html#launchers'>發射器</a>
         <li><a href='equipment.html#others'>其他</a>
     </menu>
-    <a href="//kyoganken.web.fc2.com/beyx/index.htm#parts1" target=_blank>競</a>
-    <a href="//obakeblader.com/?s=入手法" target=_blank>お</a>
+    <form class="led">
+        <label>中<input name=lang type=radio id=chi></label>
+        <label>A<input name=lang type=radio id=eng></label>
+        <label>ア<input name=lang type=radio id=jap></label>
+    </form>
 
     <label for=free>部件檢索</label>
     <search>
         <input type="search" id="free" placeholder=騎士/HN/low>
     </search>
-    <data class=prod-result>結果</data>
+    <output class=prod-result></output>
     <button>&#xe029; 重設</button>
 </nav>
 
 <main>
-    <form></form>
-
+    <div class="links">
+        <a href="//kyoganken.web.fc2.com/beyx/index.htm#parts1" target=_blank>競</a>
+        <a href="http://obakeblader.com/?s=入手法" target=_blank>お</a>
+    </div>
     <details id=filter>
         <summary>&#xe027; 分類<i></i></summary>
-        <div>
+        <fieldset>
             <label class=S title=附發射器的單陀螺>Starter</label>
             <label class=B title=單陀螺>Booster</label>
             <label class=St title=至少包含兩陀螺>Set</label>
             <label class=SS title=含對戰盤及陀螺>Stadium Set</label>
             <label class=RB title=單陀螺抽包>Random Booster</label>
-        </div>
-        <h6>&#xe02a; 異色版／再推出版</h6>
-        <div>
+        </fieldset>
+        <fieldset>
+            <legend>&#xe02a; 異色版／再推出版</legend>
             <label class='S H'>Starter</label>
             <label class='B H'>Booster</label>
             <label class='St H'>Set</label>
             <label class='SS H'>Stadium Set</label>
             <label class='RB H'>Random Booster</label>
-        </div>
-        <h6>&#xe02b; LINE<button>全部</button></h6>
-        <div class=system>
+        </fieldset>
+        <fieldset class=system>
+            <legend>&#xe02b; LINE<button>全部</button></legend>
             <label class=CX><img src=../img/lines.svg#CX alt=CX></label>
             <label class=UX><img src=../img/lines.svg#UX alt=UX></label>
             <label class=BX><img src=../img/lines.svg#BX alt=BX></label>
-        </div>
+        </fieldset>
     </details>
 
     <table id=regular class=new>
         <caption class=loading>
-            <!--span>&#xe028; 2021.04～</span-->
             <button hidden>顯示全部</button>
-            <label>中<input name=lang type=radio id=chi></label>
-            <label>A<input name=lang type=radio id=eng></label>
-            <label>ア<input name=lang type=radio id=jap></label>
         </caption>
         <thead>
             <tr class=comp>

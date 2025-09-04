@@ -49,7 +49,7 @@
 
 <script type=module>  
 import DB from './include/DB.js'
-import {spacing} from './include/utilities.js'
+import {Markup} from './include/bey.js'
 
 const observer = new IntersectionObserver(entries => entries.forEach(entry => entry.target.classList.toggle('seeing', entry.isIntersecting)));
 Q('header').after(DB(() => Q('header,section,time,.scroller', el => observer.observe(el))));
@@ -71,7 +71,7 @@ class Shohin {
                 ] : code),
             E('h4', name?.replaceAll('-', '‑').replaceAll('<br>', String.fromCharCode(10))), 
             ...imgs.map(src => E('figure', [E('a', '🖼️', {href: src}), E('img', {src})])), 
-            ...([desc ?? []].flat()).map(d => E('p', {innerHTML: spacing(d).replaceAll('-', '‑')}))
+            ...([desc ?? []].flat()).map(d => E('p', {innerHTML: Markup.spacing(d).replaceAll('-', '‑')}))
         ], {classList: [`scroller`, classList || Shohin.classes.find(code, {default: 'Lm'})]});
     }
     static classes = new O([

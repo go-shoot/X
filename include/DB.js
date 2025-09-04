@@ -147,11 +147,10 @@ Object.assign(DB, {
 });
 Object.assign(DB.cache, {
     actions: {
-        'part-blade': '', 'part-blade-CX': '', 'part-ratchet': '', 'part-bit': '',
-        'part-blade-collab': json => DB.put.parts(json, 'blade'),
-        'part-meta': json => DB.put('meta', {part: json}),
-        'prod-launchers': json => DB.put('product', {launchers: json}),
-        'prod-others': json => DB.put('product', {others: json}),
+        'part-blade': '', 'part-ratchet': '', 'part-bit': '', 'part-blade-collab': json => DB.put.parts(json, 'blade'),
+        'part-blade-divided': json => Promise.all(Object.entries(json).map(([line, parts]) => DB.put.parts(parts, `blade-${line}`))),
+        'meta': json => DB.put('meta', Object.entries(json).map(([item, content]) => ({[item]: content}))),
+        'prod-equipment': json => DB.put('product', Object.entries(json).map(([item, content]) => ({[item]: content}))),
         'prod-beys': beys => DB.put('product', {beys}),
     },
     filter: files => [...new O(files).filter(([file, time]) => new Date(time) / 1000 > (Storage('DB')?.[file] || 0)).keys()],
@@ -169,43 +168,31 @@ Object.assign(DB.put, {
 Object.assign(DB.get, {
     all (store) {
         let comp = /(blade|ratchet|bit)/.exec(store)?.[0];
-        return new Promise(res => DB.store(store).getAll()
-            .onsuccess = ev => res(ev.target.result.map(p => comp ? {...p, comp, ...store.includes('-') ? {line: store.split('-')[1]} : {}} : p)));
+        return new Promise(res => DB.store(store).getAll().onsuccess = ev => 
+            res(ev.target.result.map(p => comp ? {...p, comp, ...store.includes('-') ? {line: store.split('-')[1]} : {}} : p)));
     },
-    parts (comps = DB.stores, toNAMES) {
+    parts (comps = DB.stores) {
         comps = [comps].flat().map(c => /^.X$/.test(c) ? `blade-${c}` : c);
         DB.trans(comps);
-        return comps.length === 1 && !toNAMES ? 
+        return comps.length === 1 ? 
             DB.get.all(comps[0]) : 
-            Promise.all(comps.map(c => DB.get.all(c).then(parts => [c, parts]))).then(PARTS => toNAMES ? PARTS : new O(PARTS));
+            Promise.all(comps.map(c => DB.get.all(c).then(parts => [c, parts]))).then(PARTS => PARTS);
     },
-    names: (comps = DB.stores) => DB.get.parts(comps, true)
-        .then(PARTS => {
-            let NAMES = {};
-            PARTS.forEach(([comp, parts]) => comp.includes('-') ?
-                NAMES.blade[comp.split('-')[1]] = parts.reduce((obj, {group, abbr, names}) => ({...obj, [group]: {...obj[group], [abbr]: names} }), {}) : 
-                NAMES[comp] = parts.reduce((obj, {abbr, names}) => ({...obj, [abbr]: names}), {})
-            );
-            return NAMES;
-        })
-    ,
-    PARTS: () => DB.get.parts(undefined, true)
-        .then(PARTS => {
-            let _PARTS_ = new O();
-            PARTS.forEach(([comp, parts]) => comp.includes('-') ?
-                _PARTS_.blade[comp.split('-')[1]] = new O(parts.reduce((obj, {group, abbr, names}) => ({...obj, 
-                    [group]: new O({...obj[group], [abbr]: new Part.blade({abbr, names, group, line: comp.split('-')[1]})})
-                }), {})) : 
-                _PARTS_[comp] = new O(parts.map(({abbr, names, group, attr}) => 
-                    [abbr, new Part[comp]({
-                        abbr,
-                        ...names ? {names} : {}, 
-                        ...comp == 'blade' && /^.X$/.test(group) ? {group} : attr ? {attr} : {}
-                    })]
-                ))
-            );
-            return window.PARTS=new O(_PARTS_);
-        })
+    PARTS: () => DB.get.parts().then(PARTS => {
+        let OBJ = new O();
+        PARTS.forEach(([comp, parts]) => comp.includes('-') ?
+            OBJ.blade[comp.split('-')[1]] = new O(parts.reduce((obj, {group, abbr, names}) => ({...obj, 
+                [group]: new O({...obj[group], [abbr]: new Part.blade({abbr, names, group, line: comp.split('-')[1]})})
+            }), {})) : 
+            OBJ[comp] = new O(parts.map(({abbr, names, group, attr}) => 
+                [abbr, new Part[comp]({abbr,
+                    ...names ? {names} : {}, 
+                    ...comp == 'blade' && /^.X$/.test(group) ? {group} : attr ? {attr} : {}
+                })]
+            ))
+        );
+        return window.PARTS = new O(OBJ);
+    })
 });
 customElements.define('db-state', DB.indicator);
 export default window.DB = DB

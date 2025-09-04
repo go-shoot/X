@@ -17,11 +17,10 @@
     continuous-knob {display: none;}
 }
 
-#catalog {
+main {
     padding-bottom: 4em; 
 }
-
-#catalog details {
+details {
     position: relative; 
     user-select: none; -webkit-user-select: none; 
     transform: translateY(-100%); max-height:0;
@@ -30,7 +29,7 @@
     &.showing {transform: none; max-height:50em;}
     
     summary {
-        position: absolute; left: 1.5em; bottom: -1.5em; 
+        position: absolute !important; left: 1.5em; bottom: -1.5em; 
         width: 1.2em; height: 2.4em; 
         border-bottom-left-radius: 9em; border-bottom-right-radius: 9em; 
         background: var(--theme); color: black; 
@@ -38,7 +37,7 @@
         touch-action: none; 
         line-height: 1.5; 
         z-index: 1; 
-        transition: opacity .5s, height .5s; 
+        transition: opacity .5s, height .5s !important; 
 
         .showing & {height: calc(2.4em + 100%);}
         &::before,&::after {
@@ -47,7 +46,7 @@
         &::before {content: '\e00d';}
         &::after  {content: '\e00e';}
     }
-    article {
+    p {
         text-align: justify; line-height: 1.5; font-size: .9em; 
         padding: 0 .5em 0 3.5em; 
         transition: opacity .5s;
@@ -57,8 +56,7 @@
         margin: 1em 0; 
         display: block; 
     }
-    &:not(.showing) article,
-    &:not(.showing) summary::before,
+    &:not(.showing) p, &:not(.showing) summary::before,
     &.showing summary::after {
         opacity: 0;
     }
@@ -102,7 +100,8 @@ nav.safari:has(.part-filter.blade) {
         padding-left: .2em;
         min-width: 2.8em; height: 100%; 
         color: black; font-size: .9em;
-        background: var(--theme); 
+        background: var(--theme);
+        border-top-left-radius: 9em; border-bottom-left-radius: 9em;
 
         .part-sorter & {background: silver;}
         #group & {background: var(--fg);}

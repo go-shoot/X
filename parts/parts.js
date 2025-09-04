@@ -1,6 +1,6 @@
 import DB from '../include/DB.js'
 import { Part } from '../include/part.js';
-import { spacing } from '../include/utilities.js';
+import { Markup } from '../include/bey.js';
 
 let META, PARTS;
 let [comp, line] = [...new URLSearchParams(location.search)][0] ?? [];
@@ -44,7 +44,7 @@ Object.assign(Parts, {
     info (group) {
         document.title = document.title.replace(/^.*?(?= ■ )/, META.title?.[group] ?? META.title ?? '');
         let info = comp + (/^\w+$/.test(line) ? `.${line}` : '');
-        Q('details').hidden = !(Q('details article').innerHTML = spacing(Q(`[id='${info}']`)?.innerHTML));
+        Q('details').hidden = !(Q('details p').innerHTML = Markup.spacing(Q(`[id='${info}']`)?.innerHTML));
     },
     focus (tile) {
         Q('.target')?.classList.remove('target');
@@ -55,7 +55,7 @@ Object.assign(Parts, {
 onhashchange = () => Parts.after();
 
 const Magnifier = () => {
-    Q('nav data').before(Magnifier.create());
+    Q('nav output').before(Magnifier.create());
     Q(`#${Storage('pref')?.button || 'mag2'}`).checked = true;
     Magnifier.events();
 };
@@ -82,9 +82,9 @@ const Filter = function(type) {
 Object.assign(Filter.prototype, {
     create (type) {
         this.type = type;
-        let dl = new O(Filter.dl[type]()).map(([_, inputs]) => 
-            [_, E.checkboxes(inputs.map(({label, value, checked}) => new A(label, {value: value.replace(/^(?=\w)/, '.'), checked}) ))]
-        );
+        let dl = new O(Filter.dl[type]()).map(([_, inputs]) => [_, 
+            E.checkboxes(inputs.map(({label, value, checked}) => new A(label, {value: value.replace(/^(?=\w)/, '.'), checked}) ))
+        ]);
         this.dl = E.dl(dl, {id: type, classList: [`part-filter`, type == 'group' ? comp : '']});
         this.inputs = [this.dl.Q('input')].flat();
         type != 'group' && this.inputs.forEach(input => input.checked = true);

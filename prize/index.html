@@ -1,20 +1,19 @@
 <title>陀螺景品⬧Prizes</title>
 <script src=../include/common.js></script>
 <script src=https://aeoq.github.io/diamond-grid/script.js type=module></script>
-<link rel=stylesheet href=../include/component.css>
 <link rel=stylesheet href=prize.css>
 
 <nav>
     <menu>
         <li><a href="../products/" data-icon=""></a>
-        <li><a href="../parts/?blade=一體" data-icon=""></a>
+        <li><a href="../parts/?blade" data-icon=""></a>
     </menu>
-    <div class="led">
+    <form class="led">
         <a href="https://beyblade.takaratomy.co.jp/beyblade-x/news/news_stickerlist.html">
             <img src="https://beyblade.takaratomy.co.jp/beyblade-x/news/_image/news_stickerlist_12.png">
             <span>各款貼紙</span>
         </a>
-    </div>
+    </form>
 </nav>
 
 <main>
@@ -31,7 +30,7 @@ Object.assign(Prize, {
     display: keihins => Q('diamond-grid').append(...Keihin.all = keihins.map(k => new Keihin(k))),
     after: () => Prize.filter(),
     filter () {
-        Q('nav div').append(...E.checkboxes(Object.keys(Keihin.type).map(t => ({id: `keihin-${t}`, checked: true}) )));
+        Q('nav form').append(...E.checkboxes(Object.keys(Keihin.type).map(t => ({id: `keihin-${t}`, checked: true}) )));
         Q('nav').onchange = () => {
             let show = Q('nav input', []).filter(i => i.checked).map(i => i.id);
             Keihin.all.forEach(k => k.hidden = !show.includes(k.classList[0]));
@@ -42,16 +41,17 @@ class Keihin {
     constructor({type, note, link, date, code, bey, ver, img}) {
         let names = new Bey([, , bey]);        
         return E(`li.keihin-${type}`, [
-            E('b', Keihin.type[type]), E('p', link ? [E('a', {href: link, innerHTML: note})] : note),
+            E('em', Keihin.type[type]), 
+            E('p', link ? [E('a', {href: link, innerHTML: note})] : note),
             E('div', [
                 E('figure', [E('img', {src: img[0], style: img[1]})]), 
-                E('h5', [
-                    code ? E('span.code', code) : '', 
+                E('h4', {lang: 'ja'}, [
+                    E('code', code || ''), 
                     E('span', names.jap.replace('-', '‑')), 
                     E('small', {innerHTML: [ver?.[0] ?? '', names.only ? `（${names.only}）` : ''].filter(t => t).join('<br>')})
                 ]),
             ]),
-            E('i', [
+            E('h4', {lang: 'zh'}, [
                 names.chi.replace('-', '‑'), 
                 E('small', {innerHTML: [ver?.[1] ?? ''].filter(t => t).join(' ')})
             ]),

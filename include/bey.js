@@ -1,7 +1,6 @@
 import DB from './DB.js';
 import { Part, Cell } from './part.js';
 import Maps from '../products/maps.js';
-import { spacing } from './utilities.js';
 
 let META, PARTS;
 class Bey {
@@ -69,14 +68,14 @@ class Search {
     constructor(query) {
         this.regexp = [];
         if (typeof query == 'string') {
-            query = query.trim().replace(/[’'ʼ´ˊ]/g, '′');
+            query = query.replace(/[’'ʼ´ˊ]/g, '′');
             /^\/.+\/\w?$/.test(query) ?
                 this.regexp.push(new RegExp(.../^\/(.+)\/(\w?)$/.exec(query).slice(1))) :
                 this.lookup(query.replace(/([^\\])?([.*+?^${}()|[\]\\])/g, '$1\\$2'));
         } else {
             query.length == 3 && (query = PARTS.flatten(([comp, line, sub, abbr]) => [comp, line, abbr]).at(query).path);
-            this.query = query.toReversed().slice(1).reduce((obj, key) => ({[key]: obj}), query.at(-1));
-            this.href = new URLSearchParams({...new O(this.query).flatten(([comp, line, sub, abbr]) => [`${comp}-${line}`, abbr])});
+            this.query = query.toReversed().slice(1).reduce((obj, key) => new O({[key]: obj}), query.at(-1));
+            this.href = new URLSearchParams({...this.query.flatten(([comp, line, sub, abbr]) => [`${comp}-${line}`, abbr])});
         }
         this.build();console.log(this.regexp)
         return Search.beys().then(beys => ({
@@ -144,12 +143,12 @@ class Preview {
 
     tile = path => PARTS.at(path).tile().then(tile => Q('#tiles').append(
         E('a', '', {href: tile.href()}),
-        E('section.catalog', tile.fill())
+        tile.fill()
     ))
     images (td) {
         let {code, video, lowercase, markup, max} = this.#image.revisions(td.dataset);
         Preview.popup.Q('#images').append(
-            E('p', spacing(Maps.note.find(td.dataset.code))),
+            E('p', Markup.spacing(Maps.note.find(td.dataset.code))),
             ...video?.split(',').map(vid => E('a', {href: `//youtu.be/${vid}?start=60`})) ?? [],
             ...this.#image.src('main', code),
             ...this.#image.src('more', code, markup.more, max),
@@ -223,6 +222,7 @@ Object.assign(Markup, {
         let [r, f] = Markup[which].find(([r]) => r.test(string)) ?? [];
         return f?.(r.exec(string), values) ?? string;
     },
-    remove: name => name?.replaceAll(/[_\/\\]/g, '') ?? ''
+    remove: name => name?.replaceAll(/[_\/\\]/g, '') ?? '',
+    spacing: text => text?.replace(/(?<=\w)(?=[一-龢])/g, ' ').replace(/(?<=[一-龢])(?=\w)/g, ' ') ?? ''
 });
 export {Bey, Search, Preview, Markup};

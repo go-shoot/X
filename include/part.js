@@ -1,6 +1,5 @@
 
 import DB from '../include/DB.js'
-import { spacing } from './utilities.js';
 import { Bey, Preview, Markup } from './bey.js';
 import Table from '../products/products.js';
 
@@ -81,7 +80,7 @@ class Tile extends HTMLElement {
             E('object', {data: this.html.background()}),
             E('figure>img', {src: `../img/${path.join('/')}.png`}),
             E.ul(this.html.icons()),
-            E('p', spacing(desc)),
+            E('p', Markup.spacing(desc)),
             ...this.html.stat(),
             ...this.html.names(),
             E('div', META.types.map(t => E(`svg.${t}`, {viewBox: '-10 -10 20 10'}, E('use', {href: '#triangle'})))),
@@ -102,7 +101,7 @@ class Tile extends HTMLElement {
         [/^[A-Z]+X$/, l => E('img', {src: `../img/lines.svg#${l}`})],
         [['BSB','MFB','BBB'], g => E('img', {src: `../img/system-${g}.png`})],
         [['att','bal','def','sta'], t => E('img', {src: `../img/types.svg#${t}`})]
-    ], {left: '\ue01d', right: '\ue01e'});
+    ], {left: '\ue01d', right: '\ue01e', simple: '\ue04e'});
 }
 Object.assign(Tile.prototype.html, {
     background () {
@@ -125,11 +124,12 @@ Object.assign(Tile.prototype.html, {
     },
     names () {
         let {path, group, names} = this.Part;
+        let span = !['remake', 'collab'].includes(group);
         return [
             this.named ? 
-                Markup('tile', names.chi, group != 'remake')?.map(els => E('h5.chi', els)) ?? '' : 
+                Markup('tile', names.chi, span)?.map(els => E('h5.chi', els)) ?? '' : 
                 E('h4', path.at(-1).replace('-', '‒')), 
-            names ? ['jap', 'eng'].map(l => E(`h5.${l}`, Markup('tile', names[l])[0] ?? '')) : ''
+            names ? ['jap', 'eng'].map(l => E(`h5.${l}`, Markup('tile', names[l], span)[0])) : ''
         ].flat(9);
     },
     stat () {

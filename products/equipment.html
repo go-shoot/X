@@ -1,7 +1,6 @@
 
 <title>陀螺商品⬧Products</title>
 <script src=../include/common.js></script>
-<link rel=stylesheet href=products.css>
 <link rel=stylesheet href=../include/component.css>
 <style>
     main {
@@ -49,17 +48,18 @@
 
 
 <script type="module">
-import {spacing} from '../include/utilities.js'
+import DB from '../include/DB.js';
+import {Markup} from "../include/bey.js"
 const List = {
     headers: (where, products, determinant) => {
         for (let {eng, jap, desc, colors} of products.reverse()) {
             let details = E('details', {name: 'panel'}, [
                 E('summary', [
                     E('h3', `${jap}${String.fromCharCode(10)}${eng}`),
-                    E('small', spacing(desc)),
+                    E('small', Markup.spacing(desc)),
                     E('picture', {style: {backgroundImage: `url(${List.src((colors[1] || colors[0])[2])})`}})
                 ]),
-                E('p', {innerHTML: spacing(Q(`[id='${eng}']`)?.innerHTML)}),
+                E('p', {innerHTML: Markup.spacing(Q(`[id='${eng}']`)?.innerHTML)}),
                 E('ol.boards')
             ]);
             let size = (colors[1] || colors[0])[3];
@@ -92,10 +92,10 @@ const List = {
         long: E('ruby', ['Long Winder', E('rt', 'ロングワインダー')])
     }
 };
-addEventListener('DOMContentLoaded', () => (onhashchange = async () => {
+Q('nav').after(DB(onhashchange = async () => {
     let target = location.hash.substring(1);
     if (Q(`#${target} details`)) return;
-    let products = await (await fetch(`../db/prod-${target}.json`)).json();
+    let products = await DB.get('product', target) || await (await fetch(`../db/prod-${target}.json`)).json();
     List.headers(Q(`#${target}`), products, List.determinant[target]);
-})());
+}));
 </script>

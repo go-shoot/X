@@ -1,9 +1,12 @@
-const spacing = text => text?.replace(/(?<=\w)(?=[一-龢])/g, ' ').replace(/(?<=[一-龢])(?=\w)/g, ' ') ?? '';
-const Glossary = () => {
+import DB from "./DB.js";
+import { Markup } from "./bey.js";
+const Glossary = () => DB.get('meta', 'glossary').then(glossary => {
+    Glossary.glossary = new O(glossary);
+    Glossary.terms = [...Glossary.glossary.keys()].join('|');
     Glossary.search();
     Glossary.event();
     Q('#glossary') ?? Q('body').append(E('aside#glossary'));
-}
+});
 Object.assign(Glossary, {
     search: () => [Q('p,article'), Q('x-part', []).map(part => part.shadowRoot.Q('p'))].flat(9).forEach(p => {
         if (!p) return;
@@ -13,7 +16,9 @@ Object.assign(Glossary, {
             const texts = node.nodeValue.split(/(\w[\w ]*\w)/);
             if (texts.length <= 1) continue;
             const fragment = new DocumentFragment();
-            fragment.append(...texts.map(text => /\w[\w ]*\w/.test(text) ? E('u', text) : new Text(text)));
+            fragment.append(...texts.map(text => new RegExp(`(${Glossary.terms})`).test(text) ? 
+                E('u', text) : new Text(text)
+            ));
             node.replaceWith(fragment);
         }
     }),    
@@ -25,14 +30,12 @@ Object.assign(Glossary, {
         clearTimeout(Glossary.timer);
         let aside = Q('#glossary');
         aside.innerHTML = '';
-        let [jap, def] = Glossary[ev.target.innerText];
+        let [jap, def] = Glossary.glossary[ev.target.innerText];
         E(aside).set({
             '--left': `${ev.clientX}px`, 
             '--top': `${ev.clientY}px`
-        }, [E('dfn>ruby', [ev.target.innerText, E('rt', jap)]), def])
+        }, [E('dfn', [E('ruby', ev.target.innerText, E('rt', jap.split('&')[0])), ' ', jap.split('&')[1] ?? '']), Markup.spacing(def)])
         Glossary.timer = setTimeout(() => aside.innerHTML = '', 3000);
     },
-    Upper: ['アッパー', '旋轉時斜面把對手向上撞向空中，令其失去地面摩擦，更易被擊飛'],
-    Smash: ['スマッシュ', '旋轉時斜面把對手向下壓，令其傾側，更易失平衡倒下']
 });
-export {spacing, Glossary}
+export {Glossary}

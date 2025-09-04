@@ -1,5 +1,6 @@
 <title>Chip Centralizer</title>
-<script src=/include/common.js></script>
+<script src=../include/common.js></script>
+<script type=module src=https://aeoq.github.io/drag-knob/script.js></script>
 <canvas></canvas>
 <form>
     <label>上載<input type=file accept="image/*" ></label>
@@ -8,9 +9,9 @@
     <input type=color>
     <output name=side></output>
     <fieldset>
-        <spin-knob class=fine range='{"min":0.5,"max":4,"value":3.54,"step":0.01,"name":"sc"}'></spin-knob>
-        <spin-knob range='{"min":-20,"max":20,"value":0,"step":1,"name":"x"}'></spin-knob>
-        <spin-knob range='{"min":-20,"max":20,"value":0,"step":1,"name":"y"}'></spin-knob>
+        <continuous-knob min="0.5" max="4"  value="3.54" step="0.01" name="sc" class="fine"></continuous-knob>
+        <continuous-knob min="-20" max="20" value="0" step="1" name="x"></continuous-knob>
+        <continuous-knob min="-20" max="20" value="0" step="1" name="y"></continuous-knob>
     </fieldset>
 </form>
 
@@ -27,14 +28,14 @@ canvas {
     border:.1em solid var(--theme); box-sizing:content-box !important;
 }
 input[type=color] {margin:1em;}
-spin-knob {margin:.5em;}
+continuous-knob {margin:.5em;}
 label,button {
     margin:0 1em;
     color:var(--theme);
 }
 </style>
 
-<script>
+<script type="module">
 const MAIN = {
     con: Q('canvas').getContext('2d', { alpha: true }),
     setSide: S => MAIN.hS = (FORM.side.value = MAIN.S = MAIN.con.canvas.width = MAIN.con.canvas.height = Math.floor(S))/2
@@ -58,7 +59,7 @@ Q('button').onclick = () => {
         target: '_blank'
     }).click();
 }
-FORM.onchange = () => Draw();
+FORM.oninput = () => Draw();
 document.addEventListener("keydown", ev => { 
     ev.key == "ArrowUp"    && FORM.y.value++ ;//&& Draw();
     ev.key == "ArrowDown"  && FORM.y.value-- ;//&& Draw();
