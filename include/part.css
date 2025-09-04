@@ -245,7 +245,7 @@
         width: 100%; height: 100%;
         float: left;
         visibility: hidden;
-        shape-outside: polygon(0% 13%,75% 50%,0% 87%);
+        shape-outside: polygon(0% 14%,75% 50%,0% 86%);
     }
     u {
         border-bottom: .15em dotted var(--theme);
@@ -332,16 +332,16 @@ td {
 }
 
 tbody tr:last-child td {
-    border-bottom: solid .5px var(--on);
+    border-bottom: solid 1px var(--on);
 }
 tbody td {
-    border-top: solid .5px var(--on);
+    border-top: solid 1px var(--on);
 }
 td[abbr]:not(.fusion),td:empty {
-    border-left: solid .5px var(--on);
+    border-left: solid 1px var(--on);
 }
 td[abbr]+td:not([abbr]) {
-    border-left: solid .5px hsl(0,0%,55%);
+    border-left: solid 1px hsl(0,0%,55%);
 }
 thead {font-size: min(3vw,.7em);}
 tbody {font-size: min(2.75vw,.7em);}

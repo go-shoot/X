@@ -252,7 +252,7 @@ nav {
 
         &::after {
             content:'\e00a';
-            position:absolute; right:-1.8em; top:-10%;
+            position:absolute; right:-1.8em; top:-8%;
         }
     }
     search {
@@ -262,6 +262,7 @@ nav {
             padding:0 .3em 0 1.7em;
             background:none; outline:none;
             font-size:1em; color:var(--on);
+            vertical-align: middle;
 
             &::-webkit-search-cancel-button {display: none;}
         }
