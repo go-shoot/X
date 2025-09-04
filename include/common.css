@@ -252,7 +252,7 @@ nav {
 
         &::after {
             content:'\e00a';
-            position:absolute; right:-1.8em; top:-8%;
+            position:absolute; right:-1.8em; bottom: 0;
         }
     }
     search {

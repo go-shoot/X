@@ -332,16 +332,16 @@ td {
 }
 
 tbody tr:last-child td {
-    border-bottom: solid 1px var(--on);
+    border-bottom: solid .6px var(--on);
 }
 tbody td {
-    border-top: solid 1px var(--on);
+    border-top: solid .6px var(--on);
 }
 td[abbr]:not(.fusion),td:empty {
-    border-left: solid 1px var(--on);
+    border-left: solid .6px var(--on);
 }
 td[abbr]+td:not([abbr]) {
-    border-left: solid 1px hsl(0,0%,55%);
+    border-left: solid .6px hsl(0,0%,55%);
 }
 thead {font-size: min(3vw,.7em);}
 tbody {font-size: min(2.75vw,.7em);}
