@@ -1,4 +1,4 @@
-{
+[{
     "launchers": [
         {
             "eng": "STRING LAUNCHER",
@@ -70,7 +70,8 @@
                 ["S r","BX-22","BX22_05@1",110]
             ]
         }
-    ],
+    ]
+}, {
     "others": [
         {
             "eng": "RUBBER CUSTOM GRIP",
@@ -139,4 +140,4 @@
             ]
         }
     ]
-}
+}]

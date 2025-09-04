@@ -149,8 +149,8 @@ Object.assign(DB.cache, {
     actions: {
         'part-blade': '', 'part-ratchet': '', 'part-bit': '', 'part-blade-collab': json => DB.put.parts(json, 'blade'),
         'part-blade-divided': json => Promise.all(Object.entries(json).map(([line, parts]) => DB.put.parts(parts, `blade-${line}`))),
-        'meta': json => DB.put('meta', Object.entries(json).map(([item, content]) => ({[item]: content}))),
-        'prod-equipment': json => DB.put('product', Object.entries(json).map(([item, content]) => ({[item]: content}))),
+        'meta': json => DB.put('meta', json),
+        'prod-equipment': json => DB.put('product', json),
         'prod-beys': beys => DB.put('product', {beys}),
     },
     filter: files => [...new O(files).filter(([file, time]) => new Date(time) / 1000 > (Storage('DB')?.[file] || 0)).keys()],

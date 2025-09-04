@@ -108,7 +108,7 @@ Object.assign(Tile.prototype.html, {
         let {comp, attr} = this.Part;
         let selector = `.${comp}${attr?.includes('fusion') ? '.fusion' : ''}`;
         Tile.hue[selector] ??= [...document.styleSheets]
-            .filter(({href}) => new URL(href).host == location.host).flatMap(css => [...css.cssRules])
+            .filter(({href}) => href && new URL(href).host == location.host).flatMap(css => [...css.cssRules])
             .find(rule => rule.selectorText == selector).styleMap.get('--c')[0];
 
         let spin = attr?.includes('left') ^ attr?.includes('right');

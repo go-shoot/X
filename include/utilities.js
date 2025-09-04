@@ -8,7 +8,7 @@ const Glossary = () => DB.get('meta', 'glossary').then(glossary => {
     Q('#glossary') ?? Q('body').append(E('aside#glossary'));
 });
 Object.assign(Glossary, {
-    search: () => [Q('p,article'), Q('x-part', []).map(part => part.shadowRoot.Q('p'))].flat(9).forEach(p => {
+    search: () => [Q('p'), Q('x-part', []).map(part => part.shadowRoot.Q('p'))].flat(9).forEach(p => {
         if (!p) return;
         const walker = document.createTreeWalker(p, NodeFilter.SHOW_TEXT);
         let node;
@@ -22,9 +22,8 @@ Object.assign(Glossary, {
             node.replaceWith(fragment);
         }
     }),    
-    event: () => [Q('u'), Q('x-part', []).map(part => part.shadowRoot.Q('u'))].flat(9).forEach(u =>
-        u && (u.onclick = ev => Glossary.lookup(ev))
-    ),
+    event: () => [Q('u'), Q('x-part', []).map(part => part.shadowRoot.Q('u'))].flat(9)
+        .forEach(u => u && (u.onclick = ev => Glossary.lookup(ev))),
     lookup: ev => {
         ev.stopPropagation();
         clearTimeout(Glossary.timer);
@@ -34,7 +33,12 @@ Object.assign(Glossary, {
         E(aside).set({
             '--left': `${ev.clientX}px`, 
             '--top': `${ev.clientY}px`
-        }, [E('dfn', [E('ruby', ev.target.innerText, E('rt', jap.split('&')[0])), ' ', jap.split('&')[1] ?? '']), Markup.spacing(def)])
+        }, [
+            E('dfn', [
+                E('ruby', ev.target.innerText, E('rt', jap.split('&')[0])),
+                ' ', jap.split('&')[1] ?? ''
+            ]), Markup.spacing(def)
+        ]);
         Glossary.timer = setTimeout(() => aside.innerHTML = '', 3000);
     },
 });
