@@ -275,7 +275,7 @@
 }
 
 table {
-    white-space: nowrap; border-collapse: collapse;
+    white-space: nowrap; border-spacing: 0;
     margin: auto;
 
     tbody:empty::after {
@@ -332,16 +332,16 @@ td {
 }
 
 tbody tr:last-child td {
-    border-bottom: solid .6px var(--on);
+    border-bottom: solid .5px var(--on);
 }
 tbody td {
-    border-top: solid .6px var(--on);
+    border-top: solid .5px var(--on);
 }
 td[abbr]:not(.fusion),td:empty {
-    border-left: solid .6px var(--on);
+    border-left: solid .5px var(--on);
 }
 td[abbr]+td:not([abbr]) {
-    border-left: solid .6px hsl(0,0%,55%);
+    border-left: solid .5px hsl(0,0%,55%);
 }
 thead {font-size: min(3vw,.7em);}
 tbody {font-size: min(2.75vw,.7em);}
