@@ -29,7 +29,7 @@ class Part {
         return this;
     }
     #revised = {
-        group: base => base.group ?? new O(META.ratchet.height).find(([, dmm]) => this.abbr.split('-')[1] >= dmm)[0],
+        group: base => base.group ?? META.ratchet.height.find(([, dmm]) => this.abbr.split('-')[1] >= dmm)[0],
         names: (base, pref) => new O(base.names).prepend(...[...pref].reverse().map(p => META.bit.prefix[p])),
         stat: base => this.stat.length === 1 ? [this.stat[0], ...base.stat.slice(1)] : this.stat,
         attr: (base, pref) => [...this.attr ?? [], ...base.attr, ...pref],
@@ -51,7 +51,7 @@ class Bit extends Part {
     constructor(json) {super(json);}
     async revise (where = 'tile') {
         if (Bit.revisions[where].every(p => this[p])) return this;
-        let [, pref, base] = new RegExp(`^([${new O(META.bit.prefix)}]+)([^a-z].*)$`).exec(this.abbr);
+        let [, pref, base] = new RegExp(`^([${META.bit.prefix}]+)([^a-z].*)$`).exec(this.abbr);
         Bit.revisions[where].some(p => !PARTS.bit[base][p]) && PARTS.bit[base].push(await DB.get('bit', base));
         return super.revise(Bit.revisions[where], PARTS.bit[base], pref);
     }
@@ -127,7 +127,7 @@ Object.assign(Tile.prototype.html, {
     },
     names () {
         let {path, group, names} = this.Part;
-        let span = !['remake', 'collab'].includes(group);
+        let span = !['remake', 'collab', 'hasbro'].includes(group);
         return [
             this.named ? 
                 Markup('tile', names.chi, span)?.map(els => E('h5.chi', els)) ?? '' : 
@@ -191,8 +191,9 @@ class Cell {
     static async #html (lang, part, mode) {
         let names = part.names ?? (part.path[0] == 'bit' && await part.revise('cell')).names;
         if (!names) return [];
+        let limit = Cell.#limit[lang]?.at(part.path.slice(0, -1));
         let content = [...Markup('cell', names[lang] || names.eng), mode ? E('sub', mode[lang] || mode.eng) : ''];
-        return names[lang]?.length >= Cell.#limit[lang]?.at(part.path.slice(0, -1)) ? [E('small', content)] : content;
+        return names[lang]?.length >= (typeof limit == 'number' ? limit : 99) ? [E('small', content)] : content;
     }
     static #limit = {jap: new O({blade: {CX: {lower: 5}}, bit: 7})};
 }

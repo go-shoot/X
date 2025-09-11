@@ -127,18 +127,28 @@ db-state {display:block;}
         &::-webkit-scrollbar {
             display: none;
         }
-        &.parts button::before {
+        &.parts button::before,
+        &.links a[href*='?blade']::before {
             content: '';
             width: 1.4em; height: 1.4em; display: inline-block;
             vertical-align: text-top;
             margin-right: .2em;
+            background: url() center / contain no-repeat;
         }
-        .blade::before {background: url(img/lines.svg#BX) center / contain no-repeat;}
-        .CX::before {background: url(img/lines.svg#CX) center / contain no-repeat;}
-        .UX::before {background: url(img/lines.svg#UX) center / contain no-repeat;}
-        .ratchet::before {background: url(img/ratchet/3-60.png) center / contain no-repeat; filter: saturate(0) brightness(99);}
-        .bit::before {background: url(img/bit/A.png) center / contain no-repeat; filter: saturate(0) brightness(99);}
+        .blade::before,a[href*='?blade']::before {
+            background-image: var(--img, url(img/lines.svg#BX)) !important;
+        }
+        .ratchet::before {
+            background-image: url(img/ratchet/3-60.png) !important;
+            filter: saturate(0) brightness(99);
+        }
+        .bit::before {
+            background-image: url(img/bit/A.png) !important;
+            filter: saturate(0) brightness(99);
+        }
     }
+    button {color: var(--theme);}
+    a[href^='//'] {color: var(--theme-alt);}
     table {margin: .5em auto;}
 }
 #products {

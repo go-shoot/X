@@ -126,14 +126,15 @@ nav.safari:has(.part-filter.blade) {
     }
 }
 menu {
-    a[href*=blade]::after {background-image: url(../img/blade/CbDr.png) !important;}
-    a[href*=ratchet]::after {background-image: url(../img/ratchet/3-60.png) !important;}
-    a[href*=bit]::after {background-image: url(../img/bit/B.png) !important;}
-    a[href*=CX]::before {
+    a[href$=X]::before {
         content: ''; 
         position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); 
         z-index: 1; 
         width: 80%; height: 60%; 
-        background: url(../img/lines.svg#CX) center / contain no-repeat; 
+        background: url() center / contain no-repeat; 
     }
+    a[href*=blade]::after {background-image: url(../img/blade/CbDr.png) !important;}
+    a[href*=ratchet]::after {background-image: url(../img/ratchet/3-60.png) !important;}
+    a[href*=bit]::after {background-image: url(../img/bit/B.png) !important;}
+    a[href$=CX]::before {background-image: url(../img/lines.svg#CX) !important;}
 }

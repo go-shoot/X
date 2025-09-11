@@ -54,7 +54,7 @@ Object.assign(Table, {
     links (query) {
         let target = PARTS.at(query);
         if (!target) return;
-        let comp = target.path[2] != 'motif' && Bey.jap.at(target.path.slice(0, -1))._;
+        let comp = target.path[2] != 'motif' && META.jap.at(target.path.slice(0, -1))._;
         let name = Tile.named(target.path) ? target.names.jap : target.abbr;
         Q('a[href*=obake]').href = 'http://obakeblader.com/' + (comp && Q('output').value > 1 ? `${comp}-${name}/#toc2` : `?s=入手法`);
         Q('a[href*=kyoganken]').href = `//kyoganken.web.fc2.com/beyx/color0${['blade', 'ratchet', 'bit'].indexOf(target.path[0]) + 1}.htm`;

@@ -105,10 +105,10 @@ Object.assign(Filter.prototype, {
 });
 Object.assign(Filter, {
     dl: {
-        group: () => ({[line]: [...new O(META.group)].map(([value, {label, checked}]) => ({value, label, checked})) }),
+        group: () => ({[line]: META.group.flatMap(([value, {label, checked}]) => ({value, label, checked})) }),
         type:  () => ({類型: META.types.map(t => ({value: t, label: E('img', {src: `../img/types.svg#${t}`})}) )}),
         spin:  () => ({迴轉: ['left','right'].map((s, i) => ({value: s, label: ['\ue01d','\ue01e'][i]}) )}),
-        prefix:() => ({變化: [{value: Filter.unprefix(), label: '–'}, ...[...new O(META.variety)].map(([label, value]) => ({value, label}))] }),
+        prefix:() => ({變化: [{value: Filter.unprefix(), label: '–'}, ...META.variety.flatMap(([label, value]) => ({value, label}))] }),
     },
     filter () {
         let query = Q('.part-filter[id]:not([hidden])', []).reduce((obj, dl) => ({

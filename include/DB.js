@@ -75,7 +75,7 @@ Object.assign(DB, {
     put: (store, items, callback) => items && new Promise(res => {
         store == 'meta' && (DB.tr = null);
         if (!Array.isArray(items))
-            return DB.store(store).put(...items.abbr ? [items] : [...new O(items)][0].reverse()).onsuccess = () => res(callback?.());
+            return DB.store(store).put(...items.abbr ? [items] : Object.entries(items)[0].reverse()).onsuccess = () => res(callback?.());
         DB.trans(store);
         return Promise.all(items.map(item => DB.put(store, item, callback))).then(res).catch(er => console.error(store, er));
     }),
@@ -163,7 +163,7 @@ Object.assign(DB.store, {
     }
 });
 Object.assign(DB.put, {
-    parts: (parts, file) => DB.put(file, [...new O(parts)].map(([abbr, part]) => ({...part, abbr}) ), () => DB.indicator.update()),
+    parts: (parts, file) => DB.put(file, Object.entries(parts).map(([abbr, part]) => ({...part, abbr}) ), () => DB.indicator.update()),
 });
 Object.assign(DB.get, {
     all (store) {
@@ -181,12 +181,13 @@ Object.assign(DB.get, {
             .then(parts => transform ? DB.transform(parts) : parts);
     },
     essentials: (transform = true) => Promise.all([DB.get('meta', 'part'), DB.get.parts(transform)])
+        .then(([meta, parts]) => [new O(meta), parts])
 });
 DB.transform = parts => {
     let OBJ = new O();
     parts.forEach(([comp, parts]) => comp.includes('-') ?
         OBJ.blade[comp.split('-')[1]] = new O(parts.reduce((obj, {group, abbr, names}) => ({...obj, 
-            [group]: new O({...obj[group], [abbr]: new Part.blade({abbr, names, group, line: comp.split('-')[1]})})
+            [group]: {...obj[group], [abbr]: new Part.blade({abbr, names, group, line: comp.split('-')[1]})}
         }), {})) : 
         OBJ[comp] = new O(parts.map(({abbr, names, group, attr}) => 
             [abbr, new Part[comp]({abbr,
@@ -195,7 +196,7 @@ DB.transform = parts => {
             })]
         ))
     );
-    return window.PARTS = new O(OBJ);
+    return window.PARTS = OBJ;
 }
 customElements.define('db-state', DB.indicator);
 export default window.DB = DB

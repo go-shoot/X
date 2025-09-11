@@ -3,6 +3,7 @@ import { Part, Cell } from './part.js';
 import Maps from '../products/maps.js';
 
 let META, PARTS;
+
 class Bey {
     static import = (meta, parts) => [META, PARTS] = [meta, parts];
     constructor([code, type, abbr, ...others]) {
@@ -10,7 +11,7 @@ class Bey {
         this.abbr = abbr;
         let [blade, ratchet, bit] = abbr.split(' ');
 
-        this.line = new O(META.blade.delimiter).find(([, char]) => (blade = blade.split(char)).length > 1)?.[0];
+        this.line = META.blade.delimiter.find(([, char]) => (blade = blade.split(char)).length > 1)?.[0];
         this.blade = blade.length > 1 ? 
             blade.map((b, i) => PARTS.blade[this.line][Part.blade.sub[i]][b]) ?? new Part.blade() : 
             PARTS.blade[blade[0]] ?? new Part.blade();
@@ -28,13 +29,9 @@ class Bey {
         };
         names.chi &&= [names.chi, ' ', this.ratchet.abbr, this.bit.abbr].join('');
         names.jap = [names.jap, ' ', this.ratchet.abbr, this.bit.abbr].flat().join('');
-        let single = parts => parts.length === 1 && Bey.jap.at(parts[0].path.slice(0, -1))?._;
+        let single = parts => parts.length === 1 && META.jap.at(parts[0].path.slice(0, -1))?._;
         return {...names, only: single([this.blade, this.ratchet, this.bit].flat().filter(p => p?.abbr))};
     }
-    static jap = new O({
-        blade: {_: 'ブレード', CX: {motif: {_: 'ロックチップ'}, upper: {_: 'メインブレード'}, lower: {_: 'アシストブレード'}}},
-        ratchet: {_: 'ラチェット'}, bit: {_: 'ビット'}
-    })
     static RB = 0;
 }
 class Row {
@@ -113,7 +110,7 @@ class Search {
             let single = q.blade instanceof A ? [...q.blade] : typeof q.blade == 'string' ? q.blade : null;
             let divided = q.blade instanceof A ? {...q.blade} : typeof q.blade == 'object' ? q.blade : null;
             single?.length && this.regexp.push(new RegExp(`^${Search.#or(single)} .+$`, 'u'));
-            divided && new O(META.blade.delimiter).each(([line, char]) => divided[line]?.size &&
+            divided && META.blade.delimiter.each(([line, char]) => divided[line]?.size &&
                 this.regexp.push(new RegExp(`^${Part.blade.sub.map(sub => Search.#or(divided[line][sub])).join(`\\${char}`)} .+$`, 'u'))
             );
         }

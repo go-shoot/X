@@ -23,10 +23,6 @@
     </search>
     <ol class="parts"></ol>
     <ol class="links"></ol>
-    <div class="preview">
-        <div id="cells"></div>
-        <div id="tiles"></div>
-    </div>
 </section>
 
 <section id=products><h3>最新商品</h3></section>
@@ -59,8 +55,19 @@ Q('[type=search]').oninput = ev => {
         Promise.all([DB.get.essentials(false), DB.get('meta', 'search')])
         .then(([[meta, parts], links]) => {
             Part.import(meta.general, DB.transform(parts));
+            links.push(
+                ...Object.entries(meta.grouped.blade.一體.group).map(([line, {label}]) => ({                        
+                    keywords: ["零件","部件","組件","圖鑑","刃擊環","鋼鐵戰刃","Blade", line, label],
+                    href: `parts/?blade#${line}`, text: label
+                })),
+                ...meta.grouped.blade.filter(([line]) => line.endsWith('X'))
+                    .flatMap(([line, obj]) => obj.title.flatMap(([group, title]) => ({ 
+                        keywords: ["零件","部件","組件","圖鑑", line, title],
+                        href: `parts/?blade=${line}#${group}`, text: title.match(/(?<=[⬧】])[^⬧]+$/)[0]
+                })))
+            );
             CACHE = {links};
-            return Promise.all(parts.flatMap(([, parts]) => parts.map(p => new Part(p).revise?.())));
+            return Promise.all(parts.flatMap(([, parts]) => parts.map(p => new Part(p).revise())));
         })
         .then(parts => Object.assign(CACHE, {parts: parts.map(p => 
             p.push({text: Object.values(p).flatMap(v => typeof v == 'object' ? Object.values(v) : v).join(' ') })
@@ -73,29 +80,14 @@ Q('[type=search]').oninput = ev => {
             ]}).slice(0, 10)
             .map(({item}) => E(`li>button.${item.comp}.${item.line || item.group}`, 
                 Markup('cell', item.names?.chi || item.abbr),
-                {onclick: () => new Preview(['tile', 'cell'], item.path, Q('#search .preview'))}
+                {onclick: () => new Preview(['tile', 'cell'], item.path)}
             ))
         );
         Q('#search .links').replaceChildren(...new Fuse(links, {keys: ['keywords', 'text'], threshold: .4})
             .search(ev.target.value).slice(0, 5)
-            .map(({item}) => E('li>a', {href: item.href, innerText: item.text, target: '_blank'}))
+            .map(({item}) => E('li>a', {href: item.href, innerText: item.text, target: item.href.startsWith('//') ? '_blank' : ''}))
         );
     })
-}
-Q('body>input').onkeypress = ev => {
-    if ((ev.keyCode || ev.which) != 13) return;
-    ev.target.value = ev.target.value.trim();
-    if (/^i#.+$/i.test(ev.target.value))
-        return location.href = `https://instagram.com/explore/tags/${/(?<=#).+/.exec(ev.target.value)}`;
-    if (/^i@.+$/i.test(ev.target.value))
-        return location.href = `https://instagram.com/${/(?<=@).+/.exec(ev.target.value)}`;
-    if (/^x\?.+$/i.test(ev.target.value))
-        return location.href = `https://x.com/search?q=${/(?<=\?).+/.exec(ev.target.value)}&f=live`;
-    if (/^x#.+$/i.test(ev.target.value))
-        return location.href = `https://x.com/hashtag/${/(?<=#).+/.exec(ev.target.value)}/?f=live`;
-    if (/^t\?.+$/i.test(ev.target.value))
-        return location.href = `https://www.threads.net/search?q=${/(?<=\?).+/.exec(ev.target.value.replace('#', '%23'))}`;
-    return location.href = `https://${ev.target.value}`;
 }
 </script>
 <script type=module>  
@@ -160,4 +152,19 @@ PointerInteraction.events({
     }
 });
 (new Date - Storage('cached'))/1000/60/60/24 > 30 && fetch('sw/?delete=parts');
+Q('body>input').onkeypress = ev => {
+    if ((ev.keyCode || ev.which) != 13) return;
+    ev.target.value = ev.target.value.trim();
+    if (/^i#.+$/i.test(ev.target.value))
+        return location.href = `https://instagram.com/explore/tags/${/(?<=#).+/.exec(ev.target.value)}`;
+    if (/^i@.+$/i.test(ev.target.value))
+        return location.href = `https://instagram.com/${/(?<=@).+/.exec(ev.target.value)}`;
+    if (/^x\?.+$/i.test(ev.target.value))
+        return location.href = `https://x.com/search?q=${/(?<=\?).+/.exec(ev.target.value)}&f=live`;
+    if (/^x#.+$/i.test(ev.target.value))
+        return location.href = `https://x.com/hashtag/${/(?<=#).+/.exec(ev.target.value)}/?f=live`;
+    if (/^t\?.+$/i.test(ev.target.value))
+        return location.href = `https://www.threads.net/search?q=${/(?<=\?).+/.exec(ev.target.value.replace('#', '%23'))}`;
+    return location.href = `https://${ev.target.value}`;
+}
 </script>
