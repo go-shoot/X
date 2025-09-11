@@ -307,7 +307,7 @@ nav {
     nav .part-mag {width:auto;grid-area:1/5/3/6;}
     nav .part-result {grid-area:1/4/2/5;}
 }
-label:has(:is([type=radio],[type=checkbox]):not(:checked):not([name=mag])) {
+label:has(:is([type=radio],[type=checkbox]):not(:is(:checked,[name=mag]))):not(.toggle) {
     filter:saturate(0%);
 
     &::before {
@@ -315,7 +315,7 @@ label:has(:is([type=radio],[type=checkbox]):not(:checked):not([name=mag])) {
         color:dimgray;
     }
 }
-:where(main,.led) label:has(:is([type=radio],[type=checkbox]))::before {
+.led label:has(:is([type=radio],[type=checkbox]))::before {
     content:'·';
     display:block;
     position:relative;

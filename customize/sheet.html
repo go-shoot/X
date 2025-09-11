@@ -2,7 +2,8 @@
 <script defer src=../include/common.js></script>
 <script type=module src=https://aeoq.github.io/drag-knob/script.js></script>
 <script defer src=https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js></script>
-<link href=sheet.css rel=stylesheet>
+<link rel="stylesheet" href="sheet.css">
+<link rel="stylesheet" href="../include/component.css">
 <nav>
     <menu>
         <li><a href="#6">#6</a></li>
@@ -82,7 +83,7 @@
             <continuous-knob class="image" title="不透明度" min=0 max=1 value=1 name="opacity"></continuous-knob>
             <continuous-knob class="color" title="歪斜" unit="π" min=-0.49 max=0.49 value=0 name="sk"></continuous-knob>
             <continuous-knob class="color" title="角度" unit="π" min=-1 max=1 value=0 name="angle" snap="0.5"></continuous-knob>
-            <label><input type="checkbox" id="fine">微調<small>（Ctrl）</small></label>
+            <div>微調<small>（Ctrl）</small></div><label class="toggle"><input type="checkbox" id="fine"></label>
         </fieldset>
     </form>
 </main>

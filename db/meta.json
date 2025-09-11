@@ -89,4 +89,59 @@
         "X Line": ["Xライン", "對戰盤旁的齒條，令Bit的齒輪與其咬合時移動速度瞬間加速。"],
         "X Dash": ["Xダッシュ", "因Bit的齒輪與X Line咬合時移動速度瞬間加速。"]
     }
+}, {
+    "search": [
+        {
+            "keywords": ["HK","Hong Kong","香港","tclub","facebook","fb"], 
+            "href": "//facebook.com/tclubfanshk", "text": " 🇭🇰🇲🇴官方比賽"
+        },
+        {
+            "keywords": ["HK","Hong Kong","香港","tclub","instagram","ig"], 
+            "href": "//instagram.com/tclub_hk", "text": " 🇭🇰🇲🇴官方比賽"
+        },
+        {
+            "keywords": ["TW","Taiwan","台灣","facebook","fb"], 
+            "href": "//facebook.com/Beyblade2016", "text": " 🇹🇼官方比賽"
+        },
+        {
+            "keywords": ["TW","Taiwan","台灣","instagram","ig"], 
+            "href": "//instagram.com/beyblade.tw", "text": " 🇹🇼官方比賽"
+        },
+        {
+            "keywords": ["manga","corocoro","快樂快樂","最新資訊","コロコロ"],
+            "href": "//drive.google.com/drive/folders/1NHqckGBGUe0Kd57TqiFCZJ4G2qGGbvha", "text": "漫畫與情報"
+        },
+        {
+            "keywords": ["anime","卡通"],
+            "href": "//drive.google.com/drive/folders/1uRJA8OKiWT6NFa83si2DvgCA9kXkzp5Y", "text": "日文動畫"
+        },
+        {
+            "keywords": ["anime","卡通","素材"],
+            "href": "//beyblade.takaratomy.co.jp/anime/character/chara01.html", "text": "動畫角色"
+        },
+        {
+            "keywords": ["Takara Tomy","日本","商品"],
+            "href": "//beyblade.takaratomy.co.jp/beyblade-x/lineup/", "text": "官方網站"
+        },
+        {
+            "keywords": ["Takara Tomy","日本","影片","最新情報資訊"],
+            "href": "//www.youtube.com/@BEYBLADEOfficialYouTube/videos", "text": "官方Youtube"
+        },
+        {
+            "keywords": ["日本","最新商品"],
+            "href": "//www.amazon.co.jp/s?rh=n%3A2189319051%2Cp_n_date%3A2320554051", "text": "Amazon"
+        },
+        {
+            "keywords": ["iPhone","App Store","應用程式","分數","抽獎","QR Code"],
+            "href": "//apps.apple.com/tw/app/beyblade-x/id1670801696", "text": " iOS App"
+        },
+        {
+            "keywords": ["Google Play Store","應用程式","分數","抽獎","QR Code"],
+            "href": "//play.google.com/store/apps/details?id=jp.co.takaratomy.beyblade_x", "text": " Android App"
+        },
+        {
+            "keywords": ["X","Twitter","推特","最新情報資訊","日本"],
+            "href": "//x.com/tbh_pr", "text": "X"
+        }
+    ]
 }]

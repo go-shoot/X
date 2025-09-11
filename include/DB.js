@@ -171,28 +171,31 @@ Object.assign(DB.get, {
         return new Promise(res => DB.store(store).getAll().onsuccess = ev => 
             res(ev.target.result.map(p => comp ? {...p, comp, ...store.includes('-') ? {line: store.split('-')[1]} : {}} : p)));
     },
-    parts (comps = DB.stores) {
-        comps = [comps].flat().map(c => /^.X$/.test(c) ? `blade-${c}` : c);
+    parts (comps) {
+        let transform = comps === true;
+        comps = [typeof comps == 'string' ? comps : DB.stores].flat().map(c => /^.X$/.test(c) ? `blade-${c}` : c);
         DB.trans(comps);
         return comps.length === 1 ? 
             DB.get.all(comps[0]) : 
-            Promise.all(comps.map(c => DB.get.all(c).then(parts => [c, parts]))).then(PARTS => PARTS);
+            Promise.all(comps.map(c => DB.get.all(c).then(parts => [c, parts])))
+            .then(parts => transform ? DB.transform(parts) : parts);
     },
-    PARTS: () => DB.get.parts().then(PARTS => {
-        let OBJ = new O();
-        PARTS.forEach(([comp, parts]) => comp.includes('-') ?
-            OBJ.blade[comp.split('-')[1]] = new O(parts.reduce((obj, {group, abbr, names}) => ({...obj, 
-                [group]: new O({...obj[group], [abbr]: new Part.blade({abbr, names, group, line: comp.split('-')[1]})})
-            }), {})) : 
-            OBJ[comp] = new O(parts.map(({abbr, names, group, attr}) => 
-                [abbr, new Part[comp]({abbr,
-                    ...names ? {names} : {}, 
-                    ...comp == 'blade' && /^.X$/.test(group) ? {group} : attr ? {attr} : {}
-                })]
-            ))
-        );
-        return window.PARTS = new O(OBJ);
-    })
+    essentials: (transform = true) => Promise.all([DB.get('meta', 'part'), DB.get.parts(transform)])
 });
+DB.transform = parts => {
+    let OBJ = new O();
+    parts.forEach(([comp, parts]) => comp.includes('-') ?
+        OBJ.blade[comp.split('-')[1]] = new O(parts.reduce((obj, {group, abbr, names}) => ({...obj, 
+            [group]: new O({...obj[group], [abbr]: new Part.blade({abbr, names, group, line: comp.split('-')[1]})})
+        }), {})) : 
+        OBJ[comp] = new O(parts.map(({abbr, names, group, attr}) => 
+            [abbr, new Part[comp]({abbr,
+                ...names ? {names} : {}, 
+                ...comp == 'blade' && /^.X$/.test(group) ? {group} : attr ? {attr} : {}
+            })]
+        ))
+    );
+    return window.PARTS = new O(OBJ);
+}
 customElements.define('db-state', DB.indicator);
 export default window.DB = DB

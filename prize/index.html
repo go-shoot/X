@@ -24,8 +24,8 @@
 import { Bey } from '../include/bey.js'
 const Prize = () => Prize.before().then(Prize.display).then(Prize.after);
 Object.assign(Prize, {
-    before: () => Promise.all([DB.get('meta','part'), DB.get.PARTS(), fetch('../db/prod-keihin.json')])
-        .then(([meta, parts, resp]) => Bey.import(meta.general, parts) && resp.json()),
+    before: () => Promise.all([DB.get.essentials(), fetch('../db/prod-keihin.json')])
+        .then(([[meta, parts], resp]) => Bey.import(meta.general, parts) && resp.json()),
 
     display: keihins => Q('diamond-grid').append(...Keihin.all = keihins.map(k => new Keihin(k))),
     after: () => Prize.filter(),

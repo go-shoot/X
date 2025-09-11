@@ -10,7 +10,7 @@ Object.assign(Table, {
     async before () {
         Filter();
         Table.events();
-        [META, PARTS] = await Promise.all([DB.get('meta', 'part'), DB.get.PARTS()]);
+        [META, PARTS] = await DB.get.essentials();
         Part.import(META = META.general, PARTS);
     },
     display: () => DB.get('product', 'beys').then(beys => Q('tbody').append(...beys.map(bey => new Bey(bey)))),

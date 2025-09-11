@@ -9,7 +9,7 @@ const Parts = () => Parts.firstly().then(Parts.before).then(Parts.display).then(
 Object.assign(Parts, {
     count: () => Q('.part-result').value = Q('x-part:not([id^="+"]):not([hidden])', []).length,
     async firstly () {
-        [META, PARTS] = await Promise.all([DB.get('meta','part'), DB.get.PARTS()]);
+        [META, PARTS] = await DB.get.essentials();
         Part.import(META.general, PARTS);
         line ||= META.grouped[comp].所有 ? '所有' : '一體';
         META = {
@@ -22,7 +22,7 @@ Object.assign(Parts, {
     },
     before: () => Filter(),
     display: () => DB.get.parts(/^.X$/.test(line) ? line : comp)
-        .then(parts => Promise.all(parts.map(json => new Part[comp](json).tile())))
+        .then(parts => Promise.all(parts.map(json => new Part(json).tile())))
         .then(parts => Parts.catalog.replaceChildren(...parts)),
 
     after () {

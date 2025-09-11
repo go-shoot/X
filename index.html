@@ -1,7 +1,6 @@
 <title>非官方資訊站⬧Unofficial site</title>
 <meta name=description content="最新日本陀螺情報、所有部件圖鑑、限量産品，都一應俱全。">
 <script defer src=include/common.js></script>
-<script type=module src=https://aeoq.github.io/drag-knob/script.js></script>
 <link rel=stylesheet href=index.css>
 <link rel=stylesheet href=include/component.css>
 <img src="https://beyblade.takaratomy.co.jp/anime/_image/kv_chara.png" hidden>
@@ -16,24 +15,18 @@
 
 <section id="search">
     <search>
-        <a href=products/ >商品</a>
-        <a href=parts/ >部件</a>
-        <a href=prize/ >景品</a>
-        <a href="customize/sheet.html">設計器</a>
+        <a href=products/ > 商品</a>
+        <a href=parts/ > 部件</a>
+        <a href=prize/ > 景品</a>
+        <a href="customize/sheet.html"> 設計器</a>
         <input type="search">
-        
     </search>
-</section>
-
-
-<section id=links>
-    <h3>外部連結</h3>
-    <continuous-knob title=商品陣容 alt="//www.amazon.co.jp/s?rh=n%3A2189319051%2Cp_n_date%3A2320554051" href="//beyblade.takaratomy.co.jp/beyblade-x/lineup/" data-icon=🛍️></continuous-knob>
-    <continuous-knob title=YouTube alt="//www.youtube.com/results?search_query=ベイブレードX&sp=EgIIAw%253D%253D" href="//m.youtube.com/@BEYBLADEOfficialYouTube/videos" data-icon=🎞️></continuous-knob>
-    <continuous-knob title=漫畫閲覽 alt="//drive.google.com/drive/folders/1vSOCv8UNyiJ76KCDhUbexuS7E7Hs-Isr" href="//www.corocoro.jp/episode/4856001361379685850" data-icon=🖍️></continuous-knob>
-    <continuous-knob title=動畫資訊 alt="//drive.google.com/drive/folders/11K6rxKid9m0_90otiRxQlJRJhRTJWRSN" href="//beyblade.takaratomy.co.jp/anime/character/" data-icon=📺></continuous-knob>
-    <continuous-knob title=App 下載 alt data-icon=📥></continuous-knob>
-    <continuous-knob title=𝕏 alt="//x.com/search?q=ベイブレードX" href="//x.com/tbh_pr" data-icon=🛠️></continuous-knob>
+    <ol class="parts"></ol>
+    <ol class="links"></ol>
+    <div class="preview">
+        <div id="cells"></div>
+        <div id="tiles"></div>
+    </div>
 </section>
 
 <section id=products><h3>最新商品</h3></section>
@@ -50,6 +43,61 @@
     <br>Developed and Designed by V Man (MKK). 2023–.
 </footer>
 
+<link rel="stylesheet" href="include/part.css">
+
+<script type="module">
+import DB from './include/DB.js'
+import {Markup, Preview} from './include/bey.js'
+import {Part} from './include/part.js'
+import Fuse from 'https://cdn.jsdelivr.net/npm/fuse.js@7.1.0/dist/fuse.min.mjs'
+let CACHE;
+Q('[type=search]').oninput = ev => {
+    Preview.reset();
+    if (!ev.target.value.trim()) return;
+
+    (CACHE ? Promise.resolve(CACHE) : 
+        Promise.all([DB.get.essentials(false), DB.get('meta', 'search')])
+        .then(([[meta, parts], links]) => {
+            Part.import(meta.general, DB.transform(parts));
+            CACHE = {links};
+            return Promise.all(parts.flatMap(([, parts]) => parts.map(p => new Part(p).revise?.())));
+        })
+        .then(parts => Object.assign(CACHE, {parts: parts.map(p => 
+            p.push({text: Object.values(p).flatMap(v => typeof v == 'object' ? Object.values(v) : v).join(' ') })
+        )}))
+    ).then(({parts, links}) => {
+        Q('#search .parts').replaceChildren(...new Fuse(parts, {keys: ['abbr', 'text'], threshold: .3})
+            .search({$or: [
+                {abbr: ev.target.value.trim()}, 
+                {$and: ev.target.value.split(/(?=\W)/).map(t => ({text: t.trim()}) )}
+            ]}).slice(0, 10)
+            .map(({item}) => E(`li>button.${item.comp}.${item.line || item.group}`, 
+                Markup('cell', item.names?.chi || item.abbr),
+                {onclick: () => new Preview(['tile', 'cell'], item.path, Q('#search .preview'))}
+            ))
+        );
+        Q('#search .links').replaceChildren(...new Fuse(links, {keys: ['keywords', 'text'], threshold: .4})
+            .search(ev.target.value).slice(0, 5)
+            .map(({item}) => E('li>a', {href: item.href, innerText: item.text, target: '_blank'}))
+        );
+    })
+}
+Q('body>input').onkeypress = ev => {
+    if ((ev.keyCode || ev.which) != 13) return;
+    ev.target.value = ev.target.value.trim();
+    if (/^i#.+$/i.test(ev.target.value))
+        return location.href = `https://instagram.com/explore/tags/${/(?<=#).+/.exec(ev.target.value)}`;
+    if (/^i@.+$/i.test(ev.target.value))
+        return location.href = `https://instagram.com/${/(?<=@).+/.exec(ev.target.value)}`;
+    if (/^x\?.+$/i.test(ev.target.value))
+        return location.href = `https://x.com/search?q=${/(?<=\?).+/.exec(ev.target.value)}&f=live`;
+    if (/^x#.+$/i.test(ev.target.value))
+        return location.href = `https://x.com/hashtag/${/(?<=#).+/.exec(ev.target.value)}/?f=live`;
+    if (/^t\?.+$/i.test(ev.target.value))
+        return location.href = `https://www.threads.net/search?q=${/(?<=\?).+/.exec(ev.target.value.replace('#', '%23'))}`;
+    return location.href = `https://${ev.target.value}`;
+}
+</script>
 <script type=module>  
 import DB from './include/DB.js'
 import {Markup} from './include/bey.js'
@@ -65,9 +113,9 @@ class Shohin {
             imgs = [Shohin.base + `${c}@1.png`, ...imgs];
             imgs.push(...[2,3,4,5,6,7,8].map(n => Shohin.base + `${c}${color ? `_${color}` : ''}_0${n}@1.png`));
         }
-        this.div = E('div', [
+        return E('div', [
             E('h5', type ? [
-                E('ruby', {classList: [`below`, type]}, [
+                E(`ruby.below.${type}`, [
                     E('img', {src: `img/types.svg#${type}`}), 
                     E('rt', Shohin.types[type])]),
                     code
@@ -90,7 +138,7 @@ class Shohin {
 }
 DB.plugins = {
     announce: news => new O(news).each(([date, beys]) => 
-        Q('#products').append(E('time', {title: date}), ...beys.map(bey => new Shohin(bey).div))
+        Q('#products').append(E('time', {title: date}), ...beys.map(bey => new Shohin(bey)))
     ),
 };
 import PointerInteraction from 'https://aeoq.github.io/pointer-interaction/script.js';
@@ -101,7 +149,7 @@ const reset = message => Promise.all([
     navigator.serviceWorker.getRegistrations().then(([reg]) => reg.unregister())
 ]);
 PointerInteraction.events({
-    '.scroller': {scroll: {x: true}},
+    '.scroller,#search ol': {scroll: {x: true}},
     '#reset': {
         drop: {goal: 'i:last-child'},
         drag: PI => PI.drag.to.translate({x: {min: 0, max: Q('#reboot p').clientWidth - Q('#reset').clientWidth}, y: false}),
@@ -111,28 +159,5 @@ PointerInteraction.events({
         }).catch(er => console.error(er)),
     }
 });
-
-Q('continuous-knob', knob => {
-    knob.click = click => click.for(1).to(_ => location.href = knob.get('href')),
-    knob.drag = PI => Math.abs(PI.$drag.θ - PI.$press.θ) >= 180 && [knob.classList.add('alt'), knob.set('href', knob.get('alt'))]
-});
-let app = ['https://apps.apple.com/tw/app/id1670801696', 'https://play.google.com/store/apps/details?id=jp.co.takaratomy.beyblade&pli=1'];
-((knob, [href, alt]) => [knob.set('href', href), knob.set('alt', alt)])(Q('continuous-knob[title^=App]'), navigator.appVersion.includes('Mac') ? app : app.reverse());
-
-Q('body>input').onkeypress = ev => {
-    if ((ev.keyCode || ev.which) != 13) return;
-    ev.target.value = ev.target.value.trim();
-    if (/^i#.+$/i.test(ev.target.value))
-        return location.href = `https://instagram.com/explore/tags/${/(?<=#).+/.exec(ev.target.value)}`;
-    if (/^i@.+$/i.test(ev.target.value))
-        return location.href = `https://instagram.com/${/(?<=@).+/.exec(ev.target.value)}`;
-    if (/^x\?.+$/i.test(ev.target.value))
-        return location.href = `https://x.com/search?q=${/(?<=\?).+/.exec(ev.target.value)}&f=live`;
-    if (/^x#.+$/i.test(ev.target.value))
-        return location.href = `https://x.com/hashtag/${/(?<=#).+/.exec(ev.target.value)}/?f=live`;
-    if (/^t\?.+$/i.test(ev.target.value))
-        return location.href = `https://www.threads.net/search?q=${/(?<=\?).+/.exec(ev.target.value.replace('#', '%23'))}`;
-    return location.href = `https://${ev.target.value}`;
-}
 (new Date - Storage('cached'))/1000/60/60/24 > 30 && fetch('sw/?delete=parts');
 </script>

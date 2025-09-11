@@ -7,7 +7,10 @@ let META, PARTS;
 class Part {
     static import = (meta, parts) => ([META, PARTS] = [meta, parts]) && Bey.import(meta, parts);
     #path;
-    constructor(json = {}) {this.push(json);}
+    constructor(json = {}) {
+        this.push(json);
+        return this.constructor.name == 'Part' ? new Part[this.comp](json) : this;
+    }
     push (json) {return Object.assign(this, json);}
     get path () {return this.#path ??= [this.constructor.name.toLowerCase(), this.abbr];}
 
@@ -16,13 +19,13 @@ class Part {
         !stat && this.push(await (
             path.length >= 3 ? DB.get(`${path[0]}-${path[1]}`, path[3]) : DB.get(path[0], path[1])
         ));
-        await this.revise?.('tile'); //no .then() for blade, ratchet
+        await this.revise('tile'); //Subclass revise() called. No then() for blade, ratchet
         return new Tile(this);
     }
     cell () {return new Cell(this);}
 
-    _revise (revisions, base, pref) {
-        revisions.forEach?.(what => this[what] = this.#revised[what](base, pref));
+    revise (revisions, base, pref) {
+        revisions?.forEach?.(what => this[what] = this.#revised[what](base, pref));
         return this;
     }
     #revised = {
@@ -41,7 +44,7 @@ class Blade extends Part {
 }
 class Ratchet extends Part {
     constructor(json) {super(json);}
-    revise (where = 'tile') {return super._revise(Ratchet.revisions[where], {stat: [, ...this.abbr.split('-')]});}
+    revise (where = 'tile') {return super.revise(Ratchet.revisions[where], {stat: [, ...this.abbr.split('-')]});}
     static revisions = {tile: ['group', 'stat']};
 }
 class Bit extends Part {
@@ -50,7 +53,7 @@ class Bit extends Part {
         if (Bit.revisions[where].every(p => this[p])) return this;
         let [, pref, base] = new RegExp(`^([${new O(META.bit.prefix)}]+)([^a-z].*)$`).exec(this.abbr);
         Bit.revisions[where].some(p => !PARTS.bit[base][p]) && PARTS.bit[base].push(await DB.get('bit', base));
-        return super._revise(Bit.revisions[where], PARTS.bit[base], pref);
+        return super.revise(Bit.revisions[where], PARTS.bit[base], pref);
     }
     static revisions = {cell: ['names'], tile: ['group', 'names', 'attr', 'stat', 'desc']};
 }
@@ -60,8 +63,8 @@ class Tile extends HTMLElement {
         let {path, group, attr} = Part;
         this.Part = Part;
         this.attachShadow({mode: 'open'}).append(
-            E('link', {rel: 'stylesheet', href: '../include/common.css'}),
-            E('link', {rel: 'stylesheet', href: '../include/part.css'}),
+            E('link', {rel: 'stylesheet', href: '/X/include/common.css'}),
+            E('link', {rel: 'stylesheet', href: '/X/include/part.css'}),
         );
         E(this).set({
             id: path.at(-1),
@@ -78,7 +81,7 @@ class Tile extends HTMLElement {
         this.shadowRoot.append(
             Q('#triangle').cloneNode(true),
             E('object', {data: this.html.background()}),
-            E('figure>img', {src: `../img/${path.join('/')}.png`}),
+            E('figure>img', {src: `/X/img/${path.join('/')}.png`}),
             E.ul(this.html.icons()),
             E('p', Markup.spacing(desc)),
             ...this.html.stat(),
@@ -98,9 +101,9 @@ class Tile extends HTMLElement {
     static #onclick = ev => location.href.includes('parts') ? new Preview('cell', ev.target.Part.path) : Table.filter(ev.target.Part.path);
     static hue = {};
     static icons = new O([
-        [/^[A-Z]+X$/, l => E('img', {src: `../img/lines.svg#${l}`})],
-        [['BSB','MFB','BBB'], g => E('img', {src: `../img/system-${g}.png`})],
-        [['att','bal','def','sta'], t => E('img', {src: `../img/types.svg#${t}`})]
+        [/^[A-Z]+X$/, l => E('img', {src: `/X/img/lines.svg#${l}`})],
+        [['BSB','MFB','BBB'], g => E('img', {src: `/X/img/system-${g}.png`})],
+        [['att','bal','def','sta'], t => E('img', {src: `/X/img/types.svg#${t}`})]
     ], {left: '\ue01d', right: '\ue01e', simple: '\ue04e'});
 }
 Object.assign(Tile.prototype.html, {
@@ -116,7 +119,7 @@ Object.assign(Tile.prototype.html, {
             hue: Tile.hue[selector],
             ...spin ? {[attr?.find(a => a == 'left' || a == 'right')]: ''} : {}
         };
-        return `../parts/bg.svg?${new URLSearchParams(param)}`;
+        return `/X/parts/bg.svg?${new URLSearchParams(param)}`;
     },
     icons () {
         let {line, group, attr} = this.Part;

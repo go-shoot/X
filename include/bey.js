@@ -127,15 +127,16 @@ class Search {
     static #or = abbrs => abbrs?.length ? `(?:${[abbrs].flat().filter(a => typeof a == 'string').join('|')})` : '.+?'
 }
 class Preview {
-    constructor(what, path) {
-        Preview.popup ??= Q('[popover]') ?? Q('body').appendChild(E('aside', {
+    constructor(what, path, where) {
+        Preview.place ??= where || Q('[popover]') || Q('body').appendChild(E('aside', {
             popover: true,
             onclick: ev => ev.target.closest('[popover]').hidePopover()
         }, [E('div#cells'), E('div#tiles'), E('div#images')]));
-        Preview.popup.Q('div', div => div.innerHTML = '');
-        Preview.popup.showPopover();
-        this[what](path);
+        Preview.reset();
+        Preview.place.popover && Preview.place.showPopover();
+        [what].flat().forEach(w => this[w](path));
     }
+    static reset = () => Preview.place?.Q('div', div => div.innerHTML = '');
     cell = path => new Search(path).then(({beys, href}) => Q('#cells').append(
         E('a', '', {href: `../products/?${href}`}),
         E('table>tbody', beys.map(bey => new Bey(bey)))
@@ -147,7 +148,7 @@ class Preview {
     ))
     images (td) {
         let {code, video, lowercase, markup, max} = this.#image.revisions(td.dataset);
-        Preview.popup.Q('#images').append(
+        Preview.place.Q('#images').append(
             E('p', Markup.spacing(Maps.note.find(td.dataset.code))),
             ...video?.split(',').map(vid => E('a', {href: `//youtu.be/${vid}?start=60`})) ?? [],
             ...this.#image.src('main', code),

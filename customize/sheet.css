@@ -68,7 +68,7 @@ fieldset {
     &:not(#layer) {
         align-self:start;
 
-        label,continuous-knob::before {font-size:.9em;}
+        label:not(.toggle),continuous-knob::before {font-size:.9em;}
     }
 }
 form {
@@ -187,20 +187,19 @@ form {
     #control {
         display:grid; grid-template-columns:repeat(3,auto); gap:.5em; justify-content:center;
 
-        label {
-            grid-area:3/1/4/4;
-            margin-top:.5em;
-            line-height:4em;
-            border:.15rem solid var(--theme); border-radius:.5rem;
-            filter:initial;
+        div {
+            grid-area:3/1/4/3; place-self: center end;
+            margin: .5em -.5em 0 0;
+            line-height: 1.2;
 
-            &:has(input:checked) {
-                background:var(--theme); color:black;
-            }
-            &::before {content:initial;}
+            small {display: block;}
+        }
+        label {
+            width: auto;
+            margin-top: .5em;
         }
     }
-    #control-image[hidden]~#control .image {display:none;}
+    #control-image[hidden]~#control .image,
     #control-color[hidden]~#control .color {display:none;}
 }
 
