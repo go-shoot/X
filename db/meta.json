@@ -99,18 +99,6 @@
     }
 }, {
     "search": [
-        {                        
-            "keywords": ["零件","部件","組件","圖鑑","Blade"],
-            "href": "parts/?blade", "text": "刃擊環⬧鋼鐵戰刃"
-        },
-        {                        
-            "keywords": ["零件","部件","組件","圖鑑","Ratchet"],
-            "href": "parts/?ratchet", "text": "核輪⬧固鎖輪盤"
-        },
-        {                        
-            "keywords": ["零件","部件","組件","圖鑑","Bit"],
-            "href": "parts/?bit", "text": "軸心"
-        },
         {
             "keywords": ["launcher","旋風","拉條","拉線"], 
             "href": "products/equipment.html#launchers", "text": "發射器"

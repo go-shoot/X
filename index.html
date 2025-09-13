@@ -52,21 +52,23 @@ Q('[type=search]').oninput = ev => {
     Preview.reset();
     if (!ev.target.value.trim()) return;
 
+    const link = ([comp, line, group], title, label) => ({                        
+        keywords: ["零件","部件","組件","圖鑑", ...title.split(/[【⬧】]/)],
+        href: `parts/?${comp}${line ? `=${line}` : ''}${group ? `#${group}` : ''}`, 
+        text: (label || title).match(/[一-龥]+⬧?[一-龥]+/)?.[0] || label || title
+    });
     (CACHE ? Promise.resolve() : 
         Promise.all([DB.get.essentials(false), DB.get('meta', 'search'), DB.get('product', 'beys')])
         .then(([[meta, parts], links, beys]) => {
             Part.import(meta.general, DB.transform(parts));
-            links.push(
-                ...Object.entries(meta.grouped.blade.一體.group).map(([line, {label}]) => ({                        
-                    keywords: ["零件","部件","組件","圖鑑","刃擊環","鋼鐵戰刃","Blade", line, label],
-                    href: `parts/?blade#${line}`, text: label
-                })),
-                ...meta.grouped.blade.filter(([line]) => line.endsWith('X'))
-                    .flatMap(([line, obj]) => obj.title.flatMap(([group, title]) => ({ 
-                        keywords: ["零件","部件","組件","圖鑑", line, title],
-                        href: `parts/?blade=${line}#${group}`, text: title.match(/(?<=[⬧】])[^⬧]+$/)[0]
-                })))
-            );
+            
+            links.push(...[...meta.grouped].map(([comp, obj]) => [
+                link([comp], (obj.所有 ?? obj.一體).title),
+                [...obj].filter(([, obj]) => obj.group).map(([line, obj]) => line.endsWith('X') ? 
+                    [...obj.title].map(([group, title]) => link([comp, line, group], title)) : 
+                    [...obj.group].map(([group, {label}]) => link([comp, , group], obj.title, label))
+                )
+            ]).flat(9));
             window.CACHE = CACHE = {links, beys: [...new Set(beys.map(([code]) => code.replace('-', '')))]};
             return Promise.all(parts.flatMap(([, parts]) => parts.map(p => new Part(p).revise())));
         })

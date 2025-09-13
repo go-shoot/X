@@ -142,20 +142,20 @@ db-state {display:block;}
             margin-right: .2em;
         }
         &.parts button::before,
-        &.links a[href*='?blade']::before {
+        &.links :is([href*='#'],[href*='='])::before {
             content: '';
             width: 1.4em; height: 1.4em; display: inline-block;
             vertical-align: text-top;
             background: url() center / contain no-repeat;
         }
-        .blade::before,a[href*='?blade']::before {
+        :is(.blade,[href*='?blade#'],a[href*='?blade='])::before {
             background-image: var(--img, url(img/lines.svg#BX)) !important;
         }
-        .ratchet::before {
+        :is(.ratchet,[href*='?ratchet#'])::before {
             background-image: url(img/ratchet/3-60.png) !important;
             filter: saturate(0) brightness(99);
         }
-        .bit::before {
+        :is(.bit,[href*='?bit#'])::before {
             background-image: url(img/bit/A.png) !important;
             filter: saturate(0) brightness(99);
         }
