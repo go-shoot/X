@@ -11,6 +11,8 @@ class Part {
         this.push(json);
         return this.constructor.name == 'Part' ? new Part[this.comp](json) : this;
     }
+    [Symbol.toPrimitive] = (type) => type == 'string' && Object.values(this).flatMap(v => typeof v == 'object' ? Object.values(v) : v).join(' ');
+    
     push (json) {return Object.assign(this, json);}
     get path () {return this.#path ??= [this.constructor.name.toLowerCase(), this.abbr];}
 
@@ -82,7 +84,7 @@ class Tile extends HTMLElement {
             Q('#triangle').cloneNode(true),
             E('object', {data: this.html.background()}),
             E('figure>img', {src: `/X/img/${path.join('/')}.png`}),
-            E.ul(this.html.icons()),
+            E('ul', this.html.icons()),
             E('p', Markup.spacing(desc)),
             ...this.html.stat(),
             ...this.html.names(),
@@ -123,7 +125,10 @@ Object.assign(Tile.prototype.html, {
     },
     icons () {
         let {line, group, attr} = this.Part;
-        return [...new Set([line, group, ...attr ?? []])].map(a => Tile.icons.find(a, {evaluate: true}));
+        return [...new Set([line, group, ...attr ?? []])].map(a => {
+            let content = Tile.icons.find(a, {evaluate: true});
+            return content ? E('li', typeof content == 'string' ? {title: a} : {}, content) : '';
+        });
     },
     names () {
         let {path, group, names} = this.Part;

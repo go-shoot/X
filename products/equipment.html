@@ -5,7 +5,6 @@
 <style>
     main {
         max-width:1000px;
-        --size:150%;
     }
     section:not(:target),h1 {
         display:none;
@@ -33,69 +32,71 @@
     </section>
 </main>
 
-<template id="RUBBER CUSTOM GRIP">
+<template id="rubber custom grip">
     四塊分別是：<dl><dt><ruby>Rubber Side Panel<rt>ラバーサイドパネル</ruby> L<dd>放四根手指用<dt><ruby>Rubber Side Panel<rt>ラバーサイドパネル</ruby> M<dd>容易握的平坦形<dt><ruby>Rubber Side Panel<rt>ラバーサイドパネル</ruby> S<dd>放姆指用<dt><ruby>Rubber Grip Panel<rt>ラバーグリップパネル</ruby><dd>一端的突起減少滑手</dl>
 </template>
-<template id="CUSTOM GRIP">
+<template id="custom grip">
     四塊分別是：<dl><dt><ruby>Long Side Panel<rt>ロングサイドパネル</ruby><dd>放四根手指用<dt><ruby>Grip Panel<rt>グリップパネル</ruby><dd>掌心用的平坦形<dt><ruby>Short Side Panel<rt>ショートサイドパネル</ruby><dd>放姆指用<dt><ruby>Hybrid Panel<rt>ハイグリップパネル</ruby><dd>一端的突起減少滑手</dl>
 </template>
-<template id="Xtreme Stadium">
+<template id="xtreme stadium">
     下方兩側為2分 <ruby>Over Zone<rt>オーバーゾーン</rt></ruby>，中間為3分 <ruby>Xtreme Zone<rt>エクストリームゾーン</rt></ruby>。
 </template>
-<template id="Wide Xtreme Stadium">
+<template id="wide xtreme stadium">
     上方兩個角落為3分Xtreme Zone，下方中間為2分Over Zone。最後一顆生存的陀螺為勝，依其餘兩顆如何落敗而加總得分。例如兩顆陀螺互相碰撞後分別從2分區及3分區離開對戰盤，剩餘的一顆就取得5分。
 </template>
 
 
 <script type="module">
 import DB from '../include/DB.js';
-import {Markup} from "../include/bey.js"
-const List = {
-    headers: (where, products, determinant) => {
-        for (let {eng, jap, desc, colors} of products.reverse()) {
-            let details = E('details', {name: 'panel'}, [
-                E('summary', [
-                    E('h3', `${jap}${String.fromCharCode(10)}${eng}`),
-                    E('small', Markup.spacing(desc)),
-                    E('picture', {style: {backgroundImage: `url(${List.src((colors[1] || colors[0])[2])})`}})
-                ]),
-                E('p', {innerHTML: Markup.spacing(Q(`[id='${eng}']`)?.innerHTML)}),
-                E('ol.boards')
-            ]);
-            let size = (colors[1] || colors[0])[3];
-            size && E(details.Q('picture')).set({'--size': size + '%'});
-            details.Q('summary').addEventListener('click', () => List.products(details, colors), {once: true});
-            where.Q(`h2:nth-of-type(${determinant(eng)})`).after(details);
-        }
-    },
-    products: (where, colors) => {
-        where.Q('ol').append(...colors.map(([classList, no, src, size]) => {
-            let li = E('li', [
-                E('code', no.replace('<br>', String.fromCharCode(10))),
-                E('figure>img', {src: List.src(src), alt: no}),
-                ...classList.split(' ').map(c => ['dragon', 'long'].includes(c) ? List.winder[c].cloneNode(true) : '')
-            ], {classList})
-            size && E(li.Q('img')).set({'--size': size + '%'});
-            return li;
-        }))
-    },
-    src: src => /^https|\/img/.test(src) ? src : 
-        /^[BCU]/.test(src) ? `https://beyblade.takaratomy.co.jp/beyblade-x/lineup/_image/${src}.png` : 
-        /^\d\//.test(src) ? `https://takaratomymall.jp/img/goods/${src}.jpg` :
-        `https://pbs.twimg.com/media/${src}?format=jpg&name=large`,
-    determinant: {
-        launchers: eng => eng.includes('STRING') ? 1 : 2,
-        others: eng => eng.includes('Stadium') ? 2 : 1
-    },
-    winder: {
+import {Markup, Preview} from "../include/bey.js";
+class Group {
+    constructor({eng, jap, desc, colors}) {
+        let [, , src, size] = colors[1] || colors[0];
+        let details = E('details', {name: 'panel'}, [
+            E('summary', [
+                E('h3', `${jap}${String.fromCharCode(10)}${eng}`),
+                E('small', Markup.spacing(desc)),
+                E('picture', {style: {
+                    background: `url(${Board.src(src)}) center / ${size?.width || (size || 150) + '%'}`
+                }})
+            ]),
+            E('p', {innerHTML: Markup.spacing(Q(`[id='${eng}']`)?.innerHTML)}),
+            E('ol.boards')
+        ]);
+        details.Q('summary').addEventListener('click', () => 
+            details.Q('ol').append(...colors.map(item => new Board(item)))
+        , {once: true});
+        return details;
+    }
+    static location = {
+        launchers: eng => eng.includes('string') ? 1 : 2,
+        others: eng => eng.includes('stadium') ? 2 : 1
+    }
+}
+class Board {
+    constructor([classList, code, src, style]) {
+        return E('li', [
+            E('code', code, {onclick: () => new Preview('image', code.split('/')[0])}),
+            E('figure>img', {
+                src: Board.src(src), alt: code, 
+                style: typeof style == 'object' ? style : {width: (style || 150) + '%'}
+            }),
+            ...classList.split(' ').map(c => Board.winder[c]?.cloneNode(true) ?? '')
+        ], {classList});
+    }
+    static winder = {
         dragon: E('ruby', ['Dragon Winder', E('rt', 'ドラゴンワインダー')]),
         long: E('ruby', ['Long Winder', E('rt', 'ロングワインダー')])
     }
-};
-Q('nav').after(DB(onhashchange = async () => {
-    let target = location.hash.substring(1);
-    if (Q(`#${target} details`)) return;
-    let products = await DB.get('product', target) || await (await fetch(`../db/prod-${target}.json`)).json();
-    List.headers(Q(`#${target}`), products, List.determinant[target]);
+    static src = src => 
+        /^[A-Z]X[A-Z]?\d/i.test(src) ? `https://beyblade.takaratomy.co.jp/beyblade-x/lineup/_image/${src}.png` : 
+        /^\w\//.test(src) ? `https://takaratomymall.jp/img/goods/${src}.jpg` : src;
+}
+Q('nav').after(DB(onhashchange = () => {
+    let place = Q(`#${location.hash.substring(1)}`);
+    if (place.Q(`details`)) return;
+    DB.get('product', place.id).then(groups => groups.reverse().forEach(({eng, ...rest}) => 
+        place.Q(`h2:nth-of-type(${Group.location[place.id](eng)})`).after(new Group({eng, ...rest}))
+    ));
 }));
 </script>

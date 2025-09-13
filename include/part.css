@@ -127,26 +127,29 @@
             margin-right: auto;
         }
         &:has(img:is([alt^=system])) {
-            order: 1;
+            order: 2;
             width: 2.5em;
         }
         &:has(img:is([alt^=line])) {
-            order: 1;
-            width: 1.5em;
-        }
-        &:not(:has(img)) {
             order: 2;
-            line-height: 1.8;
-            font-size: 1.1em;
+            width: 1.5em;
         }
         img {
             object-fit: contain;
             height: 100%; width: 100%;
         }
+        &[title] {
+            order: 3;
+            line-height: 1.8;
+            font-size: 1.1em;
+        }
+        &[title=simple] {
+            order: 1;
+            margin-right: .2em;
+
+            :host(.ratchet) & {margin-right: 6.3em;}
+        }
     }
-}
-:host(.ratchet) ul li {
-    position: absolute; bottom: 80%;
 }
 :host(.CX.motif) ul::before {
     content: '';

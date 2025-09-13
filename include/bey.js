@@ -143,10 +143,11 @@ class Preview {
         E('a', '', {href: tile.href()}),
         tile.fill()
     ))
-    images (td) {
-        let {code, video, lowercase, markup, max} = this.#image.revisions(td.dataset);
+    image (td) {
+        let dataset = typeof td == 'object' ? td.dataset : {code: td};
+        let {code, video, lowercase, markup, max} = this.#image.revisions(dataset);
         Preview.place.Q('#images').append(
-            E('p', Markup.spacing(Maps.note.find(td.dataset.code))),
+            E('p', Markup.spacing(Maps.note.find(dataset.code))),
             ...video?.split(',').map(vid => E('a', {href: `//youtu.be/${vid}?start=60`})) ?? [],
             ...this.#image.src('main', code),
             ...this.#image.src('more', code, markup.more, max),
@@ -156,7 +157,7 @@ class Preview {
     #image = {
         revisions: ({code, video}) => {
             video ??= Q(`[data-code=${code}][data-video]`)?.dataset.video;
-            let max = Q(`[data-code=${code}]`).length > 2 ? 18 : 9;
+            let max = Q(`[data-code=${code}]`)?.length > 2 ? 18 : 9;
             let lowercase = this.#image.lowercase(...code.split('-'));
             let {alias, _, ...markup} = Maps.images.find(code) ?? {};
             code = (alias || code).replace('-', _ ? '_' : '');

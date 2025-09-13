@@ -42,8 +42,10 @@ Object.assign(DB, {
         updates: ({fresh, index}) => fresh && !index ||
             fetch(`/X/db/-update.json`).catch(() => DB.indicator.setAttribute('status', 'offline'))
             .then(resp => resp.json())
-            .then(({news, ...files}) => (index && DB.plugins?.announce(news), fresh || DB.cache.filter(files)))
-        ,
+            .then(({news, ...files}) => {
+                index && DB.plugins?.announce(news);
+                return fresh || DB.cache.filter(files);
+            }),
         files: files => Promise.all(files.map(file => 
                 fetch(`/X/db/${file}.json`)
                 .then(resp => Promise.allSettled([file, resp.json(), file == 'part-blade-collab' && DB.clear('blade','hasbro') ]))

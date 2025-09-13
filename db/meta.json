@@ -15,7 +15,7 @@
                 "delimiter": {"CX": "."}
             },
             "ratchet": {
-                "height": {"high": 85, "mid": 70, "low": 50},
+                "height": {"high": 80, "mid": 65, "low": 50},
                 "terms": ["重量", "RING刃數", "BASE高度"]
             },
             "bit": {
@@ -102,6 +102,10 @@
         {
             "keywords": ["launcher","旋風","拉條","拉線"], 
             "href": "products/equipment.html#launchers", "text": "發射器"
+        },
+        {
+            "keywords": ["launcher","橡膠","grip","stadium"], 
+            "href": "products/equipment.html#others", "text": "手把與對戰盤"
         },
         {
             "keywords": ["HK","Hong Kong","香港","tclub","facebook","fb"], 

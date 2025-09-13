@@ -52,8 +52,8 @@ Q('[type=search]').oninput = ev => {
     if (!ev.target.value.trim()) return;
 
     (CACHE ? Promise.resolve(CACHE) : 
-        Promise.all([DB.get.essentials(false), DB.get('meta', 'search')])
-        .then(([[meta, parts], links]) => {
+        Promise.all([DB.get.essentials(false), DB.get('meta', 'search'), DB.get('product', 'beys')])
+        .then(([[meta, parts], links, beys]) => {
             Part.import(meta.general, DB.transform(parts));
             links.push(
                 ...Object.entries(meta.grouped.blade.一體.group).map(([line, {label}]) => ({                        
@@ -66,12 +66,10 @@ Q('[type=search]').oninput = ev => {
                         href: `parts/?blade=${line}#${group}`, text: title.match(/(?<=[⬧】])[^⬧]+$/)[0]
                 })))
             );
-            CACHE = {links};
+            window.CACHE = CACHE = {links, beys};
             return Promise.all(parts.flatMap(([, parts]) => parts.map(p => new Part(p).revise())));
         })
-        .then(parts => Object.assign(CACHE, {parts: parts.map(p => 
-            p.push({text: Object.values(p).flatMap(v => typeof v == 'object' ? Object.values(v) : v).join(' ') })
-        )}))
+        .then(parts => Object.assign(CACHE, {parts: parts.map(p => p.push({text: `${p}`}))} ))
     ).then(({parts, links}) => {
         Q('#search .parts').replaceChildren(...new Fuse(parts, {keys: ['abbr', 'text'], threshold: .3})
             .search({$or: [

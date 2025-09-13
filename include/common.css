@@ -136,12 +136,6 @@ a[href],a[onclick],nav,form summary,caption label,:is(caption,#filter) button,#f
     color: var(--theme-alt);
 }
 
-@keyframes remind {
-    0%,24% {text-shadow: 0 0 0;}
-    25%,49% {text-shadow: .5em 0 0 hsla(45,90%,48%,.8);}
-    50%,74% {text-shadow: 1em 0 0 hsla(45,90%,48%,.6);}
-    75%,100% {text-shadow: 1.5em 0 0 hsla(45,90%,48%,.4);}
-}
 .animating menu {
     transition: transform .5s;
 }
@@ -187,7 +181,6 @@ nav {
             color: var(--theme-alt);
             margin-left: -.425em;
         }
-        &:hover::after {animation: remind .5s infinite;}
         li {
             height: 100%; aspect-ratio: 1/1; /*safari*/
             &:last-child {margin-left: 1em;}
@@ -334,14 +327,32 @@ label:has(:is([type=radio],[type=checkbox]):not(:is(:checked,[name=mag]))):not(.
     display: flex; flex-wrap: wrap; justify-content: center; 
     gap: .2rem; 
 }
+.loading::after {
+    content: '\e005' !important; font-size: 2em;
+    display: inline-block;
+    animation: spin 1s infinite;
+}
+@keyframes spin {to {transform: rotate(360deg);}}
+@property --angle {
+    syntax: '<angle>';
+    inherits: true;
+    initial-value: 15deg;
+}
+.PI-selected {
+    touch-action: none;
+}
+continuous-knob {
+    --light: var(--theme);
+}
 [popover] {
     width: 100%; height: 100%;
     background: hsla(0,0%,0%,0.8); color: var(--on);
     border: none;
     padding-top: 1em;
 
-    #images {display: grid;}
-    #tiles x-part {font-size: 1.2em;}
+    #tiles x-part {
+        font-size: 1.2em;
+    }
     #cells table,#tiles x-part {
         margin: .5em auto;
     }
@@ -349,6 +360,32 @@ label:has(:is([type=radio],[type=checkbox]):not(:is(:checked,[name=mag]))):not(.
         display: none;
     }
     a::before {content: '\e024';}
+
+    #images {
+        display: grid; grid-template-columns: repeat(3,1fr);
+        justify-items: center; gap: .5em; 
+        padding: 1em calc(50% - min(15em,47.5%));
+
+        * {
+            grid-column: 1/-1;
+        }
+        a[href*=youtu]::before {
+            content: '';
+            display: block; width: 3em; height: 3em;
+            background: url(https://www.gstatic.com/alkali/e90fc2de5a0e583a01f03acda2e3e61f9577a646.svg) center / contain no-repeat;
+        }
+        :is(img,p) {
+            width: 100%;
+        }
+        p {
+            font-size: .9em;
+            border-bottom: .15em dotted;
+            padding: .6em .5em; margin: 0;
+        }
+        img:first-of-type~img:not([src*=detail]) {
+            grid-column: initial;
+        }
+    }
 }
 #glossary {
     position: fixed; left: max(10px, min(var(--left), 100% - 10px - 15em)); top: var(--top);
@@ -366,21 +403,4 @@ label:has(:is([type=radio],[type=checkbox]):not(:is(:checked,[name=mag]))):not(.
 }
 @keyframes vanish {
     to {opacity: 0;}
-}
-.loading::after {
-    content: '\e005' !important; font-size: 2em;
-    display: inline-block;
-    animation: spin 1s infinite;
-}
-@keyframes spin {to {transform: rotate(360deg);}}
-@property --angle {
-    syntax: '<angle>';
-    inherits: true;
-    initial-value: 15deg;
-}
-.PI-selected {
-    touch-action: none;
-}
-continuous-knob {
-    --light: var(--theme);
 }

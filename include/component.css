@@ -113,11 +113,15 @@
     code {
         position: relative;
         display: block;
-        margin: -.7em auto .2em auto;
-        line-height: 1.3em;
+        margin: -.7em auto .3em auto;
         width: 75%;
         white-space: pre-wrap;
-        font-size: .9em;
+        line-height: 1.4em;
+        font-size: .9em; font-family: MONO,COND;
+        cursor: pointer;
+        
+        li:not(.Lm) & {color: deepskyblue;}
+        &::before,&::after {color: var(--on);}
     }
     figure {
         width: 9em; height: 9em;
@@ -127,7 +131,6 @@
     }
     img {
         position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
-        width: var(--size,100%);
     }
     ruby {
         position: absolute; bottom: 1.3em; right: 1.7em;
