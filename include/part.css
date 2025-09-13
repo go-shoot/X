@@ -357,7 +357,11 @@ tbody {font-size: min(2.75vw,.7em);}
     border: none;
     padding: 1em 0;
 
-    a::before {content: '\e024';}
+    a:not([href*=youtu])::before {
+        content: '\e024';
+        font-size: 1.2em;
+    }
+    a[href^='//']::before {content: '\e023';}
     #tiles x-part {
         font-size: 1.2em;
     }

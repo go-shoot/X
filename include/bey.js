@@ -153,6 +153,11 @@ class Preview {
             ...this.#image.src('more', code, markup.more, max),
             ...this.#image.src('detail', lowercase ? code.toLowerCase() : code, markup.detail),
         );
+        /^BXG-\d+$/.test(dataset.code) && setTimeout(() => !Preview.place.Q('#images img') && 
+            Preview.place.Q('#images').prepend(E('a', {
+                href: `//google.com/search?q=%22${dataset.code}%22+beyblade`, target: '_blank'
+            }))
+        , 1000);
     }
     #image = {
         revisions: ({code, video}) => {
