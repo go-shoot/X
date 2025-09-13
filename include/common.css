@@ -350,6 +350,7 @@ continuous-knob {
     border: none;
     padding-top: 1em;
 
+    a::before {content: '\e024';}
     #tiles x-part {
         font-size: 1.2em;
     }
@@ -359,8 +360,6 @@ continuous-knob {
     #cells:has(tbody:empty) a,#tiles:not(:has(x-part)) a,#images:empty,p:empty {
         display: none;
     }
-    a::before {content: '\e024';}
-
     #images {
         display: grid; grid-template-columns: repeat(3,1fr);
         justify-items: center; gap: .5em; 

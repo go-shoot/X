@@ -11,8 +11,9 @@ class Part {
         this.push(json);
         return this.constructor.name == 'Part' ? new Part[this.comp](json) : this;
     }
-    [Symbol.toPrimitive] = (type) => type == 'string' && Object.values(this).flatMap(v => typeof v == 'object' ? Object.values(v) : v).join(' ');
-    
+    *[Symbol.iterator] () {
+        for (const v of Object.values(this)) yield typeof v == 'object' ? Object.values(v) : v;
+    }
     push (json) {return Object.assign(this, json);}
     get path () {return this.#path ??= [this.constructor.name.toLowerCase(), this.abbr];}
 

@@ -22,6 +22,7 @@
         <input type="search">
     </search>
     <ol class="parts"></ol>
+    <ol class="beys"></ol>
     <ol class="links"></ol>
 </section>
 
@@ -51,7 +52,7 @@ Q('[type=search]').oninput = ev => {
     Preview.reset();
     if (!ev.target.value.trim()) return;
 
-    (CACHE ? Promise.resolve(CACHE) : 
+    (CACHE ? Promise.resolve() : 
         Promise.all([DB.get.essentials(false), DB.get('meta', 'search'), DB.get('product', 'beys')])
         .then(([[meta, parts], links, beys]) => {
             Part.import(meta.general, DB.transform(parts));
@@ -66,22 +67,26 @@ Q('[type=search]').oninput = ev => {
                         href: `parts/?blade=${line}#${group}`, text: title.match(/(?<=[⬧】])[^⬧]+$/)[0]
                 })))
             );
-            window.CACHE = CACHE = {links, beys};
+            window.CACHE = CACHE = {links, beys: [...new Set(beys.map(([code]) => code ))]};
             return Promise.all(parts.flatMap(([, parts]) => parts.map(p => new Part(p).revise())));
         })
-        .then(parts => Object.assign(CACHE, {parts: parts.map(p => p.push({text: `${p}`}))} ))
-    ).then(({parts, links}) => {
-        Q('#search .parts').replaceChildren(...new Fuse(parts, {keys: ['abbr', 'text'], threshold: .3})
+        .then(parts => CACHE.parts = parts.map(p => p.push({all: [...p].flat()})) )
+    ).then(() => {
+        Q('#search .parts').replaceChildren(...new Fuse(CACHE.parts, {keys: ['abbr', 'all'], threshold: .3})
             .search({$or: [
                 {abbr: ev.target.value.trim()}, 
-                {$and: ev.target.value.split(/(?=\W)/).map(t => ({text: t.trim()}) )}
+                {$and: ev.target.value.split(/(?=\W)/).map(t => ({all: t.trim()}) )}
             ]}).slice(0, 10)
             .map(({item}) => E(`li>button.${item.comp}.${item.line || item.group}`, 
                 Markup('cell', item.names?.chi || item.abbr),
                 {onclick: () => new Preview(['tile', 'cell'], item.path)}
             ))
         );
-        Q('#search .links').replaceChildren(...new Fuse(links, {keys: ['keywords', 'text'], threshold: .4})
+        Q('#search .beys').replaceChildren(...new Fuse(CACHE.beys, {threshold: 0})
+            .search(ev.target.value)
+            .map(({item}) => E('li>button', item, {onclick: () => new Preview(['cell', 'image'], item)}))
+        );
+        Q('#search .links').replaceChildren(...new Fuse(CACHE.links, {keys: ['keywords', 'text'], threshold: .4})
             .search(ev.target.value).slice(0, 5)
             .map(({item}) => E('li>a', {href: item.href, innerText: item.text, target: item.href.startsWith('//') ? '_blank' : ''}))
         );

@@ -126,12 +126,12 @@ class Search {
 class Preview {
     constructor(what, path, where) {
         Preview.place ??= where || Q('[popover]') || Q('body').appendChild(E('aside', {
-            popover: true,
+            popover: 'auto',
             onclick: ev => ev.target.closest('[popover]').hidePopover()
         }, [E('div#cells'), E('div#tiles'), E('div#images')]));
         Preview.reset();
         Preview.place.popover && Preview.place.showPopover();
-        [what].flat().forEach(w => this[w](path));
+        [what].flat().reduce((prom, w) => prom.then(() => this[w](path)), Promise.resolve());
     }
     static reset = () => Preview.place?.Q('div', div => div.innerHTML = '');
     cell = path => new Search(path).then(({beys, href}) => Q('#cells').append(

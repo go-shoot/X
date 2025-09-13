@@ -141,7 +141,7 @@
         },
         {
             "keywords": ["Takara Tomy","日本","影片","最新情報資訊"],
-            "href": "//www.youtube.com/@BEYBLADEOfficialYouTube/videos", "text": "官方Youtube"
+            "href": "//www.youtube.com/@BEYBLADEOfficialYouTube/videos", "text": "官方 Youtube"
         },
         {
             "keywords": ["日本","最新商品"],
@@ -149,11 +149,11 @@
         },
         {
             "keywords": ["iPhone","App Store","應用程式","分數","抽獎","QR Code"],
-            "href": "//apps.apple.com/tw/app/beyblade-x/id1670801696", "text": " iOS App"
+            "href": "//apps.apple.com/tw/app/beyblade-x/id1670801696", "text": "iOS App"
         },
         {
             "keywords": ["Google Play Store","應用程式","分數","抽獎","QR Code"],
-            "href": "//play.google.com/store/apps/details?id=jp.co.takaratomy.beyblade_x", "text": " Android App"
+            "href": "//play.google.com/store/apps/details?id=jp.co.takaratomy.beyblade", "text": "Android App"
         },
         {
             "keywords": ["X","Twitter","推特","最新情報資訊","日本"],
