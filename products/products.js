@@ -43,6 +43,7 @@ Object.assign(Table, {
         Q('a[href*=kyoganken]').href = '//kyoganken.web.fc2.com/beyx/#parts1';
     },
     async filter (search) {
+        search[0] == 'search' && (search = search[1]);
         typeof search == 'string' && (search = search.trim());
         if (!search) return Table.reset();
         Q('tbody tr', tr => tr.hidden = true);

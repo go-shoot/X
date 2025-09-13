@@ -80,7 +80,7 @@ class Search {
                 this.regexp.some(r => r.test(bey.dataset?.abbr ?? bey[2])) ||
                 typeof query == 'string' && query.length >= 2 && this.#search.code(query.split(' '), bey.firstChild?.innerText ?? bey[0])
             ),
-            href: this.href
+            href: this.href || `search=${query}`
         }));
     }
     lookup (string) {
@@ -135,7 +135,7 @@ class Preview {
     }
     static reset = () => Preview.place?.Q('div', div => div.innerHTML = '');
     cell = path => new Search(path).then(({beys, href}) => Q('#cells').append(
-        E('a', '', {href: `../products/?${href}`}),
+        href ? E('a', '', {href: `/X/products/?${href}`}) : '',
         E('table>tbody', beys.map(bey => new Bey(bey)))
     )).then(() => Cell.fill('chi'))
 
@@ -211,13 +211,21 @@ Object.assign(Markup, {
         [/(.*)\$\{(.+)\}(.*)/, ([, $1, $2, $3], values) => [$1, values[$2], $3].join('')],
         [/(.*)\((.+)\)(.*)/, ([, $1, $2, $3]) => $2.split('|').map(s => [$1, s, $3].join(''))],
     ],
+    search: [
+        [/攻擊?/, 'att'], [/防禦?/, 'def'], [/平衡?/, 'bal'], [/持久?/, 'sta'],
+        ['左', 'left'], ['右', 'right'],
+        [/軸心?/, 'bit'], ['固鎖', 'ratchet'], [/上蓋|面|戰刃/, 'blade'],
+    ],
     replace (string, which, values) {
         if (string instanceof Array) 
             return string.flatMap(s => Markup.replace(s, which));
         if (string instanceof HTMLElement) 
             return string;
         if (Markup[which] instanceof Array)
-            return Markup[which].reduce((str, [r, f]) => r.test(str) ? f(r.exec(str), values) : str, string);
+            return Markup[which].reduce((str, [r, f]) => 
+                typeof f == 'string' ? str.replace(r, `${f} `) : 
+                r.test(str) ? f(r.exec(str), values) : str
+            , string);
         let [r, f] = Markup[which].find(([r]) => r.test(string)) ?? [];
         return f?.(r.exec(string), values) ?? string;
     },

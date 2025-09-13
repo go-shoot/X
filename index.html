@@ -67,27 +67,29 @@ Q('[type=search]').oninput = ev => {
                         href: `parts/?blade=${line}#${group}`, text: title.match(/(?<=[⬧】])[^⬧]+$/)[0]
                 })))
             );
-            window.CACHE = CACHE = {links, beys: [...new Set(beys.map(([code]) => code ))]};
+            window.CACHE = CACHE = {links, beys: [...new Set(beys.map(([code]) => code.replace('-', '')))]};
             return Promise.all(parts.flatMap(([, parts]) => parts.map(p => new Part(p).revise())));
         })
         .then(parts => CACHE.parts = parts.map(p => p.push({all: [...p].flat()})) )
     ).then(() => {
+        const search = Markup.replace(ev.target.value, 'search').trim();
         Q('#search .parts').replaceChildren(...new Fuse(CACHE.parts, {keys: ['abbr', 'all'], threshold: .3})
             .search({$or: [
-                {abbr: ev.target.value.trim()}, 
-                {$and: ev.target.value.split(/(?=\W)/).map(t => ({all: t.trim()}) )}
-            ]}).slice(0, 10)
+                {abbr: search}, {$and: search.split(/(?=\W)/).map(t => ({all: t}) )}
+            ]})
             .map(({item}) => E(`li>button.${item.comp}.${item.line || item.group}`, 
                 Markup('cell', item.names?.chi || item.abbr),
                 {onclick: () => new Preview(['tile', 'cell'], item.path)}
             ))
         );
-        Q('#search .beys').replaceChildren(...new Fuse(CACHE.beys, {threshold: 0})
-            .search(ev.target.value)
-            .map(({item}) => E('li>button', item, {onclick: () => new Preview(['cell', 'image'], item)}))
+        Q('#search .beys').replaceChildren(...new Fuse(CACHE.beys, {threshold: .2})
+            .search(search)
+            .map(({item}) => E('li>button', item.replace(/(?=\d)/, '-'), {
+                onclick: () => new Preview(['cell', 'image'], item.replace(/(?=\d)/, '-'))
+            }))
         );
         Q('#search .links').replaceChildren(...new Fuse(CACHE.links, {keys: ['keywords', 'text'], threshold: .4})
-            .search(ev.target.value).slice(0, 5)
+            .search(search).slice(0, 5)
             .map(({item}) => E('li>a', {href: item.href, innerText: item.text, target: item.href.startsWith('//') ? '_blank' : ''}))
         );
     })
