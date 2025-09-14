@@ -102,65 +102,36 @@ Q('[type=search]').oninput = ev => {
 <script type=module>  
 import DB from './include/DB.js'
 import {Markup} from './include/bey.js'
-
-const observer = new IntersectionObserver(entries => entries.forEach(entry => entry.target.classList.toggle('seeing', entry.isIntersecting)));
-Q('header').after(DB(() => Q('header,section,time,.scroller', el => observer.observe(el))));
-
-class Shohin {
-    constructor({code, name, imgs, desc, type, color, class: classList}) {
-        imgs ??= [];
-        if (name && /XG?-\d+/.test(code)) {
-            let c = code.match(/.XG?-\d+/)[0].replace('-', '');
-            imgs = [Shohin.base + `${c}@1.png`, ...imgs];
-            imgs.push(...[2,3,4,5,6,7,8].map(n => Shohin.base + `${c}${color ? `_${color}` : ''}_0${n}@1.png`));
-        }
-        return E('div', [
-            E('h5', type ? [
-                E(`ruby.below.${type}`, [
-                    E('img', {src: `img/types.svg#${type}`}), 
-                    E('rt', Shohin.types[type])]),
-                    code
-                ] : code),
-            E('h4', name?.replaceAll('-', '‑').replaceAll('<br>', String.fromCharCode(10))), 
-            ...imgs.map(src => E('figure', [E('a', '🖼️', {href: src}), E('img', {src})])), 
-            ...([desc ?? []].flat()).map(d => E('p', {innerHTML: Markup.spacing(d).replaceAll('-', '‑')}))
-        ], {classList: [`scroller`, classList || Shohin.classes.find(code, {default: 'Lm'})]});
-    }
-    static classes = new O([
-        [/(stadium|entry) set/i, 'SS'],
-        [/組合|Set/i, 'St'],
-        [/Starter/i, 'S'],
-        [/Random/i, 'RB'],
-        [/Booster/i, 'B'],
-        [/.XG?-/, 'others'],
-    ])
-    static base = `https://beyblade.takaratomy.co.jp/beyblade-x/lineup/_image/`;
-    static types = {att: 'ATTACK', bal: 'BALANCE', sta: 'STAMINA', def: 'DEFENSE'};
-}
+import {Shohin} from './include/utilities.js'
+import PointerInteraction from 'https://aeoq.github.io/pointer-interaction/script.js';
 DB.plugins = {
     announce: news => new O(news).each(([date, beys]) => 
         Q('#products').append(E('time', {title: date}), ...beys.map(bey => new Shohin(bey)))
     ),
 };
-import PointerInteraction from 'https://aeoq.github.io/pointer-interaction/script.js';
+const observer = new IntersectionObserver(entries => entries.forEach(entry => entry.target.classList.toggle('seeing', entry.isIntersecting)));
+Q('header').after(DB(() => {
+    Q('header,section,time,.scroller', el => observer.observe(el));
+    PointerInteraction.events({
+        '.scroller,#search ol': {scroll: {x: true}},
+        '#reset': {
+            drop: {goal: 'i:last-child'},
+            drag: PI => PI.drag.to.translate({x: {min: 0, max: Q('#reboot p').clientWidth - Q('#reset').clientWidth}, y: false}),
+            lift: PI => PI.goal && reset(PI.target.nextElementSibling).then(() => {
+                onbeforeunload = () => scrollTo(0, 0);
+                location.reload();
+            }).catch(er => console.error(er)),
+        }
+    });
+}));
+
+(new Date - Storage('cached'))/1000/60/60/24 > 30 && fetch('sw/?delete=parts');
 const reset = message => Promise.all([
     DB.discard(ev => message.innerText = ev.type == 'blocked' ? '請先關閉所有本網的分頁' : ev.type),
     caches.delete('V3'), caches.delete('parts'),
     localStorage.clear(),
     navigator.serviceWorker.getRegistrations().then(([reg]) => reg.unregister())
 ]);
-PointerInteraction.events({
-    '.scroller,#search ol': {scroll: {x: true}},
-    '#reset': {
-        drop: {goal: 'i:last-child'},
-        drag: PI => PI.drag.to.translate({x: {min: 0, max: Q('#reboot p').clientWidth - Q('#reset').clientWidth}, y: false}),
-        lift: PI => PI.goal && reset(PI.target.nextElementSibling).then(() => {
-            onbeforeunload = () => scrollTo(0, 0);
-            location.reload();
-        }).catch(er => console.error(er)),
-    }
-});
-(new Date - Storage('cached'))/1000/60/60/24 > 30 && fetch('sw/?delete=parts');
 Q('body>input').onkeypress = ev => {
     if ((ev.keyCode || ev.which) != 13) return;
     ev.target.value = ev.target.value.trim();

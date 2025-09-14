@@ -22,52 +22,29 @@
 
 <script type="module">
 import { Bey } from '../include/bey.js'
+import { Keihin } from '../include/utilities.js'
+
 const Prize = () => Prize.before().then(Prize.display).then(Prize.after);
 Object.assign(Prize, {
     before: () => Promise.all([DB.get.essentials(), fetch('../db/prod-keihin.json')])
         .then(([[meta, parts], resp]) => Bey.import(meta.general, parts) && resp.json()),
 
-    display: keihins => Q('diamond-grid').append(...Keihin.all = keihins.map(k => new Keihin(k))),
-    after: () => Prize.filter(),
-    filter () {
-        Q('nav form').append(...E.checkboxes(Object.keys(Keihin.type).map(t => ({id: `keihin-${t}`, checked: true}) )));
+    display: keihins => Q('diamond-grid').append(...Prize.all = keihins.map(k => new Keihin(k))),
+    after: () => [Prize.filter(), Prize.event()],
+    
+    filter: () => Q('nav form').append(...E.checkboxes(Object.keys(Keihin.type).map(t => ({id: `keihin-${t}`, checked: true}) ))),
+    event () {
         Q('nav').onchange = () => {
             let show = Q('nav input', []).filter(i => i.checked).map(i => i.id);
-            Keihin.all.forEach(k => k.hidden = !show.includes(k.classList[0]));
+            Prize.all.forEach(k => k.hidden = !show.includes(k.classList[0]));
         };
+        onclick = ev => {
+            let h4 = ev.target.closest('h4')?.cloneNode(true);
+            if (!h4) return;
+            h4.Q('.code')?.remove();
+            navigator.clipboard.writeText([...h4.children].map(el => el.innerText.replace(' ', '')).join(' '));
+        }
     }
-})
-class Keihin {
-    constructor({type, note, link, date, code, bey, ver, img}) {
-        let names = new Bey([, , bey]);        
-        return E(`li.keihin-${type}`, [
-            E('em', Keihin.type[type]), 
-            E('p', link ? [E('a', {href: link, innerHTML: note})] : note),
-            E('div', [
-                E('figure', [E('img', {src: img[0], style: img[1]})]), 
-                E('h4', {lang: 'ja'}, [
-                    E('code', code || ''), 
-                    E('span', names.jap.replace('-', '‑')), 
-                    E('small', {innerHTML: [ver?.[0] ?? '', names.only ? `（${names.only}）` : ''].filter(t => t).join('<br>')})
-                ]),
-            ]),
-            E('h4', {lang: 'zh'}, [
-                names.chi.replace('-', '‑'), 
-                E('small', {innerHTML: [ver?.[1] ?? ''].filter(t => t).join(' ')})
-            ]),
-            E('time', date.replace('-','‒'))
-        ]);
-    }
-    static type = {t: '比賽', d: '抽獎', m: '限定商品', g: '贈品'}
-    static all = []
-}
-onclick = ev => {
-    let h5 = ev.target.closest('h5')?.cloneNode(true);
-    if (!h5) return;
-    h5.Q('.code')?.remove();
-    navigator.clipboard.writeText([...h5.children].map(el => el.innerText.replace(' ', '')).join(' '));
-}
-location.hash && Q(location.hash)?.setAttribute('open', true);
-
+});
 Q('nav').after(DB(Prize));
 </script>

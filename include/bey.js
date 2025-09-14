@@ -27,8 +27,8 @@ class Bey {
             jap: Array.isArray(this.blade) ? 
                     this.blade.map((b, i, ar) => ar[0] && ar[1] && i == 2 ? b.abbr : b?.names.jap) : this.blade.names.jap,
         };
-        names.chi &&= [names.chi, ' ', this.ratchet.abbr, this.bit.abbr].join('');
-        names.jap = [names.jap, ' ', this.ratchet.abbr, this.bit.abbr].flat().join('');
+        names.chi &&= [names.chi, ' ', this.ratchet.abbr, this.bit.abbr].join('').replace('-', '‑');
+        names.jap = [names.jap, ' ', this.ratchet.abbr, this.bit.abbr].flat().join('').replace('-', '‑');
         let single = parts => parts.length === 1 && META.jap.at(parts[0].path.slice(0, -1))?._;
         return {...names, only: single([this.blade, this.ratchet, this.bit].flat().filter(p => p?.abbr))};
     }

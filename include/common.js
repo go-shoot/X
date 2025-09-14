@@ -38,8 +38,8 @@ addEventListener('DOMContentLoaded', () => {
         PointerInteraction.events({
             'nav menu': {
                 drag: PI => {
-                    PI.drag.to.translate({x: {max: Q('nav menu').offsetLeft*-1 - 6}, y: false });
-                    PI.drag.to.select({x: 0}, [...PI.target.children].filter(child => !child.matches(':has(.current),:last-child')));
+                    PI.drag.to.translate({x: false, y: {max: Q('nav menu').offsetTop*-1 - 6} });
+                    PI.drag.to.select({y: 0}, [...PI.target.children].filter(child => !child.matches(':has(.current),:last-child')));
                 },
                 lift: PI => Q('.PI-selected') && (location.href = PI.target.Q('.PI-selected a').href)
             }
