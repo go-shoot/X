@@ -53,7 +53,7 @@
 <script type=module>
 import DB from '../include/DB.js'
 import Parts from './parts.js'
-Q('nav').after(DB(location.search && Parts));
+Q('nav').after(DB().then(location.search && Parts));
 
 import PointerInteraction from 'https://aeoq.github.io/pointer-interaction/script.js'
 PointerInteraction.events({

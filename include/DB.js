@@ -1,8 +1,9 @@
 import { Part } from "./part.js";
 import { Glossary } from "./utilities.js";
-const DB = callback => DB.indicator = new DB.indicator(callback);
+
+const DB = (plugins = {}) => Object.assign(DB, {indicator: new DB.indicator(), plugins});
 Object.assign(DB, {
-    current: 'V3',
+    current: 'V4',
     replace: (before, after) => indexedDB.databases()
         .then(dbs => dbs.find(db => db.name == before) && DB.open(before).then(DB.discard))
         .then(() => DB.open(after))
@@ -42,10 +43,9 @@ Object.assign(DB, {
         updates: ({fresh, index}) => fresh && !index ||
             fetch(`/X/db/-update.json`).catch(() => DB.indicator.setAttribute('status', 'offline'))
             .then(resp => resp.json())
-            .then(({news, ...files}) => {
-                index && DB.plugins?.announce(news);
-                return fresh || DB.cache.filter(files);
-            }),
+            .then(({news, ...files}) => 
+                (index ? DB.plugins?.announce(news) : Promise.resolve()).then(() => fresh || DB.cache.filter(files))
+            ),
         files: files => Promise.all(files.map(file => 
                 fetch(`/X/db/${file}.json`)
                 .then(resp => Promise.allSettled([file, resp.json(), file == 'part-blade-collab' && DB.clear('blade','hasbro') ]))
@@ -86,6 +86,7 @@ Object.assign(DB, {
         return new Promise(res => store.index('group').getAll(IDBKeyRange.only(value))
             .onsuccess = ev => res(ev.target.result.forEach(({abbr}) => store.delete(abbr))));
     },
+    then: callback => Object.assign(DB.indicator, {callback}),
     indicator: class extends HTMLElement {
         constructor(callback) {
             super();
@@ -155,7 +156,9 @@ Object.assign(DB.cache, {
         'prod-equipment': json => DB.put('product', json),
         'prod-beys': beys => DB.put('product', {beys}),
     },
-    filter: files => [...new O(files).filter(([file, time]) => new Date(time) / 1000 > (Storage('DB')?.[file] || 0)).keys()],
+    filter: files => [...new O(files).filter(([file, time]) => (DB.plugins.include?.includes(n) ?? true) 
+        && !DB.plugins.exclude?.includes(n) && new Date(time) / 1000 > (Storage('DB')?.[file] || 0)
+    ).keys()],
 });
 Object.assign(DB.store, {
     format (store) {

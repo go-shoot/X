@@ -1,27 +1,26 @@
 import DB from "./DB.js";
-import { Bey, Markup } from "./bey.js";
+import { Bey, Preview, Markup } from "./bey.js";
 
 class Shohin {
-    constructor({code, name, imgs, desc, type, color, class: classList}) {
+    constructor({code: header, name, imgs, desc, type}) {
         imgs ??= [];
-        if (name && /XG?-\d+/.test(code)) {
-            let c = code.match(/.XG?-\d+/)[0].replace('-', '');
-            imgs = [`${Shohin.base}${c}@1.png`, ...imgs];
-            imgs.push(...[2,3,4,5,6,7,8,9].map(n => `${Shohin.base}${c}${color ? `_${color}` : ''}_0${n}@1.png`));
+        if (name && /XG?-\d+/.test(header)) {
+            let [code, cat] = header.split(/(?<=\d) /);
+            imgs.push(...new Preview('index', code.replace('-', ''), cat));
         }
+        let content = [desc ?? []].flat().reduce((arr, n, i) => arr.toSpliced(2 * i + 1, 0, n), imgs)
+            .map(c => /^(https?:)?\/\//.test(c) ? 
+                E('figure', [E('a', '🖼️', {href: c}), E('img', {src: c})]) : 
+                E('p', {innerHTML: Markup.spacing(c).replaceAll('-', '‑')})
+            );
         return E('div', [
-            E('h5', type ? [
-                E(`ruby.below.${type}`, [
-                    E('img', {src: `img/types.svg#${type}`}), 
-                    E('rt', Shohin.type[type])]),
-                    code
-                ] : code),
-            E('h4', name?.replaceAll('-', '‑').replaceAll('<br>', String.fromCharCode(10))), 
-            ...imgs.map(src => E('figure', [
-                E('a', '🖼️', {href: src}), E('img', {src})
-            ])), 
-            ...([desc ?? []].flat()).map(d => E('p', {innerHTML: Markup.spacing(d).replaceAll('-', '‑')}))
-        ], {classList: [`scroller`, classList || Shohin.classes.find(code, {default: 'Lm'})]});
+            E('h5', [type ? E(`ruby.below.${type}`, [
+                E('img', {src: `img/types.svg#${type}`}), 
+                E('rt', Shohin.type[type])
+            ]) : '', header]),
+            E('h4', {innerHTML: name?.replaceAll('-', '‑')}), 
+            ...content
+        ], {classList: [`scroller`, Shohin.classes.find(header, {default: 'Lm'})]});
     }
     static classes = new O([
         [/(stadium|entry) set/i, 'SS'],
@@ -31,7 +30,6 @@ class Shohin {
         [/Booster/i, 'B'],
         [/.XG?-/, 'others'],
     ])
-    static base = `https://beyblade.takaratomy.co.jp/beyblade-x/lineup/_image/`;
     static type = {att: 'ATTACK', bal: 'BALANCE', sta: 'STAMINA', def: 'DEFENSE'};
 }
 class Keihin {
@@ -39,7 +37,7 @@ class Keihin {
         let names = new Bey([, , bey]);   
         return E(`li.keihin-${type}`, [
             E('em', Keihin.type[type]), 
-            E('p', link ? [E('a', {href: link}, note)] : note),
+            E('p', link ? E('a', {href: link}, note) : note),
             E('div', [
                 E('figure>img', {src, style}), 
                 E('h4', {lang: 'ja'}, [

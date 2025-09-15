@@ -29,12 +29,8 @@
 <section id=products><h3>最新商品</h3></section>
 
 <section id=reboot>
-    <div>
-        如在本網遇上問題<p><i id=reset>&#xe010;</i><span>重設儲存</span><i></i></p>
-    </div>
-    <a href="../burst/" id=bbb><img src="img/system-BBB.png"></a>
-</section>
-
+    如在本網遇上問題<div><i id=reset>&#xe010;</i><span>重設儲存</span><i></i></div>
+    <a href="../"><img src="../25th.png"></a></section>
 <footer>
     對於本網所載資料的準確性或完整性，製作者不會作任何保證或聲明，或因提供或使用此網資料而直接或間接引致的任何損失、損壞或傷害，負上任何責任。
     <br>Developed and Designed by V Man (MKK). 2023–.
@@ -59,9 +55,7 @@ Q('[type=search]').oninput = ev => {
     });
     (CACHE ? Promise.resolve() : 
         Promise.all([DB.get.essentials(false), DB.get('meta', 'search'), DB.get('product', 'beys')])
-        .then(([[meta, parts], links, beys]) => {
-            Part.import(meta.general, DB.transform(parts));
-            
+        .then(([[meta, parts], links, beys]) => {            
             links.push(...[...meta.grouped].map(([comp, obj]) => [
                 link([comp], (obj.所有 ?? obj.一體).title),
                 [...obj].filter(([, obj]) => obj.group).map(([line, obj]) => line.endsWith('X') ? 
@@ -98,25 +92,31 @@ Q('[type=search]').oninput = ev => {
         );
     })
 }
-</script>
-<script type=module>  
-import DB from './include/DB.js'
-import {Markup} from './include/bey.js'
+
 import {Shohin} from './include/utilities.js'
 import PointerInteraction from 'https://aeoq.github.io/pointer-interaction/script.js';
-DB.plugins = {
-    announce: news => new O(news).each(([date, beys]) => 
-        Q('#products').append(E('time', {title: date}), ...beys.map(bey => new Shohin(bey)))
-    ),
-};
-const observer = new IntersectionObserver(entries => entries.forEach(entry => entry.target.classList.toggle('seeing', entry.isIntersecting)));
-Q('header').after(DB(() => {
+Q('header').after(DB({
+    announce: news => DB.get.essentials()
+        .then(([meta, parts]) => Part.import(meta.general, parts))
+        .then(() =>new O(news).each(([date, beys]) => 
+            Q('#products').append(E('time', {title: date}), ...beys.map(bey => new Shohin(bey)))
+        )),
+}).then(() => {
+    const observer = new IntersectionObserver(entries => entries.forEach(entry => 
+        entry.target.classList.toggle('seeing', entry.isIntersecting)
+    ));
+    const reset = message => Promise.all([
+        DB.discard(ev => message.innerText = ev.type == 'blocked' ? '請先關閉所有本網的分頁' : ev.type),
+        caches.delete('V4'), caches.delete('parts'),
+        localStorage.clear(),
+        navigator.serviceWorker.getRegistrations().then(([reg]) => reg.unregister())
+    ]);
     Q('header,section,time,.scroller', el => observer.observe(el));
     PointerInteraction.events({
         '.scroller,#search ol': {scroll: {x: true}},
         '#reset': {
             drop: {goal: 'i:last-child'},
-            drag: PI => PI.drag.to.translate({x: {min: 0, max: Q('#reboot p').clientWidth - Q('#reset').clientWidth}, y: false}),
+            drag: PI => PI.drag.to.translate({x: {min: 0, max: Q('#reboot div').clientWidth - Q('#reset').clientWidth}, y: false}),
             lift: PI => PI.goal && reset(PI.target.nextElementSibling).then(() => {
                 onbeforeunload = () => scrollTo(0, 0);
                 location.reload();
@@ -126,12 +126,7 @@ Q('header').after(DB(() => {
 }));
 
 (new Date - Storage('cached'))/1000/60/60/24 > 30 && fetch('sw/?delete=parts');
-const reset = message => Promise.all([
-    DB.discard(ev => message.innerText = ev.type == 'blocked' ? '請先關閉所有本網的分頁' : ev.type),
-    caches.delete('V3'), caches.delete('parts'),
-    localStorage.clear(),
-    navigator.serviceWorker.getRegistrations().then(([reg]) => reg.unregister())
-]);
+
 Q('body>input').onkeypress = ev => {
     if ((ev.keyCode || ev.which) != 13) return;
     ev.target.value = ev.target.value.trim();

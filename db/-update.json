@@ -1,20 +1,26 @@
 {
-  "part-bit":          "2025/08/10 00:35:00",
-  "part-ratchet":      "2025/08/10 00:35:00",
-  "part-blade-divided":"2025/08/10 00:35:00",
-  "part-blade-collab": "2025/08/10 00:35:00",
-  "part-blade":        "2025/08/10 00:35:00",
-  "meta":              "2025/08/10 00:35:00",
-  "prod-beys":         "2025/07/31 22:00:00",
-  "prod-equipment":    "2025/06/14 22:40:00",
+  "part-ratchet":     "2025/09/12 21:40:00",
+  "part-blade-collab":"2025/09/12 21:40:00",
+  "part-blade-divided":"2025/09/12 22:20:00",
+  "prod-beys":        "2025/09/12 21:40:00",
+  "prod-equipment":   "2025/09/12 21:40:00",
+  "part-bit":         "2025/09/03 14:20:00",
+  "meta":        "2025/08/11 23:00:00",
   "news": {
-    "2025-09":[
-      {"code":"CX-09 starter","name":"ss","desc":["rgerwgwbhwrger ert er e","er ertge r", "er ert e ", "Er ter er"]}
+    "2025-09-27":[
+      {"code":"CX-09 starter","type":"bal","name":"ソルエクリプスD5-70TK<br>SolEclipse D5-70K",
+      "imgs":[],
+      "desc":["Main Blade 及 Assist Blade 都可反轉切換模式"]}
     ],
-    "2025-10":[
-      {"code":"UX-16 random booster select"},
-      {"code":"BX-46 stadium set"},
-      {"code":"BX-47 launcher"}
+    "2025-10-11":[
+      {"code":"BX-46 stadium set","name":"バトルエントリーセット∞<br>Battle Entry Set <ruby>∞<rt>infinity</ruby>",
+      "imgs":[],"desc":"雙方向X Line及Over/Xtreme Zone，大幅提升擊出機會"},
+      {"code":"UX-16 random booster select","name":"クロックミラージュ9-65B<br>ClockMirage 9-65B",
+      "type":"sta",
+    "imgs":[],
+    "desc":["ClockMirage：圓形60枚刃。只能使用簡化形的Ratchet。"]},
+      {"code":"BX-47 launcher","name":"ストリングランチャーL レッドVer.<br>String Launcher L Red Ver.",
+    "imgs":[],"desc":"左迴轉發射器"}
     ],
     "2025-11":[
       {"code":"CX-10 booster"},

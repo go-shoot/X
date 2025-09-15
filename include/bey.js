@@ -124,33 +124,34 @@ class Search {
     static #or = abbrs => abbrs?.length ? `(?:${[abbrs].flat().filter(a => typeof a == 'string').join('|')})` : '.+?'
 }
 class Preview {
-    constructor(what, path, where) {
-        Preview.place ??= where || Q('[popover]') || Q('body').appendChild(E('aside', {
-            popover: 'auto',
-            onclick: ev => ev.target.closest('[popover]').hidePopover()
-        }, [E('div#cells'), E('div#tiles'), E('div#images')]));
+    constructor(what, pathORcode, type) {
+        if (what == 'index')
+            return [
+                ...this.#image.src('main', pathORcode),
+                ...this.#image.src('more', pathORcode, '', this.#image.params(pathORcode, type).amount),
+            ].map(img => img.src);
+
         Preview.reset();
-        Preview.place.popover && Preview.place.showPopover();
-        [what].flat().reduce((prom, w) => prom.then(() => this[w](path)), Promise.resolve());
+        Preview.place.showPopover();
+        [what].flat().reduce((prom, w) => prom.then(() => this[w](pathORcode)), Promise.resolve());
     }
-    static reset = () => Preview.place?.Q('div', div => div.innerHTML = '');
     cell = path => new Search(path).then(({beys, href}) => Q('#cells').append(
-        href ? E('a', '', {href: `/X/products/?${href}`}) : '',
+        href ? E('a', {href: `/X/products/?${href}`}) : '',
         E('table>tbody', beys.map(bey => new Bey(bey)))
     )).then(() => Cell.fill('chi'))
 
     tile = path => PARTS.at(path).tile().then(tile => Q('#tiles').append(
-        E('a', '', {href: tile.href()}),
+        E('a', {href: tile.href()}),
         tile.fill()
     ))
-    image (td) {
-        let dataset = typeof td == 'object' ? td.dataset : {code: td};
-        let {code, video, lowercase, markup, max} = this.#image.revisions(dataset);
+    image (tdORcode) {
+        let dataset = typeof tdORcode == 'object' ? tdORcode.dataset : {code: tdORcode};
+        let {code, video, lowercase, markup, amount} = this.#image.revisions(dataset);
         Preview.place.Q('#images').append(
             E('p', Markup.spacing(Maps.note.find(dataset.code))),
             ...video?.split(',').map(vid => E('a', {href: `//youtu.be/${vid}?start=60`})) ?? [],
             ...this.#image.src('main', code),
-            ...this.#image.src('more', code, markup.more, max),
+            ...this.#image.src('more', code, markup.more, amount),
             ...this.#image.src('detail', lowercase ? code.toLowerCase() : code, markup.detail),
         );
         /^BXG-\d+$/.test(dataset.code) && setTimeout(() => !Preview.place.Q('#images img') && 
@@ -162,24 +163,33 @@ class Preview {
     #image = {
         revisions: ({code, video}) => {
             video ??= Q(`[data-code=${code}][data-video]`)?.dataset.video;
-            let max = Q(`[data-code=${code}]`)?.length > 2 ? 18 : 9;
-            let lowercase = this.#image.lowercase(...code.split('-'));
+            let {lowercase, amount} = this.#image.params(code);
             let {alias, _, ...markup} = Maps.images.find(code) ?? {};
             code = (alias || code).replace('-', _ ? '_' : '');
-            return {code, video, lowercase, markup, max};
+            return {code, video, lowercase, markup, amount};
         },
-        src: (type, code, markup, max) => 
+        params: (code, type) => ({
+            lowercase: (([line, number]) => Maps.lowercase[line]?.(number))(code.split('-')),
+            amount: (/set|random/i.test(type) || Q(`[data-code='${code}']`)?.length > 2 ? 18 : 9) 
+                + (META.blade.delimiter[code.split('-')[0]] ? 2 : 0)
+        }),
+        src: (type, code, markup, amount) => 
             [...markup ? Markup.replace(markup, 'image', {no: code}) : [code]]
-            .flatMap(code => this.#image.format[type](code, max))
-            .map(src => E('img', {src: src.replace(/^(?!\/).+$/, `//beyblade.takaratomy.co.jp/beyblade-x/lineup/_image/$&.png`)}))
+                .flatMap(code => this.#image.format[type](code, amount))
+                .map(src => E('img', {src: src.replace(/^(?!\/).+$/, `//beyblade.takaratomy.co.jp/beyblade-x/lineup/_image/$&.png`)}))
         ,
         format: {
             main: code => `${code}@1`,
-            more: (code, max) => [...Array(max)].map((_, i) => `${code}_${`${i+1}`.padStart(2, 0)}@1`),
+            more: (code, amount) => [...Array(amount)].map((_, i) => `${code}_${`${i+1}`.padStart(2, 0)}@1`),
             detail: code => `detail_${code}`
         },
-        lowercase: (line, number) => Maps.lowercase[line]?.(number)
     }
+    static place = Q('[popover]') || Q('body').appendChild(E('aside', {
+        popover: 'auto',
+        onclick: ev => ev.target.closest('[popover]').hidePopover()
+    }, [E('div#cells'), E('div#tiles'), E('div#images')]));
+
+    static reset = () => Preview.place?.Q('div', div => div.innerHTML = '');
 }
 
 const Markup = (where, string, span = true) => {

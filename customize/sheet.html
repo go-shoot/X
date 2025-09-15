@@ -94,10 +94,10 @@
 <script type="module">
 import DB from '../include/DB.js'
 import {App, Layers} from './sheet.js';
-Q('nav').after(DB(App));
+Q('nav').after(DB().then(App));
 
 App.picker = () => {
-    let show = image => picker.append(E('img', {src: `https://beyblade.takaratomy.co.jp/anime/character/_image/chara${image}`}));
+    let show = image => picker.append(E('img', {src: `://beyblade.takaratomy.co.jp/anime/character/_image/chara${image}`}));
     let picker = Q('[popover]'), 
         main = ['tenka','multi','bird','ekusu'], 
         mobu = ['ryu','yoko','dokuga','iwao','reiyu','roji','omega','ginro','karura','kuromu','shieru','shiguru','quinn','rex','yuni','zonamos','burn','kadovar','toguro','pan','manju','meiko'],

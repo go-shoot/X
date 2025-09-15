@@ -92,7 +92,7 @@ class Board {
         /^[A-Z]X[A-Z]?\d/i.test(src) ? `https://beyblade.takaratomy.co.jp/beyblade-x/lineup/_image/${src}.png` : 
         /^\w\//.test(src) ? `https://takaratomymall.jp/img/goods/${src}.jpg` : src;
 }
-Q('nav').after(DB(onhashchange = () => {
+Q('nav').after(DB().then(onhashchange = () => {
     let place = Q(`#${location.hash.substring(1)}`);
     if (place.Q(`details`)) return;
     DB.get('product', place.id).then(groups => groups.reverse().forEach(({eng, ...rest}) => 

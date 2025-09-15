@@ -26,7 +26,7 @@ const actions = {
     delete: {
         parts: () => fetch('db/-update.json').then(() => caches.delete('parts')),
         _: extension => fetch('db/-update.json')
-            .then(() => caches.open('V3'))
+            .then(() => caches.open('V4'))
             .then(cache => cache.keys().then(reqs => reqs.forEach(req => new RegExp(`\\.${extension}$`).test(req.url) && cache.delete(req))))
     }
 }
@@ -50,7 +50,7 @@ fetch.net = req => {
         new URL(req.url).pathname == '/' && self.registration.unregister();
     });
 }
-fetch.cache = res => res.url ? caches.open(is.part(res.url) ? 'parts' : 'V3')
+fetch.cache = res => res.url ? caches.open(is.part(res.url) ? 'parts' : 'V4')
     .then(cache => cache.put(res.url.replace(/[?#].*$/, ''), res.clone()))
     .then(() => res) : Promise.resolve(res);
 
@@ -86,7 +86,7 @@ const Head = {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Yusei+Magic&family=IBM+Plex+Sans+JP:wght@500&display=swap" rel="stylesheet">
     `,
-    cache: () => caches.open('V3').then(cache => Promise.all([
+    cache: () => caches.open('V4').then(cache => Promise.all([
         cache.put(Head.url, new Response(Head.code)), ...Head.aeoq.map(url => cache.add(url))
     ])),
     fetch: () => caches.match(Head.url).then(resp => resp.text()),

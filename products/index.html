@@ -75,5 +75,5 @@
 <script type="module">
 import DB from '../include/DB.js';
 import Table from './products.js';
-Q('nav').after(DB(Table));
+Q('nav').after(DB().then(Table));
 </script>
