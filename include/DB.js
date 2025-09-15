@@ -201,7 +201,7 @@ DB.transform = parts => {
             })]
         ))
     );
-    return window.PARTS = OBJ;
+    return OBJ;
 }
 customElements.define('db-state', DB.indicator);
 export default window.DB = DB

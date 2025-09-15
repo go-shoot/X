@@ -129,15 +129,14 @@ class Preview {
             return [
                 ...this.#image.src('main', pathORcode),
                 ...this.#image.src('more', pathORcode, '', this.#image.params(pathORcode, type).amount),
-            ].map(img => img.src);
-
+            ];
         Preview.reset();
         Preview.place.showPopover();
         [what].flat().reduce((prom, w) => prom.then(() => this[w](pathORcode)), Promise.resolve());
     }
     cell = path => new Search(path).then(({beys, href}) => Q('#cells').append(
         href ? E('a', {href: `/X/products/?${href}`}) : '',
-        E('table>tbody', beys.map(bey => new Bey(bey)))
+        E('table', [Preview.thead.cloneNode(true), E('tbody', beys.map(bey => new Bey(bey)))])
     )).then(() => Cell.fill('chi'))
 
     tile = path => PARTS.at(path).tile().then(tile => Q('#tiles').append(
@@ -188,7 +187,12 @@ class Preview {
         popover: 'auto',
         onclick: ev => ev.target.closest('[popover]').hidePopover()
     }, [E('div#cells'), E('div#tiles'), E('div#images')]));
-
+    static thead = E('thead>tr', [
+        E('th', 'No'), 
+        E('th.blade', 'Blade', {colSpan: 4}),
+        E('th.ratchet', 'Ratchet'),
+        E('th.bit', 'Bit', {colSpan: 2}),
+    ]);
     static reset = () => Preview.place?.Q('div', div => div.innerHTML = '');
 }
 

@@ -79,7 +79,7 @@ main {
     background: none;
     border: .1em solid; border-radius: 5em;
 }
-:is(#regular:not(.new),.searching) caption,.loading>*,.loading~* {
+.searching caption,.loading>*,.loading~* {
     display: none !important;
 }
 

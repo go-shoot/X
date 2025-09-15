@@ -9,9 +9,9 @@ class Shohin {
             imgs.push(...new Preview('index', code.replace('-', ''), cat));
         }
         let content = [desc ?? []].flat().reduce((arr, n, i) => arr.toSpliced(2 * i + 1, 0, n), imgs)
-            .map(c => /^(https?:)?\/\//.test(c) ? 
-                E('figure', [E('a', '🖼️', {href: c}), E('img', {src: c})]) : 
-                E('p', {innerHTML: Markup.spacing(c).replaceAll('-', '‑')})
+            .map(imgORtext => typeof imgORtext == 'object' ? 
+                E('figure', [E('a', '🖼️', {href: imgORtext.src}), imgORtext]) : 
+                E('p', {innerHTML: Markup.spacing(imgORtext).replaceAll('-', '‑')})
             );
         return E('div', [
             E('h5', [type ? E(`ruby.below.${type}`, [
@@ -80,10 +80,9 @@ Object.assign(Glossary, {
     lookup: async ev => {
         ev.stopPropagation();
         clearTimeout(Glossary.timer);
-        let term = ev.target.innerText;
-        let aside = Q('#glossary');
+        let term = ev.target.innerText, aside = Q('#glossary');
+        let [jap, def] = (await DB.get('meta', 'glossary'))[term];  //ev.target changes after await
         aside.innerHTML = '';
-        let [jap, def] = (await DB.get('meta', 'glossary'))[term];
         E(aside).set({
             '--left': `${ev.clientX}px`, '--top': `${ev.clientY}px`
         }, [

@@ -22,26 +22,30 @@ navigator.serviceWorker?.register('/X/worker.js', {scope: '/X/'}).then(() => {
     unsupported.remove();
 }).catch(() => Storage('reloaded') < 3 && Storage('reloaded', Storage('reloaded') + 1) && setTimeout(() => location.reload(), 500));
 
-addEventListener('DOMContentLoaded', () => {
-    Q('[popover]')?.addEventListener('click', ev => ev.target.closest('[popover]').hidePopover());
-    let menu = Q('nav menu');
-    if (!menu) return;
-    menu.append(E('li', [E('a', {href: '/X/', dataset: {icon: ''}} )] ));
-    let hashchange = () => {
+const Menu = {
+    append: () => Q('nav menu').append(E('li>a', {href: '/X/', dataset: {icon: ''}})),
+    current: () => {
         Q('menu .current')?.classList.remove('current');
         Q('menu li a')?.find(a => new URL(a.href, document.baseURI).href == location.href)?.classList.add('current');
-    };
-    addEventListener('hashchange', hashchange);
-    hashchange();
+    },
+    drag: {
+        'nav menu': {
+            drag: PI => {
+                PI.drag.to.translate({ x: false, y: { max: Q('nav menu').offsetTop * -1 - 4 } });
+                PI.drag.to.select({ y: 0 }, [...PI.target.children].filter(child => !child.matches(':has(.current),:last-child')));
+            },
+            lift: PI => Q('.PI-selected') && (location.href = PI.target.Q('.PI-selected a').href)
+        }
+    },
+}
+addEventListener('DOMContentLoaded', () => {
+    Q('[popover]')?.addEventListener('click', ev => ev.target.closest('[popover]').hidePopover());
+    if (!Q('nav menu')) return;
+    Menu.append();
+    Menu.current();
+    addEventListener('hashchange', Menu.current);
     Q('body').append(E('script', `
         import PointerInteraction from 'https://aeoq.github.io/pointer-interaction/script.js';
-        PointerInteraction.events({
-            'nav menu': {
-                drag: PI => {
-                    PI.drag.to.translate({x: false, y: {max: Q('nav menu').offsetTop*-1 - 6} });
-                    PI.drag.to.select({y: 0}, [...PI.target.children].filter(child => !child.matches(':has(.current),:last-child')));
-                },
-                lift: PI => Q('.PI-selected') && (location.href = PI.target.Q('.PI-selected a').href)
-            }
-        })`, {type: 'module'}));
+        PointerInteraction.events(Menu.drag)`, {type: 'module'})
+    );
 });

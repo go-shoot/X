@@ -283,6 +283,24 @@ table {
     white-space: nowrap; border-spacing: 0;
     margin: auto;
 
+    th {
+        position: relative;
+        height: 4.5em; min-width: 4em;
+        margin-bottom: .2em;
+        &:not(:first-child) {color: black;}
+
+        &::before {
+            content: ''; 
+            position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); 
+            z-index: -1; 
+            height: 4em; width: 4em; 
+            background: url() center / contain no-repeat; 
+            filter: saturate(0) brightness(99);
+        }
+        &.blade::before {background-image: url(/X/img/blade/CbDr.png) !important;}
+        &.ratchet::before {background-image: url(/X/img/ratchet/3-60.png) !important;}
+        &.bit::before {background-image: url(/X/img/bit/B.png) !important;}
+    }
     tbody:empty::after {
         content: '未有結果'; font-size: 1.5em;
     }
@@ -316,10 +334,10 @@ table {
         tr[style]:has(td:nth-child(8)) &:nth-child(3) {
             color: var(--coat,transparent);
         }
-        * {pointer-events: none;}
     }
 }
 td {
+    * {pointer-events: none;}
     sub {
         font-size: .75em;
     }
