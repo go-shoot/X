@@ -29,9 +29,10 @@ Object.assign(DB, {
             DB.db = ev.target.result;
             if (DB.db.name != DB.current) return;
             let [index, fresh] = [location.pathname == '/X/', ev.type != 'success'];
-            return fresh ? 
-                DB.setup(ev).then(DB.transfer.in).then(() => DB.fetch.updates({fresh, index})).then(DB.cache) :
-                DB.fetch.updates({fresh, index}).then(DB.cache);
+            return (fresh ? 
+                DB.setup(ev).then(DB.transfer.in) : Promise.resolve()
+            ).then(() => DB.fetch.updates({fresh, index})).then(DB.cache)
+            .then(() => DB.news && DB.plugins.announce(DB.news));
         })
     ,
     setup (ev) {
@@ -43,9 +44,10 @@ Object.assign(DB, {
         updates: ({fresh, index}) => fresh && !index ||
             fetch(`/X/db/-update.json`).catch(() => DB.indicator.setAttribute('status', 'offline'))
             .then(resp => resp.json())
-            .then(({news, ...files}) => 
-                (index ? DB.plugins?.announce(news) : Promise.resolve()).then(() => fresh || DB.cache.filter(files))
-            ),
+            .then(({news, ...files}) => {
+                index && (DB.news = news);
+                return fresh || DB.cache.filter(files);
+            }),
         files: files => Promise.all(files.map(file => 
                 fetch(`/X/db/${file}.json`)
                 .then(resp => Promise.allSettled([file, resp.json(), file == 'part-blade-collab' && DB.clear('blade','hasbro') ]))

@@ -301,6 +301,9 @@ table {
         &.ratchet::before {background-image: url(/X/img/ratchet/3-60.png) !important;}
         &.bit::before {background-image: url(/X/img/bit/B.png) !important;}
     }
+    thead:has(+tbody:empty) {
+        display: none;
+    }
     tbody:empty::after {
         content: '未有結果'; font-size: 1.5em;
     }
