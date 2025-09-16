@@ -18,7 +18,7 @@ class Shohin {
                 E('img', {src: `img/types.svg#${type}`}), 
                 E('rt', Shohin.type[type])
             ]) : '', header]),
-            E('h4', {innerHTML: name?.replaceAll('-', '‑')}), 
+            name ? E('h4', {innerHTML: name?.replaceAll('-', '‑')}) : '',
             ...content
         ], {classList: [`scroller`, Shohin.classes.find(header, {default: 'Lm'})]});
     }

@@ -62,7 +62,7 @@ details {
     }
 }
 
-nav.safari:has(.part-filter.blade) {
+nav:has(.part-filter.blade) {
     grid-template: 1.7rem 1.7rem / 3em 3fr 2fr auto; 
     @media (min-width: 631px) {grid-template: 1.7rem 1.7rem / 3em auto 1fr auto;}
 
