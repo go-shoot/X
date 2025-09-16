@@ -48,7 +48,8 @@
 
 <script type="module">
 import DB from '../include/DB.js';
-import {Markup, Preview} from "../include/bey.js";
+import {Bey, Markup, Preview} from "../include/bey.js";
+
 class Group {
     constructor({eng, jap, desc, colors}) {
         let [, , src, size] = colors[1] || colors[0];
@@ -92,11 +93,14 @@ class Board {
         /^[A-Z]X[A-Z]?\d/i.test(src) ? `https://beyblade.takaratomy.co.jp/beyblade-x/lineup/_image/${src}.png` : 
         /^\w\//.test(src) ? `https://takaratomymall.jp/img/goods/${src}.jpg` : src;
 }
-Q('main').prepend(DB().then(onhashchange = () => {
-    let place = Q(`#${location.hash.substring(1)}`);
-    if (place.Q(`details`)) return;
-    DB.get('product', place.id).then(groups => groups.reverse().forEach(({eng, ...rest}) => 
-        place.Q(`h2:nth-of-type(${Group.location[place.id](eng)})`).after(new Group({eng, ...rest}))
-    ));
+Q('main').prepend(DB().then(() => {
+    DB.get.essentials().then(([meta]) => Bey.import(meta.general));
+    (onhashchange = () => {
+        let place = Q(`#${location.hash.substring(1)}`);
+        if (place.Q(`details`)) return;
+        DB.get('product', place.id).then(groups => groups.reverse().forEach(({eng, ...rest}) => 
+            place.Q(`h2:nth-of-type(${Group.location[place.id](eng)})`).after(new Group({eng, ...rest}))
+        ));
+    })();
 }));
 </script>

@@ -17,13 +17,13 @@ Object.assign(Parts, {
             filters: META.grouped[comp].filters, 
             ...META.grouped[comp][line]
         };
-        Parts.catalog = Q('.catalog');
+        Parts.place = Q('section');
         Magnifier();
     },
     before: () => Filter(),
     display: () => DB.get.parts(/^.X$/.test(line) ? line : comp)
         .then(parts => Promise.all(parts.map(json => new Part(json).tile())))
-        .then(parts => Parts.catalog.replaceChildren(...parts)),
+        .then(parts => Parts.place.replaceChildren(...parts)),
 
     after () {
         let hash = decodeURI(location.hash.substring(1));
@@ -66,12 +66,12 @@ Object.assign(Magnifier, {
     ]),
     events () {
         Q('.part-mag').oninput = ({target}) => {
-            E(Parts.catalog).set({'--font': target.value});
+            E(Parts.place).set({'--font': target.value});
             Storage('pref', target instanceof HTMLInputElement ? {button: target.id} : {knob: target.value});
         }
         setTimeout(onresize = Magnifier.switch);
     },
-    switch: () => E(Parts.catalog).set({'--font': (innerWidth > 630 ? Q('continuous-knob') : Q('[name=mag]:checked')).value})
+    switch: () => E(Parts.place).set({'--font': (innerWidth > 630 ? Q('continuous-knob') : Q('[name=mag]:checked')).value})
 });
 
 const Filter = function(type) {
@@ -115,7 +115,7 @@ Object.assign(Filter, {
             ...obj, [dl.id]: [...dl.Q(':checked', []).map(i => i.value)].join()
         }), {});
         query.type += `,${Filter.untype()}`;
-        [...Parts.catalog.children].forEach(tile => 
+        [...Parts.place.children].forEach(tile => 
             !(tile.hidden = Object.values(query).some(classes => !tile.matches(classes))) && tile.fill()
         );
         Parts.count();
@@ -131,8 +131,8 @@ const Sorter = () => {
     }, {
         classList: `part-sorter`, 
         onchange ({target: input}) {
-            let sorted = [...Parts.catalog.children].map(tile => tile.Part).sort(Sorter.sort[input.id]);
-            Parts.catalog.append(...[...Parts.catalog.children]
+            let sorted = [...Parts.place.children].map(tile => tile.Part).sort(Sorter.sort[input.id]);
+            Parts.place.append(...[...Parts.place.children]
                 .sort((a, b) => sorted.indexOf(a.Part) - sorted.indexOf(b.Part)));
             input.checked && Storage('pref', {sort: input.id});
         }

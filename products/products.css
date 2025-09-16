@@ -86,19 +86,12 @@ main {
 tr {
     cursor: pointer;
 }
-th>div {
-    place-content: center;
-    font-weight: normal;
-    height: 2.5em; width: calc(100% - 0.2em);
-    margin: 0 auto .3em auto; padding-top: .3em;
-    border-top: .2em solid hsl(var(--c),50%,calc(20% + var(--b-adj,0%)));
-    line-height: 1.2;
-    transition: border .5s;
-    
-    &:hover {filter: brightness(90%);}
-    th[data-sortedby] & {border-color: hsl(var(--c),100%,calc(55% + var(--b-adj,0%)));}
-    th:first-child & {border-color: hsl(0,0%,25%);}
-    th:first-child[data-sortedby] & {border-color: hsl(0,0%,70%);}
+th::before {
+    transform: translateY(-.5em);
+}
+th:not([data-sortedby])::before {
+    text-shadow: none;
+    color: dimgray;
 }
 tfoot {
     visibility: hidden;

@@ -28,15 +28,11 @@ class Part {
     cell () {return new Cell(this);}
 
     revise (revisions, base, pref) {
-        revisions?.forEach?.(what => this[what] = this.#revised[what](base, pref));
+        revisions?.forEach?.(what => this[what] = this.revised[what](base, pref));
         return this;
     }
-    #revised = {
-        group: base => base.group ?? META.ratchet.height.find(([, dmm]) => this.abbr.split('-')[1] >= dmm)[0],
-        names: (base, pref) => new O(base.names).prepend(...[...pref].reverse().map(p => META.bit.prefix[p])),
+    revised = {
         stat: base => this.stat.length === 1 ? [this.stat[0], ...base.stat.slice(1)] : this.stat,
-        attr: (base, pref) => [...this.attr ?? [], ...base.attr, ...pref],
-        desc: (base, pref) => [...pref].map(p => META.bit.prefix[p].desc).join('、') + `的【${base.abbr}】Bit${this.desc ? `，${this.desc}` : '。'}`,
     }
 }
 class Blade extends Part {
@@ -48,7 +44,20 @@ class Blade extends Part {
 class Ratchet extends Part {
     constructor(json) {super(json);}
     revise (where = 'tile') {return super.revise(Ratchet.revisions[where], {stat: [, ...this.abbr.split('-')]});}
-    static revisions = {tile: ['group', 'stat']};
+    revised = {
+        ...this.revised,
+        group: () => META.ratchet.height.find(([, dmm]) => this.abbr.split('-')[1] >= dmm)[0],
+        names: () => ({ eng: (([blade, height]) => [
+            Ratchet.eng.digit[blade] ?? blade, 
+            Ratchet.eng.tens[Math.floor(height / 10)], 
+            Ratchet.eng.digit[height % 10 || ''] ?? ''
+        ].join(' '))(this.abbr.split('-')) })
+    }
+    static revisions = {tile: ['group', 'names', 'stat']};
+    static eng = {
+        digit: ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'],
+        tens: ['', '', '', '', 'fourty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety']
+    }
 }
 class Bit extends Part {
     constructor(json) {super(json);}
@@ -57,6 +66,13 @@ class Bit extends Part {
         let [, pref, base] = new RegExp(`^([${META.bit.prefix}]+)([^a-z].*)$`).exec(this.abbr);
         Bit.revisions[where].some(p => !PARTS.bit[base][p]) && PARTS.bit[base].push(await DB.get('bit', base));
         return super.revise(Bit.revisions[where], PARTS.bit[base], pref);
+    }
+    revised = {
+        ...this.revised,
+        group: base => base.group,
+        names: (base, pref) => new O(base.names).prepend(...[...pref].reverse().map(p => META.bit.prefix[p])),
+        attr: (base, pref) => [...this.attr ?? [], ...base.attr, ...pref],
+        desc: (base, pref) => [...pref].map(p => META.bit.prefix[p].desc).join('、') + `的【${base.abbr}】Bit${this.desc ? `，${this.desc}` : '。'}`,
     }
     static revisions = {cell: ['names'], tile: ['group', 'names', 'attr', 'stat', 'desc']};
 }
@@ -98,10 +114,11 @@ class Tile extends HTMLElement {
     }
     href () {
         let {path} = this.Part;
-        return `../parts/?${path[0]}${path[2] ? `=${path[1]}` : ''}#${path.at(-1)}`
+        return `/x/parts/?${path[0]}${path[2] ? `=${path[1]}` : ''}#${path.at(-1)}`
     }
     static named = path => path[0] == 'blade' && !path[2] || ['motif', 'upper', 'hasbro'].includes(path[2]);
-    static #onclick = ev => location.href.includes('parts') ? new Preview('cell', ev.target.Part.path) : Table.filter(ev.target.Part.path);
+    static #onclick = ev => location.href.includes('parts') ? new Preview('cell', ev.target.Part.path) : 
+        location.href.includes('products') ? Table.filter(ev.target.Part.path) : '';
     static hue = {};
     static icons = new O([
         [/^[A-Z]+X$/, l => E('img', {src: `/x/img/lines.svg#${l}`})],

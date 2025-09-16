@@ -1,12 +1,12 @@
 :host {
     min-width: 15em; max-width: 15em; min-height: 15em; max-height: 15em;
     --icon: 1.6em;
-    display: grid; grid-template: 2em auto .2em .9em .9em / var(--icon) calc(50% - var(--icon)) auto var(--icon) var(--icon);
-    padding: .3em .4em;
+    display: inline-grid;
+    grid-template: 2em auto .2em .9em .9em / var(--icon) calc(50% - var(--icon)) auto var(--icon) var(--icon);
+    padding: .3em .4em; margin: .1rem;
     overflow: hidden;
     position: relative;
     cursor: pointer;
-    box-shadow: 0 0 .5em 0 black;
     opacity: 1 !important; transition: opacity .5s;
 
     &::after,object {
@@ -286,10 +286,13 @@ table {
     th {
         position: relative;
         height: 4.5em; min-width: 4em;
-        margin-bottom: .2em;
-        &:not(:first-child) {color: black;}
+        font-weight: normal;
 
-        &::before {
+        div {
+            display: inline-block; vertical-align: .7em;
+        }
+        &:not(:first-child) {color: black;}
+        &::after {
             content: ''; 
             position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); 
             z-index: -1; 
@@ -297,9 +300,9 @@ table {
             background: url() center / contain no-repeat; 
             filter: saturate(0) brightness(99);
         }
-        &.blade::before {background-image: url(/x/img/blade/CbDr.png) !important;}
-        &.ratchet::before {background-image: url(/x/img/ratchet/3-60.png) !important;}
-        &.bit::before {background-image: url(/x/img/bit/B.png) !important;}
+        &.blade::after {background-image: url(/x/img/blade/CbDr.png) !important;}
+        &.ratchet::after {background-image: url(/x/img/ratchet/6-60.png) !important;}
+        &.bit::after {background-image: url(/x/img/bit/B.png) !important;}
     }
     thead:has(+tbody:empty) {
         display: none;

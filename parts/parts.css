@@ -17,8 +17,9 @@
     continuous-knob {display: none;}
 }
 
-main {
-    padding-bottom: 4em; 
+section {
+    font-size: calc(var(--font,1.2)*1em); 
+    padding: 2rem 0; 
 }
 details {
     position: relative; 
@@ -134,7 +135,7 @@ menu {
         background: url() center / contain no-repeat; 
     }
     a[href*=blade]::after {background-image: url(../img/blade/CbDr.png) !important;}
-    a[href*=ratchet]::after {background-image: url(../img/ratchet/3-60.png) !important;}
+    a[href*=ratchet]::after {background-image: url(../img/ratchet/6-60.png) !important;}
     a[href*=bit]::after {background-image: url(../img/bit/B.png) !important;}
     a[href$=CX]::before {background-image: url(../img/lines.svg#CX) !important;}
 }

@@ -93,7 +93,7 @@ section {
             &::before {content: '\e023';}
         }
         &.parts button::before,
-        &.links :is([href*=parts])::before {
+        &.links :is([href*=parts][href*='#'])::before {
             content: '';
             width: 1.4em; height: 1.4em; display: inline-block;
             vertical-align: text-top;
@@ -103,7 +103,7 @@ section {
             background-image: var(--img, url(img/lines.svg#BX)) !important;
         }
         :is(.ratchet,[href*='?ratchet#'])::before {
-            background-image: url(img/ratchet/3-60.png) !important;
+            background-image: url(img/ratchet/6-60.png) !important;
             filter: saturate(0) brightness(99);
         }
         :is(.bit,[href*='?bit#'])::before {

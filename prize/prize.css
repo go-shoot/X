@@ -1,11 +1,11 @@
-.led a {
+.LED a {
     font-size: .9em;
 }
-.led a img {
+.LED a img {
     width: 3em;
     vertical-align: bottom;
 }
-.led a span {
+.LED a span {
     width: 2.5em; display: inline-block;
     line-height: 1.1em; letter-spacing: .1em;
 }
