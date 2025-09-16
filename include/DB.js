@@ -29,10 +29,13 @@ Object.assign(DB, {
             DB.db = ev.target.result;
             if (DB.db.name != DB.current) return;
             let [index, fresh] = [location.pathname == '/x/', ev.type != 'success'];
-            return (fresh ? 
-                DB.setup(ev).then(DB.transfer.in) : Promise.resolve()
-            ).then(() => DB.fetch.updates({fresh, index})).then(DB.cache)
-            .then(() => DB.news && DB.plugins.announce(DB.news));
+
+            return (fresh ? DB.setup(ev).then(DB.transfer.in) : Promise.resolve())
+                .then(() => DB.fetch.updates({fresh, index})).then(DB.cache)
+                .then(() => DB.news && DB.plugins.announce(DB.news))
+                .catch(er => `${er}`.includes('Failed to fetch') ? 
+                    DB.indicator.setAttribute('state', 'offline') : console.error(er)
+                );
         })
     ,
     setup (ev) {
@@ -42,7 +45,7 @@ Object.assign(DB, {
     },
     fetch: {
         updates: ({fresh, index}) => fresh && !index ||
-            fetch(`/x/db/-update.json`).catch(() => DB.indicator.setAttribute('status', 'offline'))
+            fetch(`/x/db/-update.json`)
             .then(resp => resp.json())
             .then(({news, ...files}) => {
                 index && (DB.news = news);
@@ -130,7 +133,7 @@ Object.assign(DB, {
                 position:relative;
                 background:radial-gradient(circle at center var(--p),hsla(0,0%,100%,.2) 70%, var(--on) 70%);
                 background-clip:text; -webkit-background-clip:text;
-                display:inline-block; min-height:5rem;
+                display:block; min-height:5rem;
             }
             :host([style*='--c']) {
                 background:var(--c);

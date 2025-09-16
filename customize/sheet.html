@@ -94,7 +94,7 @@
 <script type="module">
 import DB from '../include/DB.js'
 import {App, Layers} from './sheet.js';
-Q('nav').after(DB().then(App));
+Q('main').prepend(DB().then(App));
 
 App.picker = () => {
     let show = image => picker.append(E('img', {src: `://beyblade.takaratomy.co.jp/anime/character/_image/chara${image}`}));

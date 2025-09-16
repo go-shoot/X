@@ -46,5 +46,5 @@ Object.assign(Prize, {
         }
     }
 });
-Q('nav').after(DB().then(Prize));
+Q('main').prepend(DB().then(Prize));
 </script>

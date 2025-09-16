@@ -13,7 +13,7 @@ self.addEventListener('fetch', ev => ev.respondWith((() => {
                 .catch(er => console.error(er) ?? new Response('', {status: 400}))
             ?? new Response('', {status: 404});
     }
-    return (is.internal(ev.request.url) ? caches.match(ev.request, {ignoreSearch: true}) : Promise.resolve())
+    return (is.internal(ev.request.url) ? caches.match(ev.request.url, {ignoreSearch: true}) : Promise.resolve())
         .then(cached => {
             if (cached && is.part(ev.request.url))
                 return cached;
@@ -45,6 +45,7 @@ fetch.net = req => {
         (res.status < 400 && is.cacheable(req.url) ? fetch.cache(res) : Promise.resolve(res))
         .then(res => is.html(req.url) ? Head.add(res) : res)
     ).catch(er => {
+        if (`${er}`.includes('Failed to fetch')) return;
         console.error(req.url);
         console.error(er);
         new URL(req.url).pathname == '/' && self.registration.unregister();
