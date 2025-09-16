@@ -66,8 +66,8 @@ class Tile extends HTMLElement {
         let {path, group, attr} = Part;
         this.Part = Part;
         this.attachShadow({mode: 'open'}).append(
-            E('link', {rel: 'stylesheet', href: '/X/include/common.css'}),
-            E('link', {rel: 'stylesheet', href: '/X/include/part.css'}),
+            E('link', {rel: 'stylesheet', href: '/x/include/common.css'}),
+            E('link', {rel: 'stylesheet', href: '/x/include/part.css'}),
         );
         E(this).set({
             id: path.at(-1),
@@ -84,7 +84,7 @@ class Tile extends HTMLElement {
         this.shadowRoot.append(
             Q('#triangle').cloneNode(true),
             E('object', {data: this.html.background()}),
-            E('figure>img', {src: `/X/img/${path.join('/')}.png`}),
+            E('figure>img', {src: `/x/img/${path.join('/')}.png`}),
             E('ul', this.html.icons()),
             E('p', Markup.spacing(desc)),
             ...this.html.stat(),
@@ -104,9 +104,9 @@ class Tile extends HTMLElement {
     static #onclick = ev => location.href.includes('parts') ? new Preview('cell', ev.target.Part.path) : Table.filter(ev.target.Part.path);
     static hue = {};
     static icons = new O([
-        [/^[A-Z]+X$/, l => E('img', {src: `/X/img/lines.svg#${l}`})],
-        [['BSB','MFB','BBB'], g => E('img', {src: `/X/img/system-${g}.png`})],
-        [['att','bal','def','sta'], t => E('img', {src: `/X/img/types.svg#${t}`})]
+        [/^[A-Z]+X$/, l => E('img', {src: `/x/img/lines.svg#${l}`})],
+        [['BSB','MFB','BBB'], g => E('img', {src: `/x/img/system-${g}.png`})],
+        [['att','bal','def','sta'], t => E('img', {src: `/x/img/types.svg#${t}`})]
     ], {left: '\ue01d', right: '\ue01e', simple: '\ue04e'});
 }
 Object.assign(Tile.prototype.html, {
@@ -122,7 +122,7 @@ Object.assign(Tile.prototype.html, {
             hue: Tile.hue[selector],
             ...spin ? {[attr?.find(a => a == 'left' || a == 'right')]: ''} : {}
         };
-        return `/X/parts/bg.svg?${new URLSearchParams(param)}`;
+        return `/x/parts/bg.svg?${new URLSearchParams(param)}`;
     },
     icons () {
         let {line, group, attr} = this.Part;

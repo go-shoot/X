@@ -135,7 +135,7 @@ class Preview {
         [what].flat().reduce((prom, w) => prom.then(() => this[w](pathORcode)), Promise.resolve());
     }
     cell = path => new Search(path).then(({beys, href}) => Q('#cells').append(
-        href ? E('a', {href: `/X/products/?${href}`}) : '',
+        href ? E('a', {href: `/x/products/?${href}`}) : '',
         E('table', [Preview.thead.cloneNode(true), E('tbody', beys.map(bey => new Bey(bey)))])
     )).then(() => Cell.fill('chi'))
 

@@ -28,7 +28,7 @@ Object.assign(DB, {
         .then(ev => {
             DB.db = ev.target.result;
             if (DB.db.name != DB.current) return;
-            let [index, fresh] = [location.pathname == '/X/', ev.type != 'success'];
+            let [index, fresh] = [location.pathname == '/x/', ev.type != 'success'];
             return (fresh ? 
                 DB.setup(ev).then(DB.transfer.in) : Promise.resolve()
             ).then(() => DB.fetch.updates({fresh, index})).then(DB.cache)
@@ -42,14 +42,14 @@ Object.assign(DB, {
     },
     fetch: {
         updates: ({fresh, index}) => fresh && !index ||
-            fetch(`/X/db/-update.json`).catch(() => DB.indicator.setAttribute('status', 'offline'))
+            fetch(`/x/db/-update.json`).catch(() => DB.indicator.setAttribute('status', 'offline'))
             .then(resp => resp.json())
             .then(({news, ...files}) => {
                 index && (DB.news = news);
                 return fresh || DB.cache.filter(files);
             }),
         files: files => Promise.all(files.map(file => 
-                fetch(`/X/db/${file}.json`)
+                fetch(`/x/db/${file}.json`)
                 .then(resp => Promise.allSettled([file, resp.json(), file == 'part-blade-collab' && DB.clear('blade','hasbro') ]))
             )).then(arr => arr.map(([{value: file}, {value: json}]) => //in one transaction
                 (DB.cache.actions[file] || DB.put.parts)(json, file)

@@ -297,9 +297,9 @@ table {
             background: url() center / contain no-repeat; 
             filter: saturate(0) brightness(99);
         }
-        &.blade::before {background-image: url(/X/img/blade/CbDr.png) !important;}
-        &.ratchet::before {background-image: url(/X/img/ratchet/3-60.png) !important;}
-        &.bit::before {background-image: url(/X/img/bit/B.png) !important;}
+        &.blade::before {background-image: url(/x/img/blade/CbDr.png) !important;}
+        &.ratchet::before {background-image: url(/x/img/ratchet/3-60.png) !important;}
+        &.bit::before {background-image: url(/x/img/bit/B.png) !important;}
     }
     thead:has(+tbody:empty) {
         display: none;

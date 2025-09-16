@@ -16,14 +16,14 @@ unsupported.textContent = `
     }
     @keyframes show {to {color:white;}}`;
 document.head.append(unsupported);
-navigator.serviceWorker?.register('/X/worker.js', {scope: '/X/'}).then(() => {
+navigator.serviceWorker?.register('/x/worker.js', {scope: '/x/'}).then(() => {
     if (!document.querySelector('link[href$="common.css"]')) return Promise.reject();
     document.title += ' ■ 戰鬥陀螺 X⬧爆旋陀螺 X⬧ベイブレード X⬧Beyblade X';
     unsupported.remove();
 }).catch(() => Storage('reloaded') < 3 && Storage('reloaded', Storage('reloaded') + 1) && setTimeout(() => location.reload(), 500));
 
 const Menu = {
-    append: () => Q('nav menu').append(E('li>a', {href: '/X/', dataset: {icon: ''}})),
+    append: () => Q('nav menu').append(E('li>a', {href: '/x/', dataset: {icon: ''}})),
     current: () => {
         Q('menu .current')?.classList.remove('current');
         Q('menu li a')?.find(a => new URL(a.href, document.baseURI).href == location.href)?.classList.add('current');
