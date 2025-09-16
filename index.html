@@ -96,11 +96,12 @@ Q('[type=search]').oninput = ev => {
 import {Shohin} from './include/utilities.js'
 import PointerInteraction from 'https://aeoq.github.io/pointer-interaction/script.js';
 Q('header').after(DB({
-    announce: news => DB.get.essentials()
+    announce: news => new O(news).each(([date, beys]) => 
+        Q('#products').append(E('time', {title: date}), ...beys.map(bey => new Shohin(bey)))
+    ),
+    followup: () => DB.get.essentials()
         .then(([meta, parts]) => Part.import(meta.general, parts))
-        .then(() =>new O(news).each(([date, beys]) => 
-            Q('#products').append(E('time', {title: date}), ...beys.map(bey => new Shohin(bey)))
-        )),
+        .then(() => Shohin.after())
 }).then(() => {
     const observer = new IntersectionObserver(entries => entries.forEach(entry => 
         entry.target.classList.toggle('seeing', entry.isIntersecting)

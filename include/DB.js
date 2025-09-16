@@ -32,7 +32,7 @@ Object.assign(DB, {
 
             return (fresh ? DB.setup(ev).then(DB.transfer.in) : Promise.resolve())
                 .then(() => DB.fetch.updates({fresh, index})).then(DB.cache)
-                .then(() => DB.news && DB.plugins.announce(DB.news))
+                .then(() => DB.plugins.followup?.())
                 .catch(er => `${er}`.includes('Failed to fetch') ? 
                     DB.indicator.setAttribute('state', 'offline') : console.error(er)
                 );
@@ -48,7 +48,7 @@ Object.assign(DB, {
             fetch(`/x/db/-update.json`)
             .then(resp => resp.json())
             .then(({news, ...files}) => {
-                index && (DB.news = news);
+                index && DB.plugins.announce(news);
                 return fresh || DB.cache.filter(files);
             }),
         files: files => Promise.all(files.map(file => 

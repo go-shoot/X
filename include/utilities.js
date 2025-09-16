@@ -4,14 +4,10 @@ import { Bey, Preview, Markup } from "./bey.js";
 class Shohin {
     constructor({code: header, name, imgs, desc, type}) {
         imgs ??= [];
-        if (name && /XG?-\d+/.test(header)) {
-            let [code, cat] = header.split(/(?<=\d) /);
-            imgs.push(...new Preview('index', code.replace('-', ''), cat));
-        }
         let content = [desc ?? []].flat().reduce((arr, n, i) => arr.toSpliced(2 * i + 1, 0, n), imgs)
-            .map(imgORtext => typeof imgORtext == 'object' ? 
-                E('figure', [E('a', '🖼️', {href: imgORtext.src}), imgORtext]) : 
-                E('p', {innerHTML: Markup.spacing(imgORtext).replaceAll('-', '‑')})
+            .map(srcORtext => /^(https?:)?\/\//.test(srcORtext) ? 
+                E('figure', [E('a', '🖼️', {href: srcORtext.src}), E('img', {src: srcORtext})]) : 
+                E('p', {innerHTML: Markup.spacing(srcORtext).replaceAll('-', '‑')})
             );
         return E('div', [
             E('h5', [type ? E(`ruby.below.${type}`, [
@@ -22,6 +18,7 @@ class Shohin {
             ...content
         ], {classList: [`scroller`, Shohin.classes.find(header, {default: 'Lm'})]});
     }
+    static type = {att: 'ATTACK', bal: 'BALANCE', sta: 'STAMINA', def: 'DEFENSE'};
     static classes = new O([
         [/(stadium|entry) set/i, 'SS'],
         [/組合|Set/i, 'St'],
@@ -30,7 +27,20 @@ class Shohin {
         [/Booster/i, 'B'],
         [/.XG?-/, 'others'],
     ])
-    static type = {att: 'ATTACK', bal: 'BALANCE', sta: 'STAMINA', def: 'DEFENSE'};
+    static after = () => Q('.scroller:has(h4)', []).forEach(div => {
+        let header = div.Q('h5').innerText;
+        if (!/XG?-\d+/.test(header)) return;
+        let [code, cat] = header.match(/(?<=\n?).+$/)[0].split(/(?<=\d) /);
+        let figures = div.Q('figure', []);
+        figures.push(...new Preview('index', code.replace('-', ''), cat).map(img => 
+            E('figure', [E('a', '🖼️', {href: img.src}), img])
+        ));
+        div.replaceChildren(
+            div.Q('h5'), div.Q('h4'), 
+            ...div.Q('p', []).reduce((arr, n, i) => arr.toSpliced(2 * i + 1, 0, n), figures)
+        );
+    })
+    
 }
 class Keihin {
     constructor({type, note, link, date, code, bey, ver, img: [src, style]}) {
