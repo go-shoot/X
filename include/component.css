@@ -158,13 +158,6 @@
     font-size: .8rem;
     margin-bottom: .5em;
 
-    &::-webkit-scrollbar {
-        background: transparent;
-        height: .5em;
-    }
-    &::-webkit-scrollbar-thumb {
-        background: #ffffff66;
-    }
     >* {
         min-width: 9em; max-width: 9em;
         overflow: hidden;

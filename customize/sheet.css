@@ -90,8 +90,6 @@ form {
         font-size:1.1em;
         max-height:calc(100svh - 4.15rem); overflow-y:scroll;
 
-        &::-webkit-scrollbar {display:none;}
-
         div {
             display:flex; flex-direction:column;
 

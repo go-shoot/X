@@ -45,12 +45,12 @@ Object.assign(DB, {
     },
     fetch: {
         updates: ({fresh, index}) => fresh && !index ||
-            fetch(`/x/db/-update.json`)
-            .then(resp => resp.json())
+            fetch(`/x/db/-update.json`).then(resp => resp.json())
             .then(({news, ...files}) => {
                 index && DB.plugins.announce(news);
                 return fresh || DB.cache.filter(files);
-            }),
+            })
+        ,
         files: files => Promise.all(files.map(file => 
                 fetch(`/x/db/${file}.json`)
                 .then(resp => Promise.allSettled([file, resp.json(), file == 'part-blade-collab' && DB.clear('blade','hasbro') ]))
@@ -109,7 +109,7 @@ Object.assign(DB, {
                 this.progress > (Storage('DB')?.count ?? 0) && Storage('DB', {count: this.progress});
                 setTimeout(() => this.hidden = true, 2000);
             }
-            E(this).set({'--c': state == 'success' ? 'lime' : 'deeppink'});
+            E(this).set({'--hue': state == 'success' ? 'lime' : 'deeppink'});
             this.title = state == 'success' ? '更新成功' : state == 'offline' ? '離線' : '';
         }
         init(update) {
@@ -135,8 +135,8 @@ Object.assign(DB, {
                 background-clip:text; -webkit-background-clip:text;
                 display:block; min-height:5rem;
             }
-            :host([style*='--c']) {
-                background:var(--c);
+            :host([style*='--hue']) {
+                background:var(--hue);
                 background-clip:text; -webkit-background-clip:text;
             }
             :host([title])::after {
@@ -190,7 +190,7 @@ Object.assign(DB.get, {
             Promise.all(comps.map(c => DB.get.all(c).then(parts => [c, parts])))
             .then(parts => transform ? DB.transform(parts) : parts);
     },
-    essentials: (transform = true) => Promise.all([DB.get('meta', 'part'), DB.get.parts(transform)])
+    essentials: (transform = true) => Promise.all([DB.get('meta', 'parts'), DB.get.parts(transform)])
         .then(([meta, parts]) => [new O(meta), parts])
 });
 DB.transform = parts => {

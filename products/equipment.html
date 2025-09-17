@@ -94,7 +94,7 @@ class Board {
         /^\w\//.test(src) ? `https://takaratomymall.jp/img/goods/${src}.jpg` : src;
 }
 Q('main').prepend(DB().then(() => {
-    DB.get.essentials().then(([meta]) => Bey.import(meta.general));
+    DB.get('meta', 'parts').then(meta => Bey.import(meta.general));
     (onhashchange = () => {
         let place = Q(`#${location.hash.substring(1)}`);
         if (place.Q(`details`)) return;

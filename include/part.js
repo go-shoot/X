@@ -8,7 +8,7 @@ class Part {
     static import = (meta, parts) => ([META, PARTS] = [meta, parts]) && Bey.import(meta, parts);
     #path;
     constructor(json = {}) {
-        this.push(json);
+        this.push({...new O(json)});
         return this.constructor.name == 'Part' ? new Part[this.comp](json) : this;
     }
     *[Symbol.iterator] () {
@@ -92,7 +92,11 @@ class Tile extends HTMLElement {
             onclick: Tile.#onclick
         });
     }
-    fill = () => !this.shadowRoot.Q('object') && this.html() || this;
+    fill = href => {
+        !this.shadowRoot.Q('object') && this.html();
+        href && this.append(E('a', {href: this.href()}));
+        return this;
+    };
     html () {
         Q('#triangle') || Tile.triangle();
         let {path, desc, from} = this.html.Part = this.Part;
@@ -101,6 +105,7 @@ class Tile extends HTMLElement {
             Q('#triangle').cloneNode(true),
             E('object', {data: this.html.background()}),
             E('figure>img', {src: `/x/img/${path.join('/')}.png`}),
+            E('slot'),
             E('ul', this.html.icons()),
             E('p', Markup.spacing(desc)),
             ...this.html.stat(),
@@ -132,7 +137,7 @@ Object.assign(Tile.prototype.html, {
         let selector = `.${comp}${attr?.includes('fusion') ? '.fusion' : ''}`;
         Tile.hue[selector] ??= [...document.styleSheets]
             .filter(({href}) => href && new URL(href).host == location.host).flatMap(css => [...css.cssRules])
-            .find(rule => rule.selectorText == selector).styleMap.get('--c')[0];
+            .find(rule => rule.selectorText == selector).styleMap.get('--hue')[0];
 
         let spin = attr?.includes('left') ^ attr?.includes('right');
         let param = {

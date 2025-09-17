@@ -88,11 +88,9 @@ nav:has(.part-filter.blade) {
     background: var(--overlay2); 
     border-radius: 9em; 
     line-height: 1.8rem; 
-    max-width: 100%; 
+    max-width: 100%;
+    --color: hsl(var(--hue), 90%, calc(50% + var(--b-adj)));
 
-    &::-webkit-scrollbar {
-        display: none; 
-    }
     label img {
         height: 1.2em; 
         margin-top: .05em; 
@@ -105,7 +103,7 @@ nav:has(.part-filter.blade) {
         border-top-left-radius: 9em; border-bottom-left-radius: 9em;
 
         .part-sorter & {background: silver;}
-        #group & {background: var(--fg);}
+        #group & {background: var(--color);}
         .part-filter:not(:has([value='.motif'])) & {cursor: pointer;}
     }
     dd {
@@ -116,7 +114,7 @@ nav:has(.part-filter.blade) {
 
         #type & {padding: 0;}
         &:has(:checked) {
-            color: var(--fg); border-color: var(--fg); 
+            color: var(--color); border-color: var(--color); 
             filter: none; 
             
             #type & {border-color: var(--type);}
@@ -125,17 +123,4 @@ nav:has(.part-filter.blade) {
             font-size: .9em;
         }
     }
-}
-menu {
-    a[href$=X]::before {
-        content: ''; 
-        position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); 
-        z-index: 1; 
-        width: 80%; height: 60%; 
-        background: url() center / contain no-repeat; 
-    }
-    a[href*=blade]::after {background-image: url(../img/blade/CbDr.png) !important;}
-    a[href*=ratchet]::after {background-image: url(../img/ratchet/6-60.png) !important;}
-    a[href*=bit]::after {background-image: url(../img/bit/B.png) !important;}
-    a[href$=CX]::before {background-image: url(../img/lines.svg#CX) !important;}
 }

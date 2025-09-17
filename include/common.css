@@ -6,6 +6,7 @@ i {
 }
 *,*::before,*::after {
     box-sizing: border-box !important;
+    scrollbar-width: none;
 }
 summary:focus {
     outline: none;
@@ -76,42 +77,46 @@ input:is([type=checkbox],[type=radio],[type=file]),svg:not([viewBox]),::-webkit-
     html {font-size: 20px;}
 }
 
-html {
-    scrollbar-width: none;
-    background: var(--backdrop);
-    --backdrop: black;--overlay1:#383838E8;--overlay2:#555555E8;
-    color: var(--on); --on: #ffffffdd;
-    --c: 87; --theme: #b5fb5c; 
-    --theme-dark: color-mix(in srgb,var(--theme) 35%,black);
-    --theme-alt: hsl(45,90%,48%);
+.blade {
+    --hue: 55; --b-adj: -5%;
+    --img: url(/x/img/blade/CbDr.png);
 }
-.blade,.ratchet,.bit {
-    --bg: hsla(var(--c),60%,calc(30% + var(--b-adj)),.9);
-    --fg: hsl(var(--c),90%,calc(50% + var(--b-adj)));
+.ratchet {
+    --hue: 175; --b-adj: 0%;
+    --img: url(/x/img/ratchet/6-60.png);
 }
-.blade   {--c: 55;--b-adj: -5%;}
-.ratchet {--c: 175;--b-adj: 0%;}
-.bit     {--c: 245;--s-adj: 20%;--b-adj: 15%;}
-.bit.fusion {--c: 200;}
+.bit {
+    --hue: 245; --s-adj: 20%; --b-adj: 15%;
+    --img: url(/x/img/bit/B.png);
+}
+.bit.fusion {--hue: 200;}
 .att,dd:has([value='.att']) {--type: #0081e3;}
 .def,dd:has([value='.def']) {--type: #009f48;}
 .sta,dd:has([value='.sta']) {--type: #f08200;}
 .bal,dd:has([value='.bal']) {--type: #de0010;}
-.BX,a[href$=BX] {--line: #71bce9; --img: url(img/lines.svg#BX);}
-.UX,a[href$=UX] {--line: #ee7800; --img: url(img/lines.svg#UX);}
-.CX,a[href*=CX] {--line: #e4007f; --img: url(img/lines.svg#CX);}
+.BX,a[href$=BX] {--line: #71bce9; --img-line: url(/x/img/lines.svg#BX);}
+.UX,a[href$=UX] {--line: #ee7800; --img-line: url(/x/img/lines.svg#UX);}
+.CX,a[href*=CX] {--line: #e4007f; --img-line: url(/x/img/lines.svg#CX);}
 
-.RB {--row-s: 0%;--b-adj: 5%;}
-.B  {--row-c: 10;}
-.SS {--row-c: 235;--b-adj: 5%;}
-.St {--row-c: 290;}
-.S  {--row-c: 200;}
-.Lm  {--row-c: 45;}
+.RB {--sat: 0%; --b-adj: 5%;}
+.B  {--hue: 10;}
+.SS {--hue: 235; --b-adj: 5%;}
+.St {--hue: 290;}
+.S  {--hue: 200;}
+.Lm  {--hue: 45;}
 .RB,.B,.S,.St,.SS,.Lm {
-    --light: hsl(var(--row-c,0),var(--row-s,60%),calc(var(--row-b,35%) + var(--b-adj,0%)));
-    --dark: hsl(var(--row-c,0),var(--row-s,50%),calc(var(--row-b,25%) + var(--b-adj,0%)));
+    --light: hsl(var(--hue,0),var(--sat,60%),calc(35% + var(--b-adj,0%)));
+    --dark: hsl(var(--hue,0),var(--sat,50%),calc(25% + var(--b-adj,0%)));
 }
 
+html {
+    background: var(--backdrop);
+    --backdrop: black;--overlay1:#383838E8;--overlay2:#555555E8;
+    color: var(--on); --on: #ffffffdd;
+    --hue: 87; --theme: #b5fb5c; 
+    --theme-dark: color-mix(in srgb,var(--theme) 35%,black);
+    --theme-alt: hsl(45,90%,48%);
+}
 body {
     margin:0;
     text-align: center; -webkit-text-size-adjust: 100%;
@@ -161,7 +166,7 @@ nav {
         margin: .1em .1em 0 0;
         touch-action: none;
         position: relative;
-        z-index:2;
+        z-index: 2;
 
         &:not(.PI-dragged) {animation: pull 5s 2s infinite;}
         &.PI-dragged a {pointer-events: none;}
@@ -208,12 +213,6 @@ nav {
             &:not([data-icon]) {
                 font-size: .8em;
                 border-radius: 9em;
-            }
-            &:not([data-icon]):empty::after {
-                content: '';
-                display: inline-block; height: 90%; aspect-ratio: 1/1;
-                background: url() center / contain no-repeat;
-                filter: contrast(0) brightness(0);        
             }
             &.current {border: .1rem dashed var(--theme);}
         }
@@ -280,8 +279,8 @@ nav {
     }
     label[for=free]::after,
     .part-mag label,.part-mag::before,.part-mag::after {
-        display: inline-block; width: 1.7rem;height: 1.7rem;
-        line-height: 1.65;font-size: 1.1rem;
+        display: inline-block; width: 1.7rem; height: 1.7rem;
+        line-height: 1.65; font-size: 1.1rem;
         border-radius: 5em;
     }
     .part-mag label,.part-mag::before,.part-mag::after {
@@ -303,6 +302,28 @@ nav {
         display: flex; align-items: center; gap: .5em;
         grid-area: 1/3/3/4;
         margin-left: .5em;
+    }
+}
+:is(th,menu a):is(.blade,.ratchet,.bit)::after {
+    content: '';
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); 
+    z-index: -1; 
+    aspect-ratio: 1;
+    background: var(--img) center / contain no-repeat; 
+    filter: saturate(0) brightness(99);
+}
+menu {
+    a[class]::after {
+        height: 90%;
+        filter: saturate(0) brightness(0) !important;
+        z-index: 0 !important;
+    }
+    a[href$=X]::before {
+        content: ''; 
+        position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); 
+        z-index: 1; 
+        width: 80%; height: 60%; 
+        background: var(--img-line) center / contain no-repeat; 
     }
 }
 @media (min-width:631px) {
@@ -334,14 +355,7 @@ label:has(:is([type=radio],[type=checkbox]):not(:is(:checked,[name=mag]))):not(.
     animation: spin 1s infinite;
 }
 @keyframes spin {to {transform: rotate(360deg);}}
-@property --angle {
-    syntax: '<angle>';
-    inherits: true;
-    initial-value: 15deg;
-}
-.PI-selected {
-    touch-action: none;
-}
+
 continuous-knob {
     --light: var(--theme);
 }
@@ -353,8 +367,7 @@ continuous-knob {
 
     a:not([href*=youtu])::before {
         content: '\e024';
-        font-size: 1.2em;
-        display: block;
+        font-size: 1.2rem;
     }
     a[href^='//']::before {content: '\e023';}
     #tiles x-part {
@@ -407,6 +420,4 @@ continuous-knob {
     &:has(dfn:not(:empty)) {animation: vanish 2s 1s forwards;}
     &:empty {display: none;}
 }
-@keyframes vanish {
-    to {opacity: 0;}
-}
+@keyframes vanish {to {opacity: 0;}}

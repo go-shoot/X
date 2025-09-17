@@ -61,7 +61,7 @@ section {
             width: 100%;
             border-radius: 9em;
             font-size: 1.2em;
-            padding: .2em .5em;
+            padding: .2em .5em; margin-bottom: .2em;
         }
     }
     ol:not(:empty) {
@@ -71,9 +71,6 @@ section {
 
         li {
             margin-right: 1em;
-        }
-        &::-webkit-scrollbar {
-            display: none;
         }
         ::before {
             margin-right: .2em;
@@ -100,7 +97,7 @@ section {
             background: url() center / contain no-repeat;
         }
         :is(.blade,[href*='?blade#'],a[href*='?blade='])::before {
-            background-image: var(--img, url(img/lines.svg#BX)) !important;
+            background-image: var(--img-line, url(img/lines.svg#BX)) !important;
         }
         :is(.ratchet,[href*='?ratchet#'])::before {
             background-image: url(img/ratchet/6-60.png) !important;

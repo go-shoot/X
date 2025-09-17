@@ -44,6 +44,7 @@
 :host svg {filter: drop-shadow(0 0 .2em var(--type));}
 
 :host {
+    ::slotted(a) {grid-area: 1/1/2/2 !important;}
     h4 {grid-area: 4/2/6/3;}
     .chi:nth-of-type(1) {grid-area: 4/2/5/4;}
     .chi:nth-of-type(2) {grid-area: 5/2/6/4;}
@@ -57,7 +58,7 @@
     strong {grid-area: 2/4/3/5;}
     ul {grid-area: 4/1/-1/-1;}
     a {grid-area: 2/2/3/3;}
-} 
+}
 :host(.ratchet) h4 {grid-area: 4/1/6/3;}
 
 :host object {
@@ -176,7 +177,7 @@
     margin-left: .05em;
 }
 :host(.ratchet) h4 {
-    color: hsl(var(--c),70%,50%);
+    color: hsl(var(--hue),70%,50%);
 }
 
 :host dl {
@@ -203,6 +204,7 @@
         border-bottom: .2em solid;
         transform: translate(-1em,-1.8em);
         width: 3em;
+        line-height: 1.4;
     }
     dd:first-of-type {
         text-align: right;
@@ -292,17 +294,7 @@ table {
             display: inline-block; vertical-align: .7em;
         }
         &:not(:first-child) {color: black;}
-        &::after {
-            content: ''; 
-            position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); 
-            z-index: -1; 
-            height: 4em; width: 4em; 
-            background: url() center / contain no-repeat; 
-            filter: saturate(0) brightness(99);
-        }
-        &.blade::after {background-image: url(/x/img/blade/CbDr.png) !important;}
-        &.ratchet::after {background-image: url(/x/img/ratchet/6-60.png) !important;}
-        &.bit::after {background-image: url(/x/img/bit/B.png) !important;}
+        &::after {width: 4em;}
     }
     thead:has(+tbody:empty) {
         display: none;
@@ -360,7 +352,7 @@ td {
     }
 }
 
-tbody tr:last-child td {
+tbody tr:nth-last-child(1 of :not([hidden])) td {
     border-bottom: solid .5px var(--on);
 }
 tbody td {

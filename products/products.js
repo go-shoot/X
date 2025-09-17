@@ -18,7 +18,7 @@ Object.assign(Table, {
         Q('.loading').classList.remove('loading');
         Q('#chi').click();
         $(Q('table')).tablesorter();
-        location.search && Table.filter(location.search.substring(1).split(/-(?=.+\=)|=/));
+        location.search && Table.filter(decodeURI(location.search.substring(1)).split(/-(?=.+\=)|=/));
     },
     
     events () {

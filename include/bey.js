@@ -68,29 +68,30 @@ class Search {
             query = query.replace(/[’'ʼ´ˊ]/g, '′');
             /^\/.+\/\w?$/.test(query) ?
                 this.regexp.push(new RegExp(.../^\/(.+)\/(\w?)$/.exec(query).slice(1))) :
-                this.lookup(query.replace(/([^\\])?([.*+?^${}()|[\]\\])/g, '$1\\$2'));
+            !/^.X/i.test(query) ?
+                this.lookup(query.replace(/([^\\])?([.*+?^${}()|[\]\\])/g, '$1\\$2')) : '';
         } else {
             query.length == 3 && (query = PARTS.flatten(([comp, line, sub, abbr]) => [comp, line, abbr]).at(query).path);
             this.query = query.toReversed().slice(1).reduce((obj, key) => new O({[key]: obj}), query.at(-1));
             this.href = new URLSearchParams({...this.query.flatten(([comp, line, sub, abbr]) => [`${comp}-${line}`, abbr])});
         }
-        this.build();console.log(this.regexp)
+        this.build();
         return Search.beys().then(beys => ({
             beys: beys.filter(bey => 
                 this.regexp.some(r => r.test(bey.dataset?.abbr ?? bey[2])) ||
-                typeof query == 'string' && query.length >= 2 && this.#search.code(query.split(' '), bey.firstChild?.innerText ?? bey[0])
+                typeof query == 'string' && query.length >= 2 && 
+                    this.#search.code(query.split(' '), bey.firstChild?.dataset.code ?? bey[0])
             ),
             href: this.href || `search=${query}`
         }));
     }
     lookup (string) {
-        this.query = this.#search.deep(string.split(' '))
-            .map(([comp, parts]) => [comp, new A(
-                [...parts.filter(([, part]) => part instanceof Part).keys()], 
-                {...parts.filter(([, part]) => !(part instanceof Part)).map(([line, subs]) => 
-                    [line, subs.map(([s, parts]) => [s, [...parts.keys()]]).filter(([, parts]) => parts.length)]
-                )}
-            )]);
+        this.query = this.#search.deep(string.split(' ')).map(([comp, parts]) => [comp, new A(
+            [...parts.filter(([, part]) => part instanceof Part).keys()], 
+            {...parts.filter(([, part]) => !(part instanceof Part)).map(([line, subs]) => 
+                [line, subs.map(([s, parts]) => [s, [...parts.keys()]]).filter(([, parts]) => parts.length)]
+            )}
+        )]);
     }
     #search = {
         deep: (target, parts = PARTS) => parts.map(([comp, parts]) => [comp, parts.filter(([, part], i, arr) => 
@@ -98,10 +99,10 @@ class Search {
         )]),
         match: (target, {abbr, names = {}}) => Array.isArray(target) ?
             target.some(t => this.#search.match(t, {abbr, names})) :
-            new RegExp(`^${target}$`, 'i').test(abbr) ||
-            !/^[^一-龥]{1,2}$/.test(target) && Object.values(names).some(n => new RegExp(target, 'i').test(Markup.remove(n))),
+            target.toLowerCase() == abbr.toLowerCase() ||
+            !/^[^一-龥]{1,2}$/.test(target) && names.values?.().some(n => new RegExp(target, 'i').test(Markup.remove(n))),
         code: (target, code) => Array.isArray(target) ?
-            target.some(t => this.#search.code(t, code)) : new RegExp(target, 'i').test(code)
+            target.some(t => this.#search.code(t, code)) : new RegExp(target.replace('-', ''), 'i').test(code.replace('-', ''))
     }
     build () {
         const q = this.query;
@@ -135,14 +136,14 @@ class Preview {
         [what].flat().reduce((prom, w) => prom.then(() => this[w](pathORcode)), Promise.resolve());
     }
     cell = path => new Search(path).then(({beys, href}) => Q('#cells').append(
-        href ? E('a', {href: `/x/products/?${href}`}) : '',
-        E('table', [Preview.thead.cloneNode(true), E('tbody', beys.map(bey => new Bey(bey)))])
+        E('table', [
+            href ? E('caption>a', {href: `/x/products/?${href}`}) : '',
+            Preview.thead.cloneNode(true), 
+            E('tbody', beys.map(bey => new Bey(bey)))
+        ])
     )).then(() => Cell.fill('chi'))
 
-    tile = path => PARTS.at(path).tile().then(tile => Q('#tiles').append(
-        E('a', {href: tile.href()}),
-        tile.fill()
-    ))
+    tile = path => PARTS.at(path).tile().then(tile => Q('#tiles').append(tile.fill(true)))
     image (tdORcode) {
         let dataset = typeof tdORcode == 'object' ? tdORcode.dataset : {code: tdORcode};
         let {code, video, lowercase, markup, amount} = this.#image.revisions(dataset);
