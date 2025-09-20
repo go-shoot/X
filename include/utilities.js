@@ -5,14 +5,19 @@ class FilterLED {
     constructor(classes, targets, custom) {
         let form = E('form.LED');
         E(form).set(E.checkboxes(classes.map(c => ({id: c, checked: true}) )), {
-            onchange: () => this.filter(form, typeof targets == 'string' ? Q(targets) : targets)
+            onchange: () => this.filter(form, typeof targets == 'string' ? Q(targets) : targets),
+            onreset: () => this.reset(form, typeof targets == 'string' ? Q(targets) : targets)
         });
         custom?.(form);
         return form;
     }
     filter (form, targets) {
         let show = [...form.elements].filter(i => i.checked).map(i => `.${i.id}`).join(',');
-        targets.forEach(el => el.hidden = !el.matches(show));
+        targets?.forEach(el => el.hidden = !el.matches(show));
+    }
+    reset (form, targets) {
+        [...form.elements].forEach(input => input.checked = true);
+        targets?.forEach(el => el.hidden = false);
     }
 }
 class Shohin {

@@ -89,22 +89,14 @@ section {
 
             &::before {content: '\e023';}
         }
-        &.parts button::before,
-        &.links :is([href*=parts][href*='#'])::before {
+        &.parts button::before, &.links a:not([class=''])::before {
             content: '';
             width: 1.4em; height: 1.4em; display: inline-block;
             vertical-align: text-top;
-            background: url() center / contain no-repeat;
+            background: var(--img-line, url(img/lines.svg#BX)) center / contain no-repeat;
         }
-        :is(.blade,[href*='?blade#'],a[href*='?blade='])::before {
-            background-image: var(--img-line, url(img/lines.svg#BX)) !important;
-        }
-        :is(.ratchet,[href*='?ratchet#'])::before {
-            background-image: url(img/ratchet/6-60.png) !important;
-            filter: saturate(0) brightness(99);
-        }
-        :is(.bit,[href*='?bit#'])::before {
-            background-image: url(img/bit/A.png) !important;
+        :is(.ratchet,.bit)::before {
+            background: var(--img) center / contain no-repeat !important;
             filter: saturate(0) brightness(99);
         }
     }
@@ -151,20 +143,21 @@ section {
 
 #reboot {
     user-select: none; -webkit-user-select: none;
-    padding: 0 .5em; margin-bottom: 2em;
+    padding: 0 .5em; 
     text-align: right; font-size: .8em;
 
     div {
         display: flex; justify-content: space-between; align-items: center;
         margin: .2em 0 .2em auto;
         border-radius: 9em;
-        width: 15em;
+        width: 16em;
         background: var(--overlay1);
+        text-align: center;
     }
     i {
         width: 2em;height: 2em;
         border-radius: 9em;
-        text-align: center; line-height: 2.2em;
+        line-height: 2.2em;
         font-size: 1.5em;
         touch-action: none;
 

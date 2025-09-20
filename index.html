@@ -83,7 +83,10 @@ Q('[type=search]').oninput = ev => {
         );
         Q('#search .links').replaceChildren(...new Fuse(CACHE.links, {keys: ['keywords', 'text'], threshold: .4})
             .search(search).slice(0, 5)
-            .map(({item}) => E('li>a', {href: item.href, innerText: item.text, target: item.href.startsWith('//') ? '_blank' : ''}))
+            .map(({item}) => E('li>a', item.text, {
+                classList: /(?<=parts\/\?).+?(?=[=#])/.exec(item.href)?.[0] || '',
+                href: item.href, target: item.href.startsWith('//') ? '_blank' : ''
+            }))
         );
         Q('#search .beys').replaceChildren(/^[a-z]x[a-z]?-?\d{2,3}$/i.test(search) 
             && (search = search.toUpperCase().replace(/([A-Z]+)(\d+)/, '$1-$2'))
@@ -95,29 +98,32 @@ Q('[type=search]').oninput = ev => {
 
 import {Shohin} from './include/utilities.js'
 import PointerInteraction from 'https://aeoq.github.io/pointer-interaction/script.js';
-Q('header').after(DB({
+const plugins = {
     announce: news => new O(news).each(([date, beys]) => 
         Q('#products').append(E('time', {title: date}), ...beys.map(bey => new Shohin(bey)))
     ),
     followup: () => DB.get.essentials()
         .then(([meta, parts]) => Part.import(meta.general, parts))
         .then(() => Shohin.after())
-}).then(() => {
+};
+Q('header').after(DB(plugins).then(() => {
     const observer = new IntersectionObserver(entries => entries.forEach(entry => 
         entry.target.classList.toggle('seeing', entry.isIntersecting)
     ));
+    Q('header,section,time,.scroller', el => observer.observe(el));
     const reset = message => Promise.all([
         DB.discard(ev => message.innerText = ev.type == 'blocked' ? '請先關閉所有本網的分頁' : ev.type),
         caches.delete('V4'), caches.delete('parts'),
         localStorage.clear(),
         navigator.serviceWorker.getRegistrations().then(([reg]) => reg.unregister())
     ]);
-    Q('header,section,time,.scroller', el => observer.observe(el));
     PointerInteraction.events({
         '.scroller,#search ol': {scroll: {x: true}},
         '#reset': {
             drop: {goal: 'i:last-child'},
-            drag: PI => PI.drag.to.translate({x: {min: 0, max: Q('#reboot div').clientWidth - Q('#reset').clientWidth}, y: false}),
+            drag: PI => PI.drag.to.translate({x: {
+                min: 0, max: Q('#reboot div').clientWidth - Q('#reset').clientWidth
+            }, y: false}),
             lift: PI => PI.goal && reset(PI.target.nextElementSibling).then(() => {
                 onbeforeunload = () => scrollTo(0, 0);
                 location.reload();
