@@ -8,12 +8,10 @@
         <li><a href="../products/" data-icon=""></a>
         <li><a href="../parts/?blade" data-icon=""></a>
     </menu>
-    <form class="LED">
-        <a href="https://beyblade.takaratomy.co.jp/beyblade-x/news/news_stickerlist.html">
-            <img src="https://beyblade.takaratomy.co.jp/beyblade-x/news/_image/news_stickerlist_12.png">
-            <span>各款貼紙</span>
-        </a>
-    </form>
+    <a href="https://beyblade.takaratomy.co.jp/beyblade-x/news/news_stickerlist.html">
+        <img src="https://beyblade.takaratomy.co.jp/beyblade-x/news/_image/news_stickerlist_12.png">
+        <span>各款貼紙</span>
+    </a>
 </nav>
 
 <main>
@@ -22,7 +20,7 @@
 
 <script type="module">
 import { Bey } from '../include/bey.js'
-import { Keihin } from '../include/utilities.js'
+import { FilterLED, Keihin } from '../include/utilities.js'
 
 const Prize = () => Prize.before().then(Prize.display).then(Prize.after);
 Object.assign(Prize, {
@@ -32,16 +30,14 @@ Object.assign(Prize, {
     display: keihins => Q('diamond-grid').append(...Prize.all = keihins.map(k => new Keihin(k))),
     after: () => [Prize.filter(), Prize.event()],
     
-    filter: () => Q('nav form').append(...E.checkboxes(Object.keys(Keihin.type).map(t => ({id: `keihin-${t}`, checked: true}) ))),
+    filter: () => Q('nav').append(
+        new FilterLED([...Keihin.type.keys()].map(t => `keihin-${t}`), Prize.all, form => form.prepend(Q('nav>a')))
+    ),
     event () {
-        Q('nav').onchange = () => {
-            let show = Q('nav input', []).filter(i => i.checked).map(i => i.id);
-            Prize.all.forEach(k => k.hidden = !show.includes(k.classList[0]));
-        };
         onclick = ev => {
             let h4 = ev.target.closest('h4')?.cloneNode(true);
             if (!h4) return;
-            h4.Q('.code')?.remove();
+            h4.Q('code')?.remove();
             navigator.clipboard.writeText([...h4.children].map(el => el.innerText.replace(' ', '')).join(' '));
         }
     }

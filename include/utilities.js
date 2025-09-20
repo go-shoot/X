@@ -1,6 +1,20 @@
 import DB from "./DB.js";
 import { Bey, Preview, Markup } from "./bey.js";
 
+class FilterLED {
+    constructor(classes, targets, custom) {
+        let form = E('form.LED');
+        E(form).set(E.checkboxes(classes.map(c => ({id: c, checked: true}) )), {
+            onchange: () => this.filter(form, typeof targets == 'string' ? Q(targets) : targets)
+        });
+        custom?.(form);
+        return form;
+    }
+    filter (form, targets) {
+        let show = [...form.elements].filter(i => i.checked).map(i => `.${i.id}`).join(',');
+        targets.forEach(el => el.hidden = !el.matches(show));
+    }
+}
 class Shohin {
     constructor({code: header, name, imgs, desc, type}) {
         imgs ??= [];
@@ -60,7 +74,7 @@ class Keihin {
             E('time', date.replace('-','‒'))
         ]);
     }
-    static type = {t: '比賽', d: '抽獎', m: '限定商品', g: '贈品'}
+    static type = new O({t: '比賽', d: '抽獎', m: '限定商品', g: '贈品'})
 }
 
 const Glossary = async () => {
@@ -91,8 +105,8 @@ Object.assign(Glossary, {
         ev.stopPropagation();
         clearTimeout(Glossary.timer);
         let term = ev.target.innerText, aside = Q('#glossary');
-        let [jap, def] = (await DB.get('meta', 'glossary'))[term];  //ev.target changes after await
         aside.innerHTML = '';
+        let [jap, def] = (await DB.get('meta', 'glossary'))[term];  //ev.target changes after await
         E(aside).set({
             '--left': `${ev.clientX}px`, '--top': `${ev.clientY}px`
         }, [
@@ -104,4 +118,4 @@ Object.assign(Glossary, {
         Glossary.timer = setTimeout(() => aside.innerHTML = '', 3000);
     },
 });
-export {Shohin, Keihin, Glossary}
+export {FilterLED, Shohin, Keihin, Glossary}

@@ -143,14 +143,14 @@
     code::before,code::after {
         position: absolute; top: -.7em;
     }
-    .r code::after {
-        content: "\e01e";
-        right: -1.2em;
-    }
-    .l code::before {
-        content: "\e01d";
-        left: -1.2em;
-    }
+}
+.r code::after,label:has(#r)::after {
+    content: "\e01e";
+    right: -1.2em;
+}
+.l code::before,label:has(#l)::after {
+    content: "\e01d";
+    left: -1.2em;
 }
 
 .scroller {

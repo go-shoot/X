@@ -1,3 +1,4 @@
+nav>a {display: none;}
 .LED a {
     font-size: .9em;
 }

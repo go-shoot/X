@@ -48,7 +48,8 @@
 
 <script type="module">
 import DB from '../include/DB.js';
-import {Bey, Markup, Preview} from "../include/bey.js";
+import {Bey, Markup, Preview} from '../include/bey.js';
+import {FilterLED} from '../include/utilities.js';
 
 class Group {
     constructor({eng, jap, desc, colors}) {
@@ -95,8 +96,10 @@ class Board {
 }
 Q('main').prepend(DB().then(() => {
     DB.get('meta', 'parts').then(meta => Bey.import(meta.general));
+    Q('nav').append(new FilterLED(['l','r'], '.boards li'));
     (onhashchange = () => {
         let place = Q(`#${location.hash.substring(1)}`);
+        Q('nav form').hidden = place.id == 'others';
         if (place.Q(`details`)) return;
         DB.get('product', place.id).then(groups => groups.reverse().forEach(({eng, ...rest}) => 
             place.Q(`h2:nth-of-type(${Group.location[place.id](eng)})`).after(new Group({eng, ...rest}))

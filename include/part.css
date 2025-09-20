@@ -202,7 +202,7 @@
     dt:first-of-type {
         position: absolute; right: 0;
         border-bottom: .2em solid;
-        transform: translate(-1em,-1.8em);
+        transform: translate(-1em,-1.9em);
         width: 3em;
         line-height: 1.4;
     }
