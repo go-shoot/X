@@ -10,8 +10,10 @@ class Bey {
         if (code == 'BH') return new Text();
         this.abbr = abbr;
         let [blade, ratchet, bit] = abbr.split(' ');
-
-        this.line = META.blade.delimiter.find(([, char]) => (blade = blade.split(char)).length > 1)?.[0];
+        
+        this.line = META.blade.delimiter.find(([, char]) => 
+            (blade = (Array.isArray(blade) ? blade[0] : blade).split(char)).length > 1
+        )?.[0];
         this.blade = blade.length > 1 ? 
             blade.map((b, i) => PARTS.blade[this.line][Part.blade.sub[i]][b]) ?? new Part.blade() : 
             PARTS.blade[blade[0]] ?? new Part.blade();

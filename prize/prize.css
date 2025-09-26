@@ -29,7 +29,7 @@ diamond-grid {
     font-size: .8em;
     --side: 20em; --gap: .5em;
 
-    li {
+    article {
         background: #fbfbfd; color: black;
         display: grid; grid-template: 20% 7.5% 44% 13.5% 15% / 10% 80% 7% 3%;
         grid-template-areas: '. type . .' '. desc . .' '. img img .' '. name . .' '. date . .';
