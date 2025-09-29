@@ -1,6 +1,7 @@
 import DB from '../include/DB.js'
 import { Part } from '../include/part.js';
 import { Markup } from '../include/bey.js';
+import { Glossary } from '../include/utilities.js';
 
 let META, PARTS;
 let [comp, line] = [...new URLSearchParams(location.search)][0] ?? [];
@@ -40,6 +41,7 @@ Object.assign(Parts, {
         Filter.filter();
         Parts.info(group);
         typeof groupORpart == 'object' && Parts.focus(groupORpart);
+        Glossary(Parts.place);
     },
     info (group) {
         document.title = document.title.replace(/^.*?(?= ■ )/, META.title?.[group] ?? META.title ?? '');

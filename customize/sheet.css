@@ -206,7 +206,7 @@ form {
     padding:1em .5em;
 
     * {width:100%;}
-    p {
+    em {
         margin:0 auto 2em auto;
 
         small {

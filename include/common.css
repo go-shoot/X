@@ -14,7 +14,14 @@ summary:focus {
 :root,input,input::placeholder,button,db-state {
     font-family: IBM Plex Sans JP,COND,sans-serif;
 }
-#parts h4,#menu h4,:host(x-part) dd,output {
+#search,nav,fieldset,summary,thead,
+h4,h5,em,dfn,p dt,.links {
+    font-weight: 500;
+}
+nav dd,summary>*,small {
+    font-weight: 400;
+}
+:host(x-part) dd,output {
     font-family: COND,IBM Plex Sans JP,sans-serif;
 }
 h2,h3 {
@@ -22,7 +29,7 @@ h2,h3 {
 }
 @font-face {
     font-family: 'COND';font-display: swap;
-    src: url("./fonts/FiraSansExtraCondensed-Regular.woff2");
+    src: url("./FiraSansExtraCondensed-Regular.woff2");
 }
 
 menu,ol:not(.default),ul:not(.default),dl,dt,dd,summary,figure,fieldset {
@@ -35,8 +42,17 @@ article p {
 svg {
     overflow: visible;
 }
-ruby.below {
-    ruby-position: under;
+ruby {
+    display: inline-flex; flex-direction: column-reverse;
+    vertical-align: bottom;
+    text-align: center;
+
+    rt {
+        text-align: center; line-height: .5;
+    }
+    &.below {
+        flex-direction: column;
+    }
 }
 label,button,summary,[onclick],a[href] {
     transition: filter .3s,background-color .3s;
@@ -152,7 +168,7 @@ nav {
     gap: .2rem .3rem;
     padding: .2rem .3rem;
     background: var(--overlay1);
-    position: fixed; top: 0; z-index:5; 
+    position: fixed; top: 0; z-index: 5; 
     user-select: none; -webkit-user-select: none;
 
     menu {
@@ -355,7 +371,7 @@ label:has(:is([type=radio],[type=checkbox]):not(:is(:checked,[name=mag]))):not(.
 continuous-knob {
     --light: var(--theme);
 }
-[popover] {
+[popover=auto] {
     width: 100%; height: 100%;
     background: hsla(0,0%,0%,0.8); color: var(--on);
     border: none;
@@ -403,17 +419,16 @@ continuous-knob {
 }
 
 #glossary {
-    position: fixed; left: max(10px, min(var(--left), 100% - 10px - 15em)); top: var(--top);
-    z-index: 9;
-    width: 15em;
-    font-size: .8em; text-align: justify;
+    border: none;
+    left: max(10px, min(var(--left), 100% - 10px - 15em)); top: var(--top);
+    max-width: 15em;
+    font-size: .8em; text-align: justify; color: var(--on);
     background: var(--overlay2);
-    padding: .8em .5em .5em .5em;
+    padding: .8em .5em .5em .5em; margin: 0;
     pointer-events: none;
     border-radius: 1em;
 
     dfn::after {content: '：'; font-style: initial;}
     &:has(dfn:not(:empty)) {animation: vanish 2s 1s forwards;}
-    &:empty {display: none;}
 }
 @keyframes vanish {to {opacity: 0;}}

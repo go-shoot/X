@@ -25,11 +25,11 @@
 </nav>
 
 <main>
-    <p class="message"><span>按住兩秒以刪除此層<small>無法回復！</span></small></p>
+    <em class="message"><span>按住兩秒以刪除此層<small>無法回復！</span></small></em>
     <canvas></canvas>
     <form>
         <details>
-            <summary><span>提示</span></summary>
+            <summary>提示</summary>
             <ul class="default">
                 <li>以左上的拉桿跳至不同專案（上限 6）</li>
                 <li>右邊是圖層操作，每一圖層只可加入一張圖片</li>
@@ -87,8 +87,8 @@
         </fieldset>
     </form>
 </main>
-<aside id="picker" popover>
-    <p>若想使用以下圖片，請長按／按右鍵下載，然後重新上載<small>因 CORS 限制，只能手動</small>
+<aside id="picker" popover="auto">
+    <em>若想使用以下圖片，請長按／按右鍵下載，然後重新上載<small>因 CORS 限制，只能手動</small></em>
 </aside>
 
 <script type="module">
@@ -97,7 +97,7 @@ import {App, Layers} from './sheet.js';
 Q('main').prepend(DB().then(App));
 
 App.picker = () => {
-    let show = image => picker.append(E('img', {src: `://beyblade.takaratomy.co.jp/anime/character/_image/chara${image}`}));
+    let show = image => picker.append(E('img', {src: `//beyblade.takaratomy.co.jp/anime/character/_image/chara${image}`}));
     let picker = Q('[popover]'), 
         main = ['tenka','multi','bird','ekusu'], 
         mobu = ['ryu','yoko','dokuga','iwao','reiyu','roji','omega','ginro','karura','kuromu','shieru','shiguru','quinn','rex','yuni','zonamos','burn','kadovar','toguro','pan','manju','meiko'],

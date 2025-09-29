@@ -1,5 +1,6 @@
 import DB from './DB.js';
 import { Part, Cell } from './part.js';
+import { Glossary } from './utilities.js';
 import Maps from '../products/maps.js';
 
 let META, PARTS;
@@ -135,7 +136,8 @@ class Preview {
             ];
         Preview.reset();
         Preview.place.showPopover();
-        [what].flat().reduce((prom, w) => prom.then(() => this[w](pathORcode)), Promise.resolve());
+        [what].flat().reduce((prom, w) => prom.then(() => this[w](pathORcode)), Promise.resolve())
+        .then(() => Glossary(Preview.place));
     }
     cell = path => new Search(path).then(({beys, href}) => Q('#cells').append(
         E('table', [

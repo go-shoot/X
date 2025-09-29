@@ -82,20 +82,21 @@ class Keihin {
     static type = new O({t: '比賽', d: '抽獎', m: '限定商品', g: '贈品'})
 }
 
-const Glossary = async () => {
-    let p = [Q('p'), Q('x-part', []).map(part => part.shadowRoot.Q('p'))].flat(9).filter(el => el);
+const Glossary = async (where = document) => {
+    let p = [where.Q('p'), where.Q('x-part', []).map(part => part.shadowRoot.Q('p'))].flat(9).filter(el => el);
     if (!p.length) return;
     Glossary.search(p, await DB.get('meta', 'glossary'));
 
-    let u = [Q('u'), Q('x-part', []).map(part => part.shadowRoot.Q('u'))].flat(9).filter(el => el);
+    let u = [where.Q('u'), where.Q('x-part', []).map(part => part.shadowRoot.Q('u'))].flat(9).filter(el => el);
     if (!u.length) return;
     Glossary.event(u);
 
-    Q('#glossary') ?? Q('body').append(E('aside#glossary'));
+    Q('#glossary') ?? Q('body').append(E('aside#glossary', {popover: 'hint'}));
 }
 Object.assign(Glossary, {
     search: (texts, glossary) => texts.forEach(p => {
-        const walker = document.createTreeWalker(p, NodeFilter.SHOW_TEXT);
+        const walker = document.createTreeWalker(p, NodeFilter.SHOW_TEXT, 
+            node => NodeFilter[node.parentElement.tagName == 'U' ? 'FILTER_REJECT' : 'FILTER_ACCEPT']);
         let node;
         while (node = walker.nextNode()) {
             const texts = node.nodeValue.split(/(\w[\w ]*\w)/);
@@ -120,7 +121,11 @@ Object.assign(Glossary, {
                 ' ', jap.split('&')[1] ?? ''
             ]), Markup.spacing(def)
         ]);
-        Glossary.timer = setTimeout(() => aside.innerHTML = '', 3000);
+        aside.showPopover();
+        Glossary.timer = setTimeout(() => {
+            aside.innerHTML = '';
+            aside.hidePopover();
+        }, 3000);
     },
 });
 export {FilterLED, Shohin, Keihin, Glossary}
