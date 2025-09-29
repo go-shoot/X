@@ -117,7 +117,7 @@
         width: 75%;
         white-space: pre-wrap;
         line-height: 1.4em;
-        font-size: .9em; font-family: MONO,COND;
+        font-size: .9em; font-family: Fira Code,COND;
         cursor: pointer;
         
         li:not(.Lm) & {color: deepskyblue;}

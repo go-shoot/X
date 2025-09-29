@@ -326,7 +326,7 @@ table {
             text-align: right;
         }
         &[abbr]:has(+:not([abbr])),&[headers=ratchet],&:first-child {
-            font-family: MONO,COND;
+            font-family: Fira Code,COND;
         }
         tr[style]:not(:has(td:nth-child(8))) &:nth-child(2),
         tr[style]:has(td:nth-child(8)) &:nth-child(3) {

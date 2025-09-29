@@ -85,7 +85,7 @@ const Head = {
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Yusei+Magic&family=IBM+Plex+Sans+JP:wght@500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@600&family=IBM+Plex+Sans+JP:wght@400&family=Kaisei+Decol:wght@500&display=swap" rel="stylesheet">
     `,
     cache: () => caches.open('V4').then(cache => Promise.all([
         cache.put(Head.url, new Response(Head.code)), ...Head.aeoq.map(url => cache.add(url))
