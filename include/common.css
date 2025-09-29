@@ -17,7 +17,7 @@ summary:focus {
 #parts h4,#menu h4,:host(x-part) dd,output {
     font-family: COND,IBM Plex Sans JP,sans-serif;
 }
-h1,h2,h3 {
+h2,h3 {
     font-family: Kaisei Decol,COND,sans-serif;
 }
 @font-face {
