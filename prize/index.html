@@ -24,8 +24,8 @@ import { FilterLED, Keihin } from '../include/utilities.js'
 
 const Prize = () => Prize.before().then(Prize.display).then(Prize.after);
 Object.assign(Prize, {
-    before: () => Promise.all([DB.get.essentials(), fetch('../db/prod-keihin.json')])
-        .then(([[meta, parts], resp]) => Bey.import(meta.general, parts) && resp.json()),
+    before: () => Promise.all([DB.get.essentials(), DB.get('product', 'keihins')])
+        .then(([[meta, parts], keihins]) => Bey.import(meta.general, parts) && keihins),
 
     display: keihins => Q('diamond-grid').append(...Prize.all = keihins.map(k => new Keihin(k))),
     after: () => [Prize.filter(), Prize.event()],

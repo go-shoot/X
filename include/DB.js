@@ -48,10 +48,13 @@ Object.assign(DB, {
             fetch(`/x/db/-update.json`).then(resp => resp.json())
             .then(({news, ...files}) => {
                 index && DB.plugins.announce(news);
+                !DB.plugins.include && (DB.plugins.exclude = ['prod-keihin', 'prod-equipment']);
                 return fresh || DB.cache.filter(files);
             })
         ,
-        files: files => Promise.all(files.map(file => 
+        files: files => Promise.all(files.filter(file => 
+                (DB.plugins.include?.includes(file) ?? true) && !DB.plugins.exclude?.includes(file)
+            ).map(file => 
                 fetch(`/x/db/${file}.json`)
                 .then(resp => Promise.allSettled([file, resp.json(), file == 'part-blade-collab' && DB.clear('blade','hasbro') ]))
             )).then(arr => arr.map(([{value: file}, {value: json}]) => //in one transaction
@@ -160,10 +163,9 @@ Object.assign(DB.cache, {
         'meta': json => DB.put('meta', json),
         'prod-equipment': json => DB.put('product', json),
         'prod-beys': beys => DB.put('product', {beys}),
+        'prod-keihin': beys => DB.put('product', {keihins: beys}),
     },
-    filter: files => [...new O(files).filter(([file, time]) => (DB.plugins.include?.includes(n) ?? true) 
-        && !DB.plugins.exclude?.includes(n) && new Date(time) / 1000 > (Storage('DB')?.[file] || 0)
-    ).keys()],
+    filter: files => [...new O(files).filter(([file, time]) => new Date(time) / 1000 > (Storage('DB')?.[file] || 0)).keys()],
 });
 Object.assign(DB.store, {
     format (store) {

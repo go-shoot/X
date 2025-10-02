@@ -83,15 +83,16 @@ class Keihin {
 }
 
 const Glossary = async (where = document) => {
+    if (!Q('#glossary')) {
+        addEventListener('click', ev => {
+            let clicked = ev.composedPath()[0];
+            clicked.tagName == 'U' && Glossary.lookup(ev, clicked.innerText);
+        }, {capture: true});
+        Q('body').append(E('aside#glossary', {popover: 'hint'}));
+    }
     let p = [where.Q('p'), where.Q('x-part', []).map(part => part.shadowRoot.Q('p'))].flat(9).filter(el => el);
     if (!p.length) return;
-    Glossary.search(p, await DB.get('meta', 'glossary'));
-
-    let u = [where.Q('u'), where.Q('x-part', []).map(part => part.shadowRoot.Q('u'))].flat(9).filter(el => el);
-    if (!u.length) return;
-    Glossary.event(u);
-
-    Q('#glossary') ?? Q('body').append(E('aside#glossary', {popover: 'hint'}));
+    Glossary.search(p, await DB.get('meta', 'glossary'));    
 }
 Object.assign(Glossary, {
     search: (texts, glossary) => texts.forEach(p => {
@@ -106,11 +107,10 @@ Object.assign(Glossary, {
             node.replaceWith(fragment);
         }
     }),    
-    event: terms => terms.forEach(u => u.onclick = ev => Glossary.lookup(ev)),
-    lookup: async ev => {
+    lookup: async (ev, term) => {
         ev.stopPropagation();
         clearTimeout(Glossary.timer);
-        let term = ev.target.innerText, aside = Q('#glossary');
+        let aside = Q('#glossary');
         aside.innerHTML = '';
         let [jap, def] = (await DB.get('meta', 'glossary'))[term];  //ev.target changes after await
         E(aside).set({
