@@ -85,7 +85,7 @@ Object.assign(Filter, {
                 this.filter();
             },
             onmouseover: ({target}) => target.matches('label[title]') && 
-                (Q('#filter summary i').innerText = `｛${target.innerText}｝：${target.title}`)
+                (Q('#filter summary i').innerText = `｛${target.innerText || target.classList}｝：${target.title}`)
         });
     },
     reset: () => Filter.inputs.forEach(input => input.checked = true)
