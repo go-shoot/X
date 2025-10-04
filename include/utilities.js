@@ -66,7 +66,7 @@ class Keihin {
         let names = new Bey([, , bey]);   
         return E(`article.keihin-${type}`, [
             E('em', Keihin.type[type]), 
-            E('p', link ? E('a', {href: link}, note) : note),
+            E('p', link ? E('a', {href: link}, note) : parseInt(style?.width) > 300 ? E('a', {href: src}, note) : note),
             E('div', [
                 E('figure>img', {src, style}), 
                 E('h4', {lang: 'ja'}, [
