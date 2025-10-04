@@ -48,7 +48,7 @@ Object.assign(DB, {
             fetch(`/x/db/-update.json`).then(resp => resp.json())
             .then(({news, ...files}) => {
                 index && DB.plugins.announce(news);
-                !DB.plugins.include && (DB.plugins.exclude = ['prod-keihin', 'prod-equipment']);
+                //!DB.plugins.include && (DB.plugins.exclude = ['prod-keihin', 'prod-equipment']);
                 return fresh || DB.cache.filter(files);
             })
         ,
