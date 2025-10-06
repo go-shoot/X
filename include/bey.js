@@ -41,7 +41,7 @@ class Row {
     constructor(bey, code, type, others) {
         let [video, extra] = ['string', 'object'].map(t => others.find(o => typeof o == t));
         this.tr = E('tr', [
-            this.cell(code, type, video), 
+            this.cell(code, video), 
             ...[bey.blade].flat().map(b => b.cell()), bey.ratchet.cell(), bey.bit.cell()
         ].flat(9), {
             classList: [bey.line ?? bey.blade.group ?? 'BX', type],
@@ -50,13 +50,9 @@ class Row {
         this.extra(extra ?? {});
         return this.tr;  
     }
-    cell (code, type, video) { //todo: include 01-08 in beys.json
-        type.split(' ')[0] == 'RB' ? code == Bey.current ? Bey.RB++ : Bey.RB = 1 : Bey.RB = 0;
-        Bey.current = code;
-        return E('td', 
-            [code + ' ', ...Bey.RB ? [E('sub', `0${Bey.RB}`)] : []], 
-            {dataset: {code, ...video ? {video} : {}}}
-        );
+    cell (code, video) {
+        code = code.split('_');
+        return E('td', [code[0] + ' ', code[1] ? E('sub', code[1]) : ''], {dataset: {code: code[0], ...video ? {video} : {}}});
     }
     extra ({coat, mode}) {
         coat && E(this.tr).set({'--coat': coat});
