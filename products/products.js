@@ -31,7 +31,7 @@ Object.assign(Table, {
                 Table.timer = setTimeout(() => Table.filter(ev.target.value), 500);
             }
         });
-        Q('tbody').onclick = ev => ev.target.matches('td:first-child') && new Preview('image', ev.target);
+        Q('tbody').onclick = Preview.for.table;
         new MutationObserver(Table.count).observe(Q('tbody'), {childList: true, subtree: true, attributeFilter: ['hidden', 'class']});
     },
     reset () {

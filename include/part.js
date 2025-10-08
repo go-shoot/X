@@ -113,7 +113,7 @@ class Tile extends HTMLElement {
             E('div', META.types.map(t => E(`svg.${t}`, {viewBox: '-10 -10 20 10'}, E('use', {href: '#triangle'})))),
             from ? E('a', from, {
                 href: `#${from}`, 
-                onclick: ev => location.href.includes('part') && ev.stopPropagation()
+                onclick: ev => location.pathname.includes('part') && ev.stopPropagation()
             }) : '',
         );
     }
@@ -122,8 +122,8 @@ class Tile extends HTMLElement {
         return `/x/parts/?${path[0]}${path[2] ? `=${path[1]}` : ''}#${path.at(-1)}`
     }
     static named = path => path[0] == 'blade' && !path[2] || ['motif', 'upper', 'hasbro'].includes(path[2]);
-    static #onclick = ev => location.href.includes('parts') ? new Preview('cell', ev.target.Part.path) : 
-        location.href.includes('products') ? Table.filter(ev.target.Part.path) : '';
+    static #onclick = ev => location.pathname.includes('parts') ? new Preview('cell', ev.target.Part.path) : 
+        location.pathname.includes('products') ? Table.filter(ev.target.Part.path) : '';
     static hue = {};
     static icons = new O([
         [/^[A-Z]+X$/, l => E('img', {src: `/x/img/lines.svg#${l}`})],
@@ -208,7 +208,7 @@ class Cell {
         return tds;
     }
     static #named = path => path[0] == 'ratchet' || Tile.named(path);
-    static #onclick = ev => location.href.includes('products') && new Preview('tile', ev.target.Part.path)
+    static #onclick = ev => '';
 
     static fill = (lang, td) => [td ?? Q('td[abbr]:not([headers=ratchet])')].flat().forEach(td => {
         if (!td) return;

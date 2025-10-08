@@ -103,8 +103,7 @@ Object.assign(DB, {
         }
         connectedCallback() {
             [this.progress, this.total] = [0, Storage('DB')?.count || 100];
-            Q('link[href$="common.css"]') && DB.replace('V', DB.current).then(this.callback).catch(this.error)
-            .then(() => Glossary());
+            Q('link[href$="common.css"]') && DB.replace('V', DB.current).then(this.callback).catch(this.error).then(Glossary);
         }
         attributeChangedCallback(_, __, state) {
             if (state == 'success') {
@@ -162,8 +161,12 @@ Object.assign(DB.cache, {
         'part-blade-divided': json => Promise.all(Object.entries(json).map(([line, parts]) => DB.put.parts(parts, `blade-${line}`))),
         'meta': json => DB.put('meta', json),
         'prod-equipment': json => DB.put('product', json),
-        'prod-beys': beys => DB.put('product', {beys}),
         'prod-keihin': beys => DB.put('product', {keihins: beys}),
+        'prod-beys': beys => DB.put('product', {beys: beys.map(([code, type, ...rest]) => {
+            type.split(' ')[0] == 'RB' ? code == DB.current ? DB.RB++ : DB.RB = 1 : DB.RB = 0;
+            DB.current = code;
+            return [DB.RB ? code + `_0${DB.RB}` : code, type, ...rest];
+        })}),
     },
     filter: files => [...new O(files).filter(([file, time]) => new Date(time) / 1000 > (Storage('DB')?.[file] || 0)).keys()],
 });

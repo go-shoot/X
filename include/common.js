@@ -39,7 +39,7 @@ const Menu = {
     },
 }
 addEventListener('DOMContentLoaded', () => {
-    Q('[popover=auto]')?.addEventListener('click', ev => ev.target.closest('[popover]').hidePopover());
+    Q('[popover=auto]')?.addEventListener('click', ev => ev.target.closest('[popover]')?.hidePopover());
     if (!Q('nav menu')) return;
     Menu.append();
     Menu.current();

@@ -140,7 +140,9 @@ class Preview {
             href ? E('caption>a', {href: `/x/products/?${href}`}) : '',
             Preview.thead.cloneNode(true), 
             E('tbody', beys.map(bey => new Bey(bey)))
-        ])
+        ], {
+            onclick: Preview.for.table
+        })
     )).then(() => Cell.fill('chi'))
 
     tile = path => PARTS.at(path).tile().then(tile => Q('#tiles').append(tile.fill(true)))
@@ -184,9 +186,14 @@ class Preview {
             detail: code => `detail_${code}`
         },
     }
+    static for = {
+        table: ev => location.pathname.includes('products') ? new Preview(...
+            ev.target.matches(':first-child') ? ['image', ev.target.dataset.code] : ['tile', ev.target.Part.path]
+        ) : ''
+    }
     static place = Q('[popover]') || Q('body').appendChild(E('aside', {
         popover: 'auto',
-        onclick: ev => ev.target.closest('[popover]').hidePopover()
+        onclick: ev => ev.target.closest('[popover]')?.hidePopover()
     }, [E('div#cells'), E('div#tiles'), E('div#images')]));
     static thead = E('thead>tr', [
         E('th', 'No'), 
