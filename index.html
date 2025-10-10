@@ -4,6 +4,7 @@
 <link rel=stylesheet href=index.css>
 <link rel=stylesheet href=include/component.css>
 <img src="https://beyblade.takaratomy.co.jp/anime/_image/kv_chara.png" hidden>
+<div id="bg"><video src="./bg.mp4" muted autoplay></video><video src="./bg.mp4" muted></video></div>
 
 <input>
 
@@ -30,7 +31,9 @@
 
 <section id=reboot>
     如在本網遇上問題<div><i id=reset>&#xe010;</i><span>重設儲存</span><i></i></div>
-    <a href="../"><img src="../25th.png"></a></section>
+    <a href="../"><img src="../25th.png"></a>
+</section>
+
 <footer>
     對於本網所載資料的準確性或完整性，製作者不會作任何保證或聲明，或因提供或使用此網資料而直接或間接引致的任何損失、損壞或傷害，負上任何責任。
     <br>Developed and Designed by V Man (MKK). 2023–.
@@ -149,4 +152,16 @@ Q('body>input').onkeypress = ev => {
         return location.href = `https://www.threads.net/search?q=${/(?<=\?).+/.exec(ev.target.value.replace('#', '%23'))}`;
     return location.href = `https://${ev.target.value}`;
 }
+
+let swapped;
+Q('video', video => video.ontimeupdate = ev => {
+    if (ev.target.duration - ev.target.currentTime <= 2 && !swapped) {
+        let next = ev.target.nextElementSibling || ev.target.previousElementSibling;
+        next.play();
+        next.style.opacity = 1;
+        ev.target.style.opacity = 0;
+        swapped = true;
+        setTimeout(() => swapped = false, 2000);
+    }
+});
 </script>

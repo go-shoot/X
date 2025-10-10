@@ -3,12 +3,16 @@ html,body {overflow-x: hidden;}
 body {
     position: relative;
 
-    &::before {
-        content: '';
+    #bg {
+        position: fixed; z-index: -1; inset: 0;
+        filter: blur(30px);
+    }
+    video {
         position: absolute; inset: 0;
-        background: url() 60% center / cover;
-        filter: blur(5px) brightness(0.7);
-        z-index: -1;
+        width: 100%; object-fit: cover;
+        transition: opacity 2s ease-in-out;
+
+        &:nth-child(2) {opacity: 0;}
     }
 }
 input:not([type]) {
