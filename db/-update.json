@@ -22,7 +22,7 @@
     "imgs":[],
     "desc":["ClockMirage：圓形60枚刃。只能使用簡化形的Ratchet。"]},
       {"code":"BX-47 launcher","name":"ストリングランチャーL レッドVer.<br>String Launcher L Red Ver.",
-    "imgs":["http://127.0.0.1:5500/25th.png"],"desc":"左迴轉發射器"}
+    "imgs":["../25th.png"],"desc":"左迴轉發射器"}
     ],
     "2025-11":[
       {"code":"CX-10 booster"},
