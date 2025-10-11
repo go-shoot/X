@@ -10,7 +10,7 @@ body {
     video {
         position: absolute; inset: 0;
         width: 100%; object-fit: cover;
-        transition: opacity 2s ease-in-out;
+        transition: opacity calc(1s*var(--crossfade,1)) ease-in-out;
 
         &:nth-child(2) {opacity: 0;}
     }

@@ -153,15 +153,17 @@ Q('body>input').onkeypress = ev => {
     return location.href = `https://${ev.target.value}`;
 }
 
-let swapped;
-Q('video', video => video.ontimeupdate = ev => {
-    if (ev.target.duration - ev.target.currentTime <= 2 && !swapped) {
+let swapped, sec = 1;
+Q('video', video => E(video).set({
+    '--crossfade': sec,
+    ontimeupdate: ev => {
+        if (swapped || ev.target.duration - ev.target.currentTime > sec) return;
         let next = ev.target.nextElementSibling || ev.target.previousElementSibling;
         next.play();
         next.style.opacity = 1;
         ev.target.style.opacity = 0;
         swapped = true;
-        setTimeout(() => swapped = false, 2000);
+        setTimeout(() => swapped = false, 1000 * sec);
     }
-});
+}));
 </script>
